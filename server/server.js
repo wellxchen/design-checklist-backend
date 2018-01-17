@@ -37,7 +37,7 @@ methods.GET = function(request, respond) {
           respond(404, 'error');
         }
         else {
-          respond(200, message);
+          respond(200, message); //json 
         }
       });
       pyshell.end(function(err) {
