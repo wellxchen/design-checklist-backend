@@ -91,6 +91,7 @@ class server (object):
 
                 errmessage = {}
                 errmessage['path'] = issue['component']
+                errmessage['rule'] = ruleResult[0]['name']
                 errmessage['message'] = issue['message']
                 errmessage['textRange'] = {}
                 if 'textRange' in issue:

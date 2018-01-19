@@ -1,0 +1,43 @@
+{
+    "percentage": {
+        "A": "double",
+        "B": "double",
+        "C": "double"
+    },
+    "error": {
+        "A": {
+            "path" : "string",
+            "rule" : "string",
+            "message" : "string",
+            "textRange" : {
+                "startLine" : "int",
+                "endLine" : "int",
+                "startOffset" : "int",
+                "endOffset" : "int"
+            }
+        },
+        "B": {
+            "path" : "string",
+            "rule" : "string",
+            "message" : "string",
+            "textRange" : {
+                "startLine" : "int",
+                "endLine" : "int",
+                "startOffset" : "int",
+                "endOffset" : "int"
+            }
+        },
+        "C": {
+            "path" : "string",
+            "rule" : "string",
+            "message" : "string",
+            "textRange" : {
+                "startLine" : "int",
+                "endLine" : "int",
+                "startOffset" : "int",
+                "endOffset" : "int"
+            }
+        }
+    }
+    
+}
