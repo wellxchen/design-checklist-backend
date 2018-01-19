@@ -7,7 +7,9 @@ http.createServer(function(request, response) {
 
     if (!type) type = "text/plain";
 
-    response.writeHead(code, {"Content-Type": type});
+    response.writeHead(code, {"Content-Type": type, 
+    						  "Access-Control-Allow-Origin" : "http://localhost:3000",
+    						  "Access-Control-Allow-Methods": "GET,OPTIONS"});
     if (body && body.pipe)
       body.pipe(response);
     else
@@ -62,6 +64,10 @@ methods.GET = function(request, respond) {
   });
 };
 
+methods.OPTIONS = function(request, respond) {
+	 respond(200);
+};
+
 /*methods.DELETE = function(path, respond) {
   fs.stat(path, function(error, stats) {
     if (error && error.code == "ENOENT")
@@ -73,7 +79,7 @@ methods.GET = function(request, respond) {
     else
       fs.unlink(path, respondErrorOrNothing(respond));
   });
-};*/
+};
 
 function respondErrorOrNothing(respond) {
   return function(error) {
@@ -93,7 +99,7 @@ methods.PUT = function(path, respond, request) {
     respond(204);
   });
   request.pipe(outStream);
-};
+};*/
 
 
 
