@@ -25,6 +25,7 @@ http.createServer(function(request, response) {
 
 function urlToPath(url) {
   var path = require("url").parse(url).pathname;
+
   return "." + decodeURIComponent(path);
 }
 
@@ -36,7 +37,7 @@ methods.GET = function(request, respond) {
       pyshell.send(JSON.stringify(request));
       pyshell.on('message', function(message) {
         if (message === 'error') {
-          respond(404, 'error');
+          respond(404, 'Either analysis has not completed or you entered an invalid project');
         }
         else {
           respond(200, message); //json 
@@ -52,12 +53,17 @@ methods.GET = function(request, respond) {
     else if (error)
       respond(500, error.toString());
     else if (stats.isDirectory())
-      fs.readdir(path, function(error, files) {
-        if (error)
-          respond(500, error.toString());
-        else
-          respond(200, path);
-      });
+      if (request === './') {
+      	respond(404, 'Either analysis has not completed or you entered an invalid project');
+      }
+      else {
+      	fs.readdir(request, function(error, files) {
+        	if (error)
+          		respond(500, error.toString());
+        	else
+          		respond(200, path);
+      	});
+  	}
     else
       respond(200, fs.createReadStream(path),
               require("mime").lookup(path));
