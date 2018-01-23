@@ -116,13 +116,13 @@ class server (object):
             percentageC = (0.0 + len(C) - len(self.rulesViolated[2])) / len(C) * 100.00
         data = {}
         data['error'] = {}
-        data['error']['A'] = self.message[0]
-        data['error']['B'] = self.message[1]
-        data['error']['C'] = self.message[2]
+        data['error']['Communication'] = self.message[0]
+        data['error']['Modularity'] = self.message[1]
+        data['error']['Flexibility'] = self.message[2]
         data['percentage'] = {}
-        data['percentage']['A'] = percentageA
-        data['percentage']['B'] = percentageB
-        data['percentage']['C'] = percentageC
+        data['percentage']['Communication'] = percentageA
+        data['percentage']['Modularity'] = percentageB
+        data['percentage']['Flexibility'] = percentageC
         return json.dumps(data)
 
 def read_in ():
