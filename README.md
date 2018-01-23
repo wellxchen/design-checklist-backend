@@ -1,51 +1,54 @@
 # SonarQube-Plugin-Backend
 
-Node.js server that retrieves analysis data as json from SonarQube hosting on Duke University's server. Processing data in python using SonarQube web api.Then returns the filtered json data to node server to be displayed in frontend.
+Python server that retrieves analysis data as json from SonarQube hosting on Duke University's server. Processing data in python using SonarQube web api. You can install dependencies using `pip install -r requirements.txt` and run the server with `FLASK_APP=api.py flask run`. The server will be running on `http://localhost:5000`.
 
-To start the server, run ```node server.js```, then enter the ```localhost:8000/``` + ```<project name you have analzed on sonarqube>``` in browser. 
+## API
 
-It returns a Json file with schema: 
+# `/overview`
+
+Returns a Json response with schema:
+
 ```json
 {
-    "percentage": {
-        "A": "double",
-        "B": "double",
-        "C": "double"
+  "percentage": {
+    "A": "double",
+    "B": "double",
+    "C": "double"
+  },
+  "error": {
+    "A": {
+      "path": "string",
+      "rule": "string",
+      "message": "string",
+      "textRange": {
+        "startLine": "int",
+        "endLine": "int",
+        "startOffset": "int",
+        "endOffset": "int"
+      }
     },
-    "error": {
-        "A": {
-            "path" : "string",
-            "rule" : "string",
-            "message" : "string",
-            "textRange" : {
-                "startLine" : "int",
-                "endLine" : "int",
-                "startOffset" : "int",
-                "endOffset" : "int"
-            }
-        },
-        "B": {
-            "path" : "string",
-            "rule" : "string",
-            "message" : "string",
-            "textRange" : {
-                "startLine" : "int",
-                "endLine" : "int",
-                "startOffset" : "int",
-                "endOffset" : "int"
-            }
-        },
-        "C": {
-            "path" : "string",
-            "rule" : "string",
-            "message" : "string",
-            "textRange" : {
-                "startLine" : "int",
-                "endLine" : "int",
-                "startOffset" : "int",
-                "endOffset" : "int"
-            }
-        }
+    "B": {
+      "path": "string",
+      "rule": "string",
+      "message": "string",
+      "textRange": {
+        "startLine": "int",
+        "endLine": "int",
+        "startOffset": "int",
+        "endOffset": "int"
+      }
+    },
+    "C": {
+      "path": "string",
+      "rule": "string",
+      "message": "string",
+      "textRange": {
+        "startLine": "int",
+        "endLine": "int",
+        "startOffset": "int",
+        "endOffset": "int"
+      }
     }
+  }
 }
 ```
