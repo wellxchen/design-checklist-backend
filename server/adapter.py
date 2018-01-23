@@ -2,12 +2,12 @@ import requests
 import json
 import sys
 
-class server (object):
+class Adapter (object):
 
-    def __init__(self, arg):
+    def __init__(self, project):
 
         self.GROUPID = 'duke-compsci308:'
-        self.TEST_PROJECT = self.GROUPID + arg
+        self.TEST_PROJECT = self.GROUPID + project
         self.QUALITY_PROFILE = 'AV8XUqRGF03llpuaxc6_'#new quality profile 'AV-ylMj9F03llpuaxc9n'
 
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
@@ -128,6 +128,7 @@ class server (object):
 def read_in ():
     lines = sys.stdin.readlines()
     return json.loads(lines[0])
+
 if __name__ == '__main__':
     a = 'sonar_test'
     project = read_in()
@@ -136,7 +137,7 @@ if __name__ == '__main__':
     if not len(filelist) == 2:
         print "error"
         sys.exit()
-    s = server(filelist[1]).percentage()
+    s = Adapter(filelist[1]).percentage()
     print s
     sys.exit()
 '''
