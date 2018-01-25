@@ -123,7 +123,7 @@ class Adapter (object):
         data['percentage']['A'] = percentageA
         data['percentage']['B'] = percentageB
         data['percentage']['C'] = percentageC
-        return json.dumps(data)
+        return data
 
 def read_in ():
     lines = sys.stdin.readlines()
@@ -138,7 +138,7 @@ if __name__ == '__main__':
         print "error"
         sys.exit()
     s = Adapter(filelist[1]).percentage()
-    print s
+    print json.dumps(s)
     sys.exit()
 '''
 
