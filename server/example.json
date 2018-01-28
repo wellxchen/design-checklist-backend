@@ -14,7 +14,8 @@
                 "endLine" : "int",
                 "startOffset" : "int",
                 "endOffset" : "int"
-            }
+            },
+            "code" : []
         },
         "Modularity": {
             "path" : "string",
@@ -25,7 +26,8 @@
                 "endLine" : "int",
                 "startOffset" : "int",
                 "endOffset" : "int"
-            }
+            },
+            "code" : []
         },
         "Flexibility": {
             "path" : "string",
@@ -36,7 +38,8 @@
                 "endLine" : "int",
                 "startOffset" : "int",
                 "endOffset" : "int"
-            }
+            },
+            "code" : []
         }
     }
     

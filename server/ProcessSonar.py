@@ -29,6 +29,8 @@ class ProcessSonar (object):
             self.rulesViolated[index].append(ruleID)
 
 
+
+
     def percentage(self):
 
         #if project not been analysis return error
@@ -97,6 +99,18 @@ class ProcessSonar (object):
                 errmessage['textRange'] = {}
                 if 'textRange' in issue:
                     errmessage['textRange'] = issue['textRange']
+                    startLine = issue['textRange']['startLine']
+                    endLine = issue['textRange']['endLine']
+                    r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
+                                     "&to=" + str(endLine) +
+                                     "&key=" + issue['component'])
+                    items = r.json()["sources"]
+                    errmessage['code'] = []
+                    for item in items:
+                        formattedItem = item[1].replace('\t', '')
+                        errmessage['code'].append(formattedItem)
+
+
                 if ruleID in A:
                     self.checkRuleID(0,ruleID, errmessage)
                 elif ruleID in B:
@@ -128,5 +142,7 @@ class ProcessSonar (object):
         return json.dumps(data)
 
 
-
-
+'''
+if __name__ == '__main__':
+    print ProcessSonar("sonar_test").percentage()
+'''
