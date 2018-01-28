@@ -1,11 +1,11 @@
 {
     "percentage": {
-        "A": "double",
-        "B": "double",
-        "C": "double"
+        "Communication": "double",
+        "Modularity": "double",
+        "Flexibility": "double"
     },
     "error": {
-        "A": {
+        "Communication": {
             "path" : "string",
             "rule" : "string",
             "message" : "string",
@@ -16,7 +16,7 @@
                 "endOffset" : "int"
             }
         },
-        "B": {
+        "Modularity": {
             "path" : "string",
             "rule" : "string",
             "message" : "string",
@@ -27,7 +27,7 @@
                 "endOffset" : "int"
             }
         },
-        "C": {
+        "Flexibility": {
             "path" : "string",
             "rule" : "string",
             "message" : "string",
