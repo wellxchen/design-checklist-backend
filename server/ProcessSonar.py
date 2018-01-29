@@ -50,6 +50,7 @@ class ProcessSonar (object):
             data['err'] = "project not found"
             return json.dumps(data)
 
+           #communication
         A = {'squid:S00115', 'squid:S1190', 'squid:S1126',
             'squid:S109', 'squid:S00122', 'squid:S00121',
             'squid:S2681', 'squid:S881', 'squid:S2114',
@@ -64,6 +65,7 @@ class ProcessSonar (object):
             'squid:S2692', 'squid:S1481', 'squid:S1710',
             'squid:S3358', 'squid:S2147', 'squid:S1170',
             'squid:S2159', 'squid:S1068'}
+           #Modularbility 
         B = {'squid:S1258', 'squid:S3066', 'squid:ClassVariableVisibilityCheck',
         	'squid:S00104','squid:S1188', 'squid:S2094',
         	'squid:S2177','squid:S2440', 'squid:S2209',
@@ -71,10 +73,13 @@ class ProcessSonar (object):
         	'squid:S2388', 'squid:S2386', 'squid:S2387',
         	'squid:S2384', 'squid:S2141', 'squid:S3038',
         	'squid:S2156'}
+           #Flexibility
         C = {'common-java:DuplicatedBlocks', 'squid:S3047', 'squid:S3776',
         	'squid:S2176', 'squid:MethodCyclomaticComplexity', 'squid:S138',
         	'squid:S1067', 'squid:S1479', 'squid:S1118',
         	'squid:S00107', 'squid:S3422', 'squid:S2166'}
+          #Java related
+          #code smell
 
         #get number of pages
         r = requests.get(
