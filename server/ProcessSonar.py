@@ -8,7 +8,7 @@ class ProcessSonar (object):
 
         self.GROUPID = 'duke-compsci308:'
         self.TEST_PROJECT = self.GROUPID + arg
-        self.QUALITY_PROFILE = 'AV8XUqRGF03llpuaxc6_'#new quality profile 'AV-ylMj9F03llpuaxc9n'
+        self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
 
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
 
