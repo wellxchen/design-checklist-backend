@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/<string:project>")
 def process(project):
-    print project
+
     return ProcessSonar(project).percentage();
 
 

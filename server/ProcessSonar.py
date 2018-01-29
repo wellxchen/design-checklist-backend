@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 
 class ProcessSonar (object):
 
@@ -29,6 +30,14 @@ class ProcessSonar (object):
             self.rulesViolated[index].append(ruleID)
 
 
+    def striphtml(self, data):
+        p = re.compile(r'<.*?>')
+        p = p.sub('', data)
+        p = p.replace('&lt;', '<')
+        p = p.replace('&gt;', '>')
+        p = p.replace('&le;', '<=')
+        p = p.replace('&ge;', '>=')
+        return p
 
 
     def percentage(self):
@@ -39,7 +48,7 @@ class ProcessSonar (object):
         if 'errors' in found_project:
             return 'error'
 
-        #r = requests.get (self.SONAR_URL + "api/sources/show?key=")
+        r = requests.get(self.SONAR_URL + "/api/sources/show?key=duke-compsci308:sonar_test:src/gameplayer/front_end/application_scene/HighScoreScene.java")
 
         A = {'squid:S00115', 'squid:S1190', 'squid:S1126',
             'squid:S109', 'squid:S00122', 'squid:S00121',
@@ -106,10 +115,11 @@ class ProcessSonar (object):
                                      "&key=" + issue['component'])
                     items = r.json()["sources"]
                     errmessage['code'] = []
+                    print issue['component']
                     for item in items:
                         formattedItem = item[1].replace('\t', '')
+                        formattedItem = self.striphtml(formattedItem)
                         errmessage['code'].append(formattedItem)
-
 
                 if ruleID in A:
                     self.checkRuleID(0,ruleID, errmessage)
@@ -144,5 +154,5 @@ class ProcessSonar (object):
 
 '''
 if __name__ == '__main__':
-    print ProcessSonar("sonar_test").percentage()
+    ProcessSonar("sonar_test").percentage()
 '''
