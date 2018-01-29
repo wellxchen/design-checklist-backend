@@ -126,6 +126,7 @@ class ProcessSonar (object):
                                      "&key=" + issue['component'])
                     items = r.json()["sources"]
                     errmessage['code'] = []
+                    errmessage['startLine'] = items[0][0] if len(items) > 0 else 1
                     print issue['component']
                     for item in items:
                         formattedItem = item[1].replace('\t', '')
