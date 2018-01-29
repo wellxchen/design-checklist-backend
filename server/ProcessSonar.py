@@ -46,11 +46,9 @@ class ProcessSonar (object):
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
-        	data = {}
-        	data['err'] = 'project not found'
+            data = {}
+            data['err'] = "project not found"
             return json.dumps(data)
-
-     
 
         A = {'squid:S00115', 'squid:S1190', 'squid:S1126',
             'squid:S109', 'squid:S00122', 'squid:S00121',
@@ -163,7 +161,7 @@ class ProcessSonar (object):
         return json.dumps(data)
 
 
-'''
+
 if __name__ == '__main__':
     ProcessSonar("sonar_test").percentage()
-'''
+
