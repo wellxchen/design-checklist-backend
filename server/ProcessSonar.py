@@ -129,7 +129,7 @@ class ProcessSonar (object):
                                      "&key=" + issue['component'])
                     items = r.json()["sources"]
                     errmessage['code'] = []
-                    print issue['component']
+
                     for item in items:
                         formattedItem = item[1].replace('\t', '')
                         formattedItem = self.striphtml(formattedItem)
