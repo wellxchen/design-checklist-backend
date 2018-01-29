@@ -46,7 +46,9 @@ class ProcessSonar (object):
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
-            return 'error'
+        	data = {}
+        	data['err'] = 'project not found'
+            return json.dumps(data)
 
      
 
@@ -64,8 +66,17 @@ class ProcessSonar (object):
             'squid:S2692', 'squid:S1481', 'squid:S1710',
             'squid:S3358', 'squid:S2147', 'squid:S1170',
             'squid:S2159', 'squid:S1068'}
-        B = {'squid:S1258'}
-        C = {}
+        B = {'squid:S1258', 'squid:S3066', 'squid:ClassVariableVisibilityCheck',
+        	'squid:S00104','squid:S1188', 'squid:S2094',
+        	'squid:S2177','squid:S2440', 'squid:S2209',
+        	'squid:S1194', 'squid:S2696', 'squid:S2694',
+        	'squid:S2388', 'squid:S2386', 'squid:S2387',
+        	'squid:S2384', 'squid:S2141', 'squid:S3038',
+        	'squid:S2156'}
+        C = {'common-java:DuplicatedBlocks', 'squid:S3047', 'squid:S3776',
+        	'squid:S2176', 'squid:MethodCyclomaticComplexity', 'squid:S138',
+        	'squid:S1067', 'squid:S1479', 'squid:S1118',
+        	'squid:S00107', 'squid:S3422', 'squid:S2166'}
 
         #get number of pages
         r = requests.get(
