@@ -48,7 +48,7 @@ class ProcessSonar (object):
         if 'errors' in found_project:
             return 'error'
 
-        r = requests.get(self.SONAR_URL + "/api/sources/show?key=duke-compsci308:sonar_test:src/gameplayer/front_end/application_scene/HighScoreScene.java")
+     
 
         A = {'squid:S00115', 'squid:S1190', 'squid:S1126',
             'squid:S109', 'squid:S00122', 'squid:S00121',
