@@ -101,7 +101,7 @@ class ProcessSonar (object):
     def calpercentage (self, category, rules_under_category):
         if len(category) > 0:
                 return (0.0 + len(category) - len(rules_under_category)) / len(category) * 100.00
-        return 0.0
+        return 100.0
 
     def process(self):
 
