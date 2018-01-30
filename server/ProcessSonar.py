@@ -16,7 +16,7 @@ class ProcessSonar (object):
         self.issue = []
         self.message = []
 
-        for i in range(3):
+        for i in range(5):
             self.rulesViolated.append([])
             self.issue.append([])
             self.message.append([])
@@ -39,8 +39,12 @@ class ProcessSonar (object):
         p = p.replace('&ge;', '>=')
         return p
 
+    def calpercentage (self, category, rules_under_category):
+        if len(category) > 0:
+                return (0.0 + len(category) - len(rules_under_category)) / len(category) * 100.00
+        return 0.0
 
-    def percentage(self):
+    def process(self):
 
         #if project not been analysis return error
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
@@ -51,7 +55,7 @@ class ProcessSonar (object):
             return json.dumps(data)
 
            #communication
-        A = {'squid:S00115', 'squid:S1190', 'squid:S1126',
+        Communication = {'squid:S00115', 'squid:S1190', 'squid:S1126',
             'squid:S109', 'squid:S00122', 'squid:S00121',
             'squid:S2681', 'squid:S881', 'squid:S2114',
             'squid:S2589', 'squid:S2293', 'squid:S2178',
@@ -65,21 +69,31 @@ class ProcessSonar (object):
             'squid:S2692', 'squid:S1481', 'squid:S1710',
             'squid:S3358', 'squid:S2147', 'squid:S1170',
             'squid:S2159', 'squid:S1068'}
+        Communication_Sub = ['Meaningful names: give variables, methods, classes, and packages non-abbreviated, intention-revealing names',
+                             'No magic values: use constants for all values used multiple times or in program logic',
+                             'Write readable code instead of comments: use comments only to explain important design decisions or purpose of code, not to restate code logic',
+                             'Use scope wisely: variables should be declared as close as possible to where they are used',
+                             'At all points, code should be "at the same level" (try not to mix method calls and low-level if logic in same method)',
+                             'Code should be "concise" (use booleans wisely, for-each loop where possible, use Java API calls instead of implementing yourself)',
+                             'Code should contain no warnings from Java compiler or CheckStyle']
            #Modularbility 
-        B = {'squid:S1258', 'squid:S3066', 'squid:ClassVariableVisibilityCheck',
+        Modularbility = {'squid:S1258', 'squid:S3066', 'squid:ClassVariableVisibilityCheck',
         	'squid:S00104','squid:S1188', 'squid:S2094',
         	'squid:S2177','squid:S2440', 'squid:S2209',
         	'squid:S1194', 'squid:S2696', 'squid:S2694',
         	'squid:S2388', 'squid:S2386', 'squid:S2387',
         	'squid:S2384', 'squid:S2141', 'squid:S3038',
         	'squid:S2156'}
+        Modularbility_sub = []
            #Flexibility
-        C = {'common-java:DuplicatedBlocks', 'squid:S3047', 'squid:S3776',
+        Flexibility = {'common-java:DuplicatedBlocks', 'squid:S3047', 'squid:S3776',
         	'squid:S2176', 'squid:MethodCyclomaticComplexity', 'squid:S138',
         	'squid:S1067', 'squid:S1479', 'squid:S1118',
         	'squid:S00107', 'squid:S3422', 'squid:S2166'}
           #Java related
+        JavaNote = {}
           #code smell
+        CodeSmell = {}
 
         #get number of pages
         r = requests.get(
@@ -108,7 +122,7 @@ class ProcessSonar (object):
             self.SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + self.QUALITY_PROFILE)
         rules = r.json()['rules']
 
-
+        print len(issues)
         #store details
         for issue in issues:
             ruleID = issue['rule']
@@ -135,33 +149,40 @@ class ProcessSonar (object):
                         formattedItem = self.striphtml(formattedItem)
                         errmessage['code'].append(formattedItem)
 
-                if ruleID in A:
-                    self.checkRuleID(0,ruleID, errmessage)
-                elif ruleID in B:
-                    self.checkRuleID(1,ruleID, errmessage)
-                elif ruleID in C:
-                    self.checkRuleID(2, ruleID,  errmessage)
+                if ruleID in Communication:
+                    self.checkRuleID(0, ruleID, errmessage)
+                elif ruleID in Modularbility:
+                    self.checkRuleID(1, ruleID, errmessage)
+                elif ruleID in Flexibility:
+                    self.checkRuleID(2, ruleID, errmessage)
+                elif ruleID in JavaNote:
+                    self.checkRuleID(3, ruleID, errmessage)
+                elif ruleID in CodeSmell:
+                    self.checkRuleID(4, ruleID, errmessage)
+
 
         #cal percentage
-        percentageA = 100.0
-        percentageB = 100.0
-        percentageC = 100.0
+        percentageA = self.calpercentage(Communication, self.rulesViolated[0])
+        percentageB = self.calpercentage(Modularbility, self.rulesViolated[1])
+        percentageC = self.calpercentage(Flexibility, self.rulesViolated[2])
+        percentageD = self.calpercentage(JavaNote, self.rulesViolated[3])
+        percentageE = self.calpercentage(CodeSmell, self.rulesViolated[4])
 
-        if len(A) > 0:
-            percentageA = (0.0 + len(A) - len(self.rulesViolated[0])) / len(A) * 100.00
-        if len(B) > 0:
-            percentageB = (0.0 + len(B) - len(self.rulesViolated[1])) / len(B) * 100.00
-        if len(C) > 0:
-            percentageC = (0.0 + len(C) - len(self.rulesViolated[2])) / len(C) * 100.00
+
+
         data = {}
         data['error'] = {}
         data['error']['Communication'] = self.message[0]
         data['error']['Modularity'] = self.message[1]
         data['error']['Flexibility'] = self.message[2]
+        data['error']['Java Note'] = self.message[3]
+        data['error']['Code Smell'] = self.message[4]
         data['percentage'] = {}
         data['percentage']['Communication'] = percentageA
         data['percentage']['Modularity'] = percentageB
         data['percentage']['Flexibility'] = percentageC
+        data['percentage']['Java Note'] = percentageD
+        data['percentage']['Code Smell'] = percentageE
 
         return json.dumps(data)
 

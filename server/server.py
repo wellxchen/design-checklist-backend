@@ -8,7 +8,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 @app.route("/<string:project>")
 def process(project):
 
-    return ProcessSonar(project).percentage();
+    return ProcessSonar(project).process();
 
 
 if __name__ == '__main__':
