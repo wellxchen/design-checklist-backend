@@ -142,7 +142,6 @@ class ProcessSonar (object):
             self.SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + self.QUALITY_PROFILE)
         rules = r.json()['rules']
 
-        print len(issues)
         #store details
         for issue in issues:
             ruleID = issue['rule']
