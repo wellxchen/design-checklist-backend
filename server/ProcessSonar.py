@@ -1,7 +1,7 @@
 import requests
 import json
 import re
-from rules import categories
+from categories import categories
 
 class ProcessSonar (object):
 
@@ -14,24 +14,40 @@ class ProcessSonar (object):
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
 
         self.rulesViolated = []
-        self.issue = []
         self.message = []
 
         for i in range(5):
             self.rulesViolated.append([])
-            self.issue.append([])
             self.message.append([])
+            k = 0
+            if i == 0:
+                k = 7
+            if i == 1:
+                k = 8
+            if i == 2:
+                k = 5
+            for j in range(k):
+                self.message[i].append([])
 
 
 
 
+    def checkRuleID(self, ruleID, errmessage):
+        ruleInfo = categories().getRuleDetail(ruleID)
 
-    def checkRuleID(self,  index, ruleID,  errmessage):
+        if len(ruleInfo) == 0:
+            return
+        mainindex = ruleInfo[0]
 
-        self.issue[index].append(ruleID)
-        self.message[index].append(errmessage)
-        if not ruleID in self.rulesViolated[index]:
-            self.rulesViolated[index].append(ruleID)
+        if len(ruleInfo) == 2:
+            subindex = ruleInfo[1]
+
+            self.message[mainindex][subindex - 1].append(errmessage)
+        else:
+            self.message[mainindex].append(errmessage)
+
+        if not ruleID in self.rulesViolated[mainindex]:
+            self.rulesViolated[mainindex].append(ruleID)
 
 
     def striphtml(self, data):
@@ -57,8 +73,6 @@ class ProcessSonar (object):
             data = {}
             data['err'] = "project not found"
             return json.dumps(data)
-
-
 
         #get number of pages
         r = requests.get(
@@ -109,36 +123,108 @@ class ProcessSonar (object):
                     errmessage['code'] = []
 
                     for item in items:
-                        formattedItem = item[1].replace('\t', '')
+                        #formattedItem = item[1].replace('\t', '')
                         #formattedItem = self.striphtml(formattedItem)
-                        errmessage['code'].append(formattedItem)
+                        errmessage['code'].append(item)
 
-                if ruleID in categories.Communication:
-                    self.checkRuleID(0, ruleID, errmessage)
-                elif ruleID in categories.Modularbility:
-                    self.checkRuleID(1, ruleID, errmessage)
-                elif ruleID in categories.Flexibility:
-                    self.checkRuleID(2, ruleID, errmessage)
-                elif ruleID in categories.JavaNote:
-                    self.checkRuleID(3, ruleID, errmessage)
-                elif ruleID in categories.CodeSmell:
-                    self.checkRuleID(4, ruleID, errmessage)
+
+                self.checkRuleID (ruleID, errmessage)
+
 
 
         #cal percentage
-        percentageA = self.calpercentage(categories.Communication, self.rulesViolated[0])
-        percentageB = self.calpercentage(categories.Modularbility, self.rulesViolated[1])
-        percentageC = self.calpercentage(categories.Flexibility, self.rulesViolated[2])
-        percentageD = self.calpercentage(categories.JavaNote, self.rulesViolated[3])
-        percentageE = self.calpercentage(categories.CodeSmell, self.rulesViolated[4])
-
+        percentageA = self.calpercentage(categories().communication, self.rulesViolated[0])
+        percentageB = self.calpercentage(categories().modularity, self.rulesViolated[1])
+        percentageC = self.calpercentage(categories().flexibility, self.rulesViolated[2])
+        percentageD = self.calpercentage(categories().javanote, self.rulesViolated[3])
+        percentageE = self.calpercentage(categories().codesmell, self.rulesViolated[4])
 
 
         data = {}
         data['error'] = {}
-        data['error']['Communication'] = self.message[0]
-        data['error']['Modularity'] = self.message[1]
-        data['error']['Flexibility'] = self.message[2]
+        data['error']['Communication'] = {}
+        data['error']['Communication']['Meaningful names'] = {}
+        data['error']['Communication']['Meaningful names']["category description"] = categories().Communication_Sub[1]
+        data['error']['Communication']['Meaningful names']["detail"]  = self.message[0][0]
+
+        data['error']['Communication']['No magic values'] = {}
+        data['error']['Communication']['No magic values']["category description"] = categories().Communication_Sub[2]
+        data['error']['Communication']['No magic values']["detail"] =  self.message[0][1]
+
+        data['error']['Communication']['Readable code'] = {}
+        data['error']['Communication']['Readable code']["category description"] = categories().Communication_Sub[3]
+        data['error']['Communication']['Readable code']["detail"] = self.message[0][2]
+
+        data['error']['Communication']['Use scope wisely'] = {}
+        data['error']['Communication']['Use scope wisely']["category description"] = categories().Communication_Sub[4]
+        data['error']['Communication']['Use scope wisely']["detail"] = self.message[0][3]
+
+        data['error']['Communication']['Same level code'] = {}
+        data['error']['Communication']['Same level code']["category description"] = categories().Communication_Sub[5]
+        data['error']['Communication']['Same level code']["detail"] = self.message[0][4]
+
+        data['error']['Communication']['Concise code'] = {}
+        data['error']['Communication']['Concise code']["category description"] = categories().Communication_Sub[6]
+        data['error']['Communication']['Concise code']["message"] = self.message[0][5]
+
+        data['error']['Communication']['No warning'] = {}
+        data['error']['Communication']['No warning']["category description"] = categories().Communication_Sub[7]
+        data['error']['Communication']['No warning']["message"] = self.message[0][6]
+
+        data['error']['Modularity'] = {}
+        data['error']['Modularity']['Data responsibility'] = {}
+        data['error']['Modularity']['Data responsibility']["category description"]  = categories().Modularity_sub[1]
+        data['error']['Modularity']['Data responsibility']["message"] = self.message[1][0]
+
+        data['error']['Modularity']['No public instance variables'] = {}
+        data['error']['Modularity']['No public instance variables']["category description"] = categories().Modularity_sub[2]
+        data['error']['Modularity']['No public instance variables']["message"] = self.message[1][1]
+
+        data['error']['Modularity']['No manager classes'] = {}
+        data['error']['Modularity']['No manager classes']["category description"] = categories().Modularity_sub[3]
+        data['error']['Modularity']['No manager classes']["message"] = self.message[1][2]
+
+        data['error']['Modularity']['No static variables'] = {}
+        data['error']['Modularity']['No static variables']["category description"] = categories().Modularity_sub[4]
+        data['error']['Modularity']['No static variables']["message"] = self.message[1][3]
+
+        data['error']['Modularity']['Active classes'] = {}
+        data['error']['Modularity']['Active classes']["category description"] = categories().Modularity_sub[5]
+        data['error']['Modularity']['Active classes']["message"] = self.message[1][4]
+
+        data['error']['Modularity']['Get method give minimum info'] = {}
+        data['error']['Modularity']['Get method give minimum info']["category description"] = categories().Modularity_sub[6]
+        data['error']['Modularity']['Get method give minimum info']["message"] = self.message[1][5]
+
+        data['error']['Modularity']['Get method validate input'] = {}
+        data['error']['Modularity']['Get method validate input']["category description"] = categories().Modularity_sub[7],
+        data['error']['Modularity']['Get method validate input']["message"] = self.message[1][6]
+
+        data['error']['Modularity']['Superclasses are their own class'] = {}
+        data['error']['Modularity']['Superclasses are their own class']["category description"] = categories().Modularity_sub[8]
+        data['error']['Modularity']['Superclasses are their own class']["message"] =  self.message[1][7]
+
+        data['error']['Flexibility'] = {}
+        data['error']['Flexibility']['No duplicated code'] = {}
+        data['error']['Flexibility']['No duplicated code']["category description"] = categories().Modularity_sub[1]
+        data['error']['Flexibility']['No duplicated code']["message"] = self.message[2][0]
+
+        data['error']['Flexibility']['General type'] = {}
+        data['error']['Flexibility']['General type']["category description"] = categories().Modularity_sub[2]
+        data['error']['Flexibility']['General type']["message"] = self.message[2][1]
+
+        data['error']['Flexibility']['Single Purpose'] = {}
+        data['error']['Flexibility']['Single Purpose']["category description"] = categories().Modularity_sub[3]
+        data['error']['Flexibility']['Single Purpose']["message"] =  self.message[2][2]
+
+        data['error']['Flexibility']['Behavior Driven Design'] = {}
+        data['error']['Flexibility']['Behavior Driven Design']["category description"] = categories().Modularity_sub[4]
+        data['error']['Flexibility']['Behavior Driven Design']["message"] = self.message[2][3]
+
+        data['error']['Flexibility']['Polymorphism'] = {}
+        data['error']['Flexibility']['Polymorphism']["category description"] = categories().Modularity_sub[5]
+        data['error']['Flexibility']['Polymorphism']["message"] = self.message[2][4]
+
         data['error']['Java Note'] = self.message[3]
         data['error']['Code Smell'] = self.message[4]
         data['percentage'] = {}
@@ -148,10 +234,13 @@ class ProcessSonar (object):
         data['percentage']['Java Note'] = percentageD
         data['percentage']['Code Smell'] = percentageE
 
-        return json.dumps(data)
+        res = json.dumps(data,
+                 indent=4, separators=(',', ': '))
+        print res
+        return res
 
 
 
 if __name__ == '__main__':
-    ProcessSonar("sonar_test").percentage()
+     ProcessSonar("test").process()
 
