@@ -125,7 +125,7 @@ class ProcessSonar (object):
                     for item in items:
                         #formattedItem = item[1].replace('\t', '')
                         #formattedItem = self.striphtml(formattedItem)
-                        errmessage['code'].append(item)
+                        errmessage['code'].append(item[1])
 
 
                 self.checkRuleID (ruleID, errmessage)
