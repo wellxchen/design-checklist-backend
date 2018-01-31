@@ -1,7 +1,8 @@
 import requests
 import json
-import re
+
 from categories import categories
+from utility import utility
 
 class ProcessSonar (object):
 
@@ -50,14 +51,7 @@ class ProcessSonar (object):
             self.rulesViolated[mainindex].append(ruleID)
 
 
-    def striphtml(self, data):
-        p = re.compile(r'<.*?>')
-        p = p.sub('', data)
-        p = p.replace('&lt;', '<')
-        p = p.replace('&gt;', '>')
-        p = p.replace('&le;', '<=')
-        p = p.replace('&ge;', '>=')
-        return p
+
 
     def calpercentage (self, category, rules_under_category):
         if len(category) > 0:
