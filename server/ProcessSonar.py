@@ -225,8 +225,8 @@ class ProcessSonar (object):
         data['percentage']['Communication'] = percentageA
         data['percentage']['Modularity'] = percentageB
         data['percentage']['Flexibility'] = percentageC
-        data['percentage']['Java Note'] = percentageD
-        data['percentage']['Code Smell'] = percentageE
+        data['percentage']['Java Notes'] = percentageD
+        data['percentage']['Code Smells'] = percentageE
 
         res = json.dumps(data,
                  indent=4, separators=(',', ': '))
