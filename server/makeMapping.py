@@ -11,6 +11,6 @@ def makeMap(rules, main, sub):
     return res
 
 
-rules = {'squid:S00115', 'squid:S1190', 'squid:S00101', 'squid:S1942', 'squid:S1221', 'squid:S1700', 'squid:S1223'}
+rules = {'squid:S2189', 'squid:S2252', 'squid:S2251', 'squid:S1994', 'squid:S1862', 'squid:S134', 'squid:S1905', 'squid:ForLoopCounterChangedCheck', 'squid:IndentationCheck', 'squid:S1226'}
 
-print makeMap(rules, "communication", 1)
+print makeMap(rules, "codesmell", 0)
