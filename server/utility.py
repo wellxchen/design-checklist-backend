@@ -3,6 +3,7 @@ from categories import categories
 import json
 
 class utility ():
+
     def makeMap(rules, main, sub):
         res = ""
         for rule in rules:
@@ -29,6 +30,7 @@ class utility ():
         return json.dumps(data)
 
     def dataHandler(self, message, percentage):
+
         data = {}
         data['error'] = {}
         data['error']['Communication'] = {}

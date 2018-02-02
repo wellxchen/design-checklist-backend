@@ -12,9 +12,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 @app.route("/api/show")
 def process():
-
     project = request.args.get('project')
-    print project
     return ProcessSonar(project).process();
 
 @app.route("/api/statistics") #not finished

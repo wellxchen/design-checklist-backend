@@ -126,9 +126,9 @@ class ProcessSonar (object):
         percentage.append(self.calpercentage(categories().javanote, self.rulesViolated[3]))
         percentage.append(self.calpercentage(categories().codesmell, self.rulesViolated[4]))
 
-        data = utility.dataHandler(self.message, percentage)
-        res = json.dumps(data,
-                        indent=4, separators=(',', ': '))
+        data = utility().dataHandler(self.message, percentage)
+        print data
+        res = json.dumps(data, indent=4, separators=(',', ': '))
 
 
         return res
