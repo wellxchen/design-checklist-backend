@@ -9,6 +9,8 @@ class ProcessSonar (object):
     def __init__(self, arg):
 
         self.GROUPID = 'duke-compsci308:'
+        if arg is None:
+            arg = ""
         self.TEST_PROJECT = self.GROUPID + arg
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
 
@@ -55,16 +57,19 @@ class ProcessSonar (object):
                 return (0.0 + len(category) - len(rules_under_category)) / len(category) * 100.00
         return 100.0
 
+    def errHandler (self):
+        data = {}
+        data['err'] = "project not found"
+        data['description'] = "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
+        return json.dumps(data)
+
     def process(self):
 
         #if project not been analysis return error
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
-            data = {}
-            data['err'] = "project not found"
-            data['description'] = "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
-            return json.dumps(data)
+            return self.errHandler()
 
         #get number of pages
         r = requests.get(
@@ -228,17 +233,17 @@ class ProcessSonar (object):
 
         res = json.dumps(data,
                  indent=4, separators=(',', ': '))
-        print res
+
+
         return res
 
     def statistics(self):
-
-        api / custom_measures / search
-
+        #TODO
         res = ""
         return res
 
     def getrules (self, main, sub):
+        #TODO
         res = ""
         return res
 
