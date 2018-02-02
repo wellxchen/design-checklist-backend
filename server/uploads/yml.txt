@@ -1,0 +1,9 @@
+image: maven
+
+sonar_analysis:
+  script:
+    - mvn sonar:sonar -Dsonar.host.url=http://coursework.cs.duke.edu:9000
+  tags:
+    - sonarqube
+  only:
+    - master

@@ -63,6 +63,7 @@ class ProcessSonar (object):
         if 'errors' in found_project:
             data = {}
             data['err'] = "project not found"
+            data['description'] = "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
             return json.dumps(data)
 
         #get number of pages
@@ -231,6 +232,9 @@ class ProcessSonar (object):
         return res
 
     def statistics(self):
+
+        api / custom_measures / search
+
         res = ""
         return res
 
