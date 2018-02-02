@@ -50,9 +50,6 @@ class ProcessSonar (object):
         if not ruleID in self.rulesViolated[mainindex]:
             self.rulesViolated[mainindex].append(ruleID)
 
-
-
-
     def calpercentage (self, category, rules_under_category):
         if len(category) > 0:
                 return (0.0 + len(category) - len(rules_under_category)) / len(category) * 100.00
@@ -233,6 +230,13 @@ class ProcessSonar (object):
         print res
         return res
 
+    def statistics(self):
+        res = ""
+        return res
+
+    def getrules (self, main, sub):
+        res = ""
+        return res
 
 
 if __name__ == '__main__':
