@@ -1,4 +1,4 @@
-# SonarQube-Plugin-Backend
+# SonarQube-Web-Backend
 
 Flask server that retrieves analysis data as json from SonarQube hosting on Duke University's server. Processing data in python using SonarQube web api.Then returns the filtered json data to be displayed in frontend. Frontend:https://github.com/zacharyfmarion/sonarqube-web-frontend
 
