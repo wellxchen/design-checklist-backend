@@ -7,7 +7,7 @@ from flask import send_from_directory
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @app.route("/api/show")
