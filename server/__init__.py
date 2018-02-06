@@ -15,7 +15,7 @@ def process():
     project = request.args.get('project')
     return ProcessSonar(project).process();
 
-@app.route("/api/statistics") #not finished
+@app.route("/api/statistics") #partly finished
 def statistics():
     project = request.args.get('project')
     return ProcessSonar(project).statistics();
