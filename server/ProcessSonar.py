@@ -51,7 +51,7 @@ class ProcessSonar (object):
 
     def calpercentage (self, category, rules_under_category):
         if len(category) > 0:
-                return (0.0 + len(category) - len(rules_under_category)) / len(category) * 100.00
+                return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
         return 100.0
 
     def process(self):
@@ -83,6 +83,8 @@ class ProcessSonar (object):
             allissues = r.json()['issues']  # all issues it has
             openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
             issues.extend(openissue)
+
+        print issues
 
         #get all rules associate with quanlity profile
         r = requests.get(
@@ -127,16 +129,34 @@ class ProcessSonar (object):
         percentage.append(self.calpercentage(categories().codesmell, self.rulesViolated[4]))
 
         data = utility().dataHandler(self.message, percentage)
-        print data
+
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
 
         return res
 
     def statistics(self):
-        #TODO
-        res = ""
-        return res
+
+        #http://coursework.cs.duke.edu:9000/api/measures/component?componentKey=duke-compsci308:test&metricKeys=lines
+        lines_of_code = "ncloc,"
+        lines = "lines,"
+        functions = "functions,"
+        classes = "classes,"
+        files = "files,"
+        comment_lines = "comment_lines,"
+        comment_lines_density = "comment_lines_density,"
+
+        r = requests.get(
+            self.SONAR_URL + '/api/measures/component?componentKey=' +
+            self.TEST_PROJECT + "&metricKeys=" + lines_of_code + lines + functions +
+            classes + files + comment_lines + comment_lines_density)
+        measures = r.json()['component']['measures']
+        res = {}
+        res ['measures'] = {}
+        for measure in measures:
+            res['measures'][measure['metric']] = measure['value']
+
+        return json.dumps(res)
 
     def getrules (self, main, sub):
         #TODO
@@ -145,5 +165,5 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-     ProcessSonar("test").process()
+    ProcessSonar("test").statistics()
 

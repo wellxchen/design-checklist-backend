@@ -4,7 +4,7 @@ import json
 
 class utility ():
 
-    def makeMap(rules, main, sub):
+    def makeMap(self, rules, main, sub):
         res = ""
         for rule in rules:
             if sub > 0:
