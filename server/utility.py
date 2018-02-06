@@ -23,6 +23,41 @@ class utility ():
         p = p.replace('&ge;', '>=')
         return p
 
+    def calpercentage (self, category, rules_under_category):
+        if len(category) > 0:
+                return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
+        return 100.0
+
+    def makeTextRange (self, issue):
+        res = []
+        if len(issue['flows']) == 0:
+            entry = {}
+            entry['locations']  = [{'textRange' : issue['textRange'], 'msg' : ""}]
+            res.append(entry)
+        else:
+
+            for line in issue['flows']:
+
+                entry = {}
+                entry['locations'] = line['locations']
+                res.append(entry)
+
+        return res
+
+
+    def storeIssue(self, ruleID, errmessage, message, rulesViolated):
+        ruleInfo = categories().getRuleDetail(ruleID)
+        if len(ruleInfo) == 0:
+            return
+        mainindex = ruleInfo[0]
+        if len(ruleInfo) == 2:
+            subindex = ruleInfo[1]
+            message[mainindex][subindex - 1].append(errmessage)
+        else:
+            message[mainindex].append(errmessage)
+        if not ruleID in rulesViolated[mainindex]:
+            rulesViolated[mainindex].append(ruleID)
+
     def errHandler (self):
         data = {}
         data['err'] = "project not found"

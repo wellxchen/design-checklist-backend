@@ -32,27 +32,6 @@ class ProcessSonar (object):
             for j in range(k):
                 self.message[i].append([])
 
-    def checkRuleID(self, ruleID, errmessage):
-        ruleInfo = categories().getRuleDetail(ruleID)
-
-        if len(ruleInfo) == 0:
-            return
-        mainindex = ruleInfo[0]
-
-        if len(ruleInfo) == 2:
-            subindex = ruleInfo[1]
-
-            self.message[mainindex][subindex - 1].append(errmessage)
-        else:
-            self.message[mainindex].append(errmessage)
-
-        if not ruleID in self.rulesViolated[mainindex]:
-            self.rulesViolated[mainindex].append(ruleID)
-
-    def calpercentage (self, category, rules_under_category):
-        if len(category) > 0:
-                return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
-        return 100.0
 
     def process(self):
 
@@ -84,7 +63,6 @@ class ProcessSonar (object):
             openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
             issues.extend(openissue)
 
-        print issues
 
         #get all rules associate with quanlity profile
         r = requests.get(
@@ -92,47 +70,78 @@ class ProcessSonar (object):
         rules = r.json()['rules']
 
         #store details
+        dup_errmessages = []
         for issue in issues:
             ruleID = issue['rule']
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)  #rulename = ruleResult[0]['name']
-            if len(ruleResult) > 0:
 
+            if len(ruleResult) > 0:
                 errmessage = {}
-                errmessage['path'] = issue['component']
+                errmessage['path'] = [issue['component']]
                 errmessage['rule'] = ruleResult[0]['name']
                 errmessage['message'] = issue['message']
-                errmessage['textRange'] = {}
-                if 'textRange' in issue:
-                    errmessage['textRange'] = issue['textRange']
-                    startLine = issue['textRange']['startLine']
-                    endLine = issue['textRange']['endLine']
-                    r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
+                if ruleID == "common-java:DuplicatedBlocks":
+                    print errmessage['path']
+                    dup_errmessages.append(errmessage)
+
+                else:
+                    errmessage['textRange'] = []
+                    if 'textRange' in issue:
+                        errmessage['textRange'].extend(utility().makeTextRange(issue))
+                        errmessage['code'] = {}
+                        for entry in errmessage['textRange']:
+                            locations = entry['locations']
+                            for location in locations:
+                                startLine = location['textRange']['startLine']
+                                endLine = location['textRange']['endLine']
+                                r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
                                      "&to=" + str(endLine) +
                                      "&key=" + issue['component'])
-                    items = r.json()["sources"]
-                    errmessage['code'] = []
+                                items = r.json()["sources"]
 
-                    for item in items:
-                        #formattedItem = item[1].replace('\t', '')
-                        #formattedItem = self.striphtml(formattedItem)
-                        errmessage['code'].append(item[1])
+                                errmessage['code'][startLine] = []
+                                for item in items:
+                                    errmessage['code'][startLine].append(item[1])
+                    utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
-
-                self.checkRuleID (ruleID, errmessage)
-
+        #handle duplicated block
+        if len(dup_errmessages) > 0:
+            dup_block_id = "common-java:DuplicatedBlocks"
+            for dup_errmessage in dup_errmessages:
+                r = requests.get(self.SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
+                items = r.json()
+                duplications = items['duplications']
+                files = items['files']
+                dup_errmessage['duplications'] = []
+                for duplication in duplications:
+                    blocks = duplication['blocks']
+                    single_dup = []
+                    for block in blocks:
+                        entry = {}
+                        entry['startLine'] = block['from']
+                        entry['endLine'] = entry['startLine'] - 1 + block['size']
+                        entry['loc'] = files[block['_ref']]['key']
+                        r1 = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(entry['startLine']) +
+                                     "&to=" + str(entry['endLine']) +
+                                     "&key=" + entry['loc'])
+                        items = r1.json()["sources"]
+                        entry['code'] = {}
+                        entry['code'][entry['startLine']] = []
+                        for item in items:
+                            entry['code'][entry['startLine']].append(item[1])
+                        single_dup.append(entry)
+                    dup_errmessage['duplications'].append(single_dup)
+                utility().storeIssue(dup_block_id, dup_errmessage, self.message, self.rulesViolated)
         #cal percentage
         percentage = []
-        percentage.append(self.calpercentage(categories().communication, self.rulesViolated[0]))
-        percentage.append(self.calpercentage(categories().modularity, self.rulesViolated[1]))
-        percentage.append(self.calpercentage(categories().flexibility, self.rulesViolated[2]))
-        percentage.append(self.calpercentage(categories().javanote, self.rulesViolated[3]))
-        percentage.append(self.calpercentage(categories().codesmell, self.rulesViolated[4]))
+        percentage.append(utility().calpercentage(categories().communication, self.rulesViolated[0]))
+        percentage.append(utility().calpercentage(categories().modularity, self.rulesViolated[1]))
+        percentage.append(utility().calpercentage(categories().flexibility, self.rulesViolated[2]))
+        percentage.append(utility().calpercentage(categories().javanote, self.rulesViolated[3]))
+        percentage.append(utility().calpercentage(categories().codesmell, self.rulesViolated[4]))
 
         data = utility().dataHandler(self.message, percentage)
-
         res = json.dumps(data, indent=4, separators=(',', ': '))
-
-
         return res
 
     def statistics(self):
@@ -165,5 +174,5 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-    ProcessSonar("test").statistics()
+    ProcessSonar("test").process()
 

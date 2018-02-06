@@ -1,6 +1,7 @@
 
 class categories ():
 
+
     Communication_Sub = [
                 "",
                 'Meaningful names: give variables, methods, classes, and packages non-abbreviated, intention-revealing names',
