@@ -81,7 +81,7 @@ class ProcessSonar (object):
                 errmessage['rule'] = ruleResult[0]['name']
                 errmessage['message'] = issue['message']
                 if ruleID == "common-java:DuplicatedBlocks":
-                    
+
                     dup_errmessages.append(errmessage)
 
                 else:
