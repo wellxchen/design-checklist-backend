@@ -123,10 +123,20 @@ class utility ():
         data['description'] = "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
         return json.dumps(data)
 
-    def dataHandler(self, message, percentage):
+    def dataHandler(self, message, percentage, onlyDup):
 
         data = {}
         data['error'] = {}
+
+        data['error']['Flexibility'] = {}
+        data['error']['Flexibility']['No duplicated code'] = {}
+        data['error']['Flexibility']['No duplicated code']["category description"] = categories().Flexibility_sub[1]
+        data['error']['Flexibility']['No duplicated code']["detail"] = message[2][0]
+
+        if onlyDup:
+            return data
+
+
         data['error']['Communication'] = {}
         data['error']['Communication']['Meaningful names'] = {}
         data['error']['Communication']['Meaningful names']["category description"] = categories().Communication_Sub[1]
@@ -193,25 +203,20 @@ class utility ():
         categories().Modularity_sub[8]
         data['error']['Modularity']['Superclasses are their own class']["detail"] = message[1][7]
 
-        data['error']['Flexibility'] = {}
-        data['error']['Flexibility']['No duplicated code'] = {}
-        data['error']['Flexibility']['No duplicated code']["category description"] = categories().Modularity_sub[1]
-        data['error']['Flexibility']['No duplicated code']["detail"] = message[2][0]
-
         data['error']['Flexibility']['General type'] = {}
-        data['error']['Flexibility']['General type']["category description"] = categories().Modularity_sub[2]
+        data['error']['Flexibility']['General type']["category description"] = categories().Flexibility_sub[2]
         data['error']['Flexibility']['General type']["detail"] = message[2][1]
 
         data['error']['Flexibility']['Single Purpose'] = {}
-        data['error']['Flexibility']['Single Purpose']["category description"] = categories().Modularity_sub[3]
+        data['error']['Flexibility']['Single Purpose']["category description"] = categories().Flexibility_sub[3]
         data['error']['Flexibility']['Single Purpose']["detail"] = message[2][2]
 
         data['error']['Flexibility']['Behavior Driven Design'] = {}
-        data['error']['Flexibility']['Behavior Driven Design']["category description"] = categories().Modularity_sub[4]
+        data['error']['Flexibility']['Behavior Driven Design']["category description"] = categories().Flexibility_sub[4]
         data['error']['Flexibility']['Behavior Driven Design']["detail"] = message[2][3]
 
         data['error']['Flexibility']['Polymorphism'] = {}
-        data['error']['Flexibility']['Polymorphism']["category description"] = categories().Modularity_sub[5]
+        data['error']['Flexibility']['Polymorphism']["category description"] = categories().Flexibility_sub[5]
         data['error']['Flexibility']['Polymorphism']["detail"] = message[2][4]
 
         data['error']['Java Notes'] = message[3]

@@ -56,12 +56,7 @@ class ProcessSonar (object):
             self.SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + self.QUALITY_PROFILE)
             rules.extend(r.json()['rules'])
         else:
-            rules.extend([{'key':'common-java:DuplicatedBlocks', 'name':'Source files should not have any duplicated blocks'},
-            {'key':'squid:S3047', 'name':'Multiple loops over the same set should be combined'},
-            {'key':'squid:S1939','name':'Extensions and implementations should not be redundant'},
-            {'key':'squid:S1871', 'name' : 'Two branches in a conditional structure should not have exactly the same implementation'},
-            {'key': 'squid:S1700', 'name':'A field should not duplicate the name of its containing class'},
-            {'key': 'squid:S1192', 'name':'String literals should not be duplicated'}])
+            rules.extend(categories().duplications)
 
         #store details
         dup_errmessages = []
@@ -77,7 +72,6 @@ class ProcessSonar (object):
                 if ruleID == "common-java:DuplicatedBlocks":
 
                     dup_errmessages.append(errmessage)
-
                 else:
                     errmessage['textRange'] = []
                     if 'textRange' in issue:
@@ -110,7 +104,7 @@ class ProcessSonar (object):
         percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
         percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
 
-        data = utility().dataHandler(self.message, percentage)
+        data = utility().dataHandler(self.message, percentage, onlyDup)
         res = json.dumps(data, indent=4, separators=(',', ': '))
         return res
 
