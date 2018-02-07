@@ -1,6 +1,7 @@
 import re
 from categories import categories
 import json
+import requests
 
 class utility ():
 
@@ -23,10 +24,40 @@ class utility ():
         p = p.replace('&ge;', '>=')
         return p
 
-    def calpercentage (self, category, rules_under_category):
+    #get number of pages
+
+    def getNumOfPages (self, SONAR_URL, TEST_PROJECT):
+        r = requests.get(
+            SONAR_URL + '/api/issues/search?ps=500&componentKeys=' + TEST_PROJECT)
+        total_number_issues = r.json()['total']
+        page_size = r.json()['ps']
+        total_pages = 2
+        if total_number_issues > page_size:
+            total_pages += total_number_issues / page_size
+            if total_number_issues % page_size != 0:
+                total_pages += 1
+        return total_pages
+
+    #get all issues
+
+    def getIssues (self, SONAR_URL, TEST_PROJECT, total_pages):
+        issues = []
+        for i in range(1, total_pages):
+            r = requests.get(
+                SONAR_URL + '/api/issues/search?ps=500&p=' + str(i) + '&componentKeys=' + TEST_PROJECT)
+            allissues = r.json()['issues']  # all issues it has
+            openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
+            issues.extend(openissue)
+        return issues
+
+    #calcualte percentage for the category
+
+    def calPercentage (self, category, rules_under_category):
         if len(category) > 0:
                 return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
         return 100.0
+
+    #get the text range in either textRange or flow
 
     def makeTextRange (self, issue):
         res = []
@@ -35,15 +66,13 @@ class utility ():
             entry['locations']  = [{'textRange' : issue['textRange'], 'msg' : ""}]
             res.append(entry)
         else:
-
             for line in issue['flows']:
-
                 entry = {}
                 entry['locations'] = line['locations']
                 res.append(entry)
-
         return res
 
+    #store the issue in message
 
     def storeIssue(self, ruleID, errmessage, message, rulesViolated):
         ruleInfo = categories().getRuleDetail(ruleID)
@@ -57,6 +86,36 @@ class utility ():
             message[mainindex].append(errmessage)
         if not ruleID in rulesViolated[mainindex]:
             rulesViolated[mainindex].append(ruleID)
+
+    #handle duplicated block
+
+    def duplicatedBlockHandlerStore(self, SONAR_URL, dup_errmessages, message, rulesViolated):
+        dup_block_id = "common-java:DuplicatedBlocks"
+        for dup_errmessage in dup_errmessages:
+            r = requests.get(SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
+            items = r.json()
+            duplications = items['duplications']
+            files = items['files']
+            dup_errmessage['duplications'] = []
+            for duplication in duplications:
+                blocks = duplication['blocks']
+                single_dup = []
+                for block in blocks:
+                    entry = {}
+                    entry['startLine'] = block['from']
+                    entry['endLine'] = entry['startLine'] - 1 + block['size']
+                    entry['loc'] = files[block['_ref']]['key']
+                    r1 = requests.get(SONAR_URL + "/api/sources/show?from=" + str(entry['startLine']) +
+                                      "&to=" + str(entry['endLine']) +
+                                      "&key=" + entry['loc'])
+                    items = r1.json()["sources"]
+                    entry['code'] = {}
+                    entry['code'][entry['startLine']] = []
+                    for item in items:
+                        entry['code'][entry['startLine']].append(item[1])
+                    single_dup.append(entry)
+                dup_errmessage['duplications'].append(single_dup)
+            self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
 
     def errHandler (self):
         data = {}

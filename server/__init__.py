@@ -13,19 +13,19 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.route("/api/show")
 def process():
     project = request.args.get('project')
-    return ProcessSonar(project).process();
+    return ProcessSonar(project).process(False)
 
 @app.route("/api/statistics") #partly finished
 def statistics():
     project = request.args.get('project')
-    return ProcessSonar(project).statistics();
+    return ProcessSonar(project).statistics()
 
 @app.route("/api/rules") #not finished
 def getrules():
     main = request.args.get('main')
     sub = request.args.get('sub')
     project = request.args.get('project')
-    return ProcessSonar(project).getrules(main, sub);
+    return ProcessSonar(project).getrules(main, sub)
 
 @app.route("/api/file/xml")
 def uploadxml():
@@ -34,6 +34,11 @@ def uploadxml():
 @app.route("/api/file/yml")
 def uploadyml ():
     return send_from_directory(app.config['UPLOAD_FOLDER'], "yml.txt")
+
+@app.route("/api/duplications")
+def duplications():
+    project = request.args.get('project')
+    return ProcessSonar(project).process(True)
 
 if __name__ == '__main__':
     app.run(threaded=True)

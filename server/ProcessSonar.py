@@ -33,7 +33,7 @@ class ProcessSonar (object):
                 self.message[i].append([])
 
 
-    def process(self):
+    def process(self, onlyDup):
 
         #if project not been analysis return error
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
@@ -42,32 +42,26 @@ class ProcessSonar (object):
             return utility().errHandler()
 
         #get number of pages
-        r = requests.get(
-            self.SONAR_URL + '/api/issues/search?ps=500&componentKeys=' + self.TEST_PROJECT)
-        total_number_issues = r.json()['total']
-        page_size = r.json()['ps']
-        total_pages = 2
-        if total_number_issues > page_size:
-            total_pages += total_number_issues / page_size
-            if total_number_issues % page_size != 0:
-                total_pages += 1
+        total_pages = utility().getNumOfPages(self.SONAR_URL, self.TEST_PROJECT)
 
         #get all issues that are open
-        issues = []
+        issues = utility().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages)
 
-        for i in range (1, total_pages):
-            r = requests.get(
-                self.SONAR_URL + '/api/issues/search?ps=500&p=' + str(i) +  '&componentKeys=' + self.TEST_PROJECT)
-
-            allissues = r.json()['issues']  # all issues it has
-            openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
-            issues.extend(openissue)
 
 
         #get all rules associate with quanlity profile
-        r = requests.get(
+        rules = []
+        if not onlyDup:
+            r = requests.get(
             self.SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + self.QUALITY_PROFILE)
-        rules = r.json()['rules']
+            rules.extend(r.json()['rules'])
+        else:
+            rules.extend([{'key':'common-java:DuplicatedBlocks', 'name':'Source files should not have any duplicated blocks'},
+            {'key':'squid:S3047', 'name':'Multiple loops over the same set should be combined'},
+            {'key':'squid:S1939','name':'Extensions and implementations should not be redundant'},
+            {'key':'squid:S1871', 'name' : 'Two branches in a conditional structure should not have exactly the same implementation'},
+            {'key': 'squid:S1700', 'name':'A field should not duplicate the name of its containing class'},
+            {'key': 'squid:S1192', 'name':'String literals should not be duplicated'}])
 
         #store details
         dup_errmessages = []
@@ -106,39 +100,15 @@ class ProcessSonar (object):
 
         #handle duplicated block
         if len(dup_errmessages) > 0:
-            dup_block_id = "common-java:DuplicatedBlocks"
-            for dup_errmessage in dup_errmessages:
-                r = requests.get(self.SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
-                items = r.json()
-                duplications = items['duplications']
-                files = items['files']
-                dup_errmessage['duplications'] = []
-                for duplication in duplications:
-                    blocks = duplication['blocks']
-                    single_dup = []
-                    for block in blocks:
-                        entry = {}
-                        entry['startLine'] = block['from']
-                        entry['endLine'] = entry['startLine'] - 1 + block['size']
-                        entry['loc'] = files[block['_ref']]['key']
-                        r1 = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(entry['startLine']) +
-                                     "&to=" + str(entry['endLine']) +
-                                     "&key=" + entry['loc'])
-                        items = r1.json()["sources"]
-                        entry['code'] = {}
-                        entry['code'][entry['startLine']] = []
-                        for item in items:
-                            entry['code'][entry['startLine']].append(item[1])
-                        single_dup.append(entry)
-                    dup_errmessage['duplications'].append(single_dup)
-                utility().storeIssue(dup_block_id, dup_errmessage, self.message, self.rulesViolated)
+            utility().duplicatedBlockHandlerStore(self.SONAR_URL, dup_errmessages, self.message, self.rulesViolated)
+
         #cal percentage
         percentage = []
-        percentage.append(utility().calpercentage(categories().communication, self.rulesViolated[0]))
-        percentage.append(utility().calpercentage(categories().modularity, self.rulesViolated[1]))
-        percentage.append(utility().calpercentage(categories().flexibility, self.rulesViolated[2]))
-        percentage.append(utility().calpercentage(categories().javanote, self.rulesViolated[3]))
-        percentage.append(utility().calpercentage(categories().codesmell, self.rulesViolated[4]))
+        percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
+        percentage.append(utility().calPercentage(categories().modularity, self.rulesViolated[1]))
+        percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
+        percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
+        percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
 
         data = utility().dataHandler(self.message, percentage)
         res = json.dumps(data, indent=4, separators=(',', ': '))
@@ -167,6 +137,8 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
+
+
     def getrules (self, main, sub):
         #TODO
         res = ""
@@ -174,5 +146,6 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-    ProcessSonar("test").process()
+
+    print ProcessSonar("test").process(True)
 

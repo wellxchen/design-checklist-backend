@@ -32,10 +32,10 @@ class categories ():
                 'Polymorphism: use subclassing to avoid "case-based code logic" (i.e., conditional chains or case statements on "type" information)']
 
     communication = {
-    'squid:S00115', 'squid:S1190', 'squid:S00101', 'squid:S1942', 'squid:S1221', 'squid:S1700', 'squid:S1223', 'squid:S109',
+    'squid:S00115', 'squid:S1190', 'squid:S00101', 'squid:S1942', 'squid:S1221', 'squid:S1223', 'squid:S109',
     'squid:S00122', 'squid:S00121', 'squid:S2681','squid:S1941','squid:S881', 'squid:S2114','squid:S2589', 'squid:S2293',
-    'squid:S2178', 'squid:S2175', 'squid:S2200', 'squid:S1192', 'squid:S1126', 'squid:S1125', 'squid:S2185', 'squid:S1481',
-    'squid:S1871', 'squid:S3923', 'squid:S1656', 'squid:S2959', 'squid:S1604','squid:S1133', 'squid:S00108', 'squid:S2097',
+    'squid:S2178', 'squid:S2175', 'squid:S2200', 'squid:S1126', 'squid:S1125', 'squid:S2185', 'squid:S1481',
+    'squid:S3923', 'squid:S1656', 'squid:S2959', 'squid:S1604','squid:S1133', 'squid:S00108', 'squid:S2097',
     'squid:S1148', 'squid:S00112', 'squid:S2208', 'squid:UselessImportCheck', 'squid:UselessParenthesesCheck', 'squid:S1199',
     'squid:S1488', 'squid:S1244', 'squid:S135', 'squid:S2692', 'squid:S1710', 'squid:S3358', 'squid:S2147', 'squid:S1170',
     'squid:S2159', 'squid:S1068', 'squid:S2153', 'squid:S1066', ' squid:S1157', 'squid:S2154', 'squid:S1764'
@@ -46,7 +46,7 @@ class categories ():
     'squid:S2885', 'squid:S2386', 'squid:S2786', 'squid:S1185', 'squid:S2638',
     }
     flexibility = {
-    'common - java:DuplicatedBlocks', 'squid:S3047', 'squid:S1939','squid:S1319','squid:S3776', 'squid:S2176',
+    'common - java:DuplicatedBlocks', 'squid:S3047', 'squid:S1939','squid:S1871', 'squid:S1700','squid:S1192','squid:S1319','squid:S3776', 'squid:S2176',
     'squid:MethodCyclomaticComplexity', 'squid:S138', 'squid:S1067', 'squid:S00107','squid:S1479', 'squid:S1219', 'squid:S1151','squid:S3400'
     }
     codesmell = {
@@ -74,7 +74,7 @@ class categories ():
              'squid:S1190' : [0,1],
              'squid:S1221' : [0,1],
              'squid:S00101' : [0,1],
-             'squid:S1700' : [0,1],
+             'squid:S1700' : [2,1],
              'squid:S109' : [0, 2],
              'squid:S00122': [0, 3],
              'squid:S00121': [0, 3],
@@ -88,12 +88,12 @@ class categories ():
              'squid:S2293': [0, 6],
              'squid:S2200': [0, 6],
              'squid:S2589': [0, 6],
-             'squid:S1871': [0, 6],
+             'squid:S1871': [2, 1],
              'squid:S1656': [0, 6],
              'squid:S2178': [0, 6],
              'squid:S2959': [0, 6],
              'squid:S2185': [0, 6],
-             'squid:S1192': [0, 6],
+             'squid:S1192': [2, 1],
              'squid:S3923': [0, 6],
              'squid:S1481': [0, 6],
              'squid:S1125': [0, 6],
