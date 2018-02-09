@@ -13,13 +13,12 @@ class ProcessSonar (object):
             arg = ""
         self.TEST_PROJECT = self.GROUPID + arg
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
-
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
 
         self.rulesViolated = []
         self.message = []
 
-        for i in range(5):
+        for i in range(6):
             self.rulesViolated.append([])
             self.message.append([])
             k = 0
@@ -48,7 +47,6 @@ class ProcessSonar (object):
         issues = utility().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages)
 
 
-
         #get all rules associate with quanlity profile
         rules = []
         if not onlyDup:
@@ -57,7 +55,6 @@ class ProcessSonar (object):
             rules.extend(r.json()['rules'])
         else:
             rules.extend(categories().duplications)
-
         #store details
         dup_errmessages = []
         for issue in issues:
@@ -73,23 +70,21 @@ class ProcessSonar (object):
 
                     dup_errmessages.append(errmessage)
                 else:
-                    errmessage['textRange'] = []
+                    errmessage['code'] = []
                     if 'textRange' in issue:
-                        errmessage['textRange'].extend(utility().makeTextRange(issue))
-                        errmessage['code'] = {}
-                        for entry in errmessage['textRange']:
-                            locations = entry['locations']
-                            for location in locations:
-                                startLine = location['textRange']['startLine']
-                                endLine = location['textRange']['endLine']
-                                r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
+                        textRange = utility().makeTextRange(issue)
+                        for entry in textRange:
+                            startLine = entry['textRange']['startLine']
+                            endLine = entry['textRange']['endLine']
+                            r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
                                      "&to=" + str(endLine) +
                                      "&key=" + issue['component'])
-                                items = r.json()["sources"]
+                            items = r.json()["sources"]
 
-                                errmessage['code'][startLine] = []
-                                for item in items:
-                                    errmessage['code'][startLine].append(item[1])
+                            entry['code'] = []
+                            for item in items:
+                                entry['code'].append(item[1])
+                            errmessage['code'].append(entry)
                     utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
         #handle duplicated block
@@ -103,6 +98,7 @@ class ProcessSonar (object):
         percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
         percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
         percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
+        percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
         res = json.dumps(data, indent=4, separators=(',', ': '))
@@ -141,5 +137,5 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    print ProcessSonar("test").process(True)
+    ProcessSonar("test").process(False)
 

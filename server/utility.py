@@ -5,6 +5,12 @@ import requests
 
 class utility ():
 
+    def activateRule (self, SONAR_URL, QUALITY_PROFILE, ruleID):
+
+        r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=' ,
+                          data={'profile_key':QUALITY_PROFILE, 'rule_key' : ruleID},
+                          auth=('rcd', 'wzuA3F4g27'))
+
     def makeMap(self, rules, main, sub):
         res = ""
         for rule in rules:
@@ -62,14 +68,10 @@ class utility ():
     def makeTextRange (self, issue):
         res = []
         if len(issue['flows']) == 0:
-            entry = {}
-            entry['locations']  = [{'textRange' : issue['textRange'], 'msg' : ""}]
-            res.append(entry)
+            res.append({'textRange' : issue['textRange'], 'msg' : ""})
         else:
             for line in issue['flows']:
-                entry = {}
-                entry['locations'] = line['locations']
-                res.append(entry)
+                res.append(line['locations'][0])
         return res
 
     #store the issue in message
@@ -109,10 +111,9 @@ class utility ():
                                       "&to=" + str(entry['endLine']) +
                                       "&key=" + entry['loc'])
                     items = r1.json()["sources"]
-                    entry['code'] = {}
-                    entry['code'][entry['startLine']] = []
+                    entry['code'] = []
                     for item in items:
-                        entry['code'][entry['startLine']].append(item[1])
+                        entry['code'].append(item[1])
                     single_dup.append(entry)
                 dup_errmessage['duplications'].append(single_dup)
             self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
@@ -221,11 +222,12 @@ class utility ():
 
         data['error']['Java Notes'] = message[3]
         data['error']['Code Smells'] = message[4]
+        data['error']['Duplications'] = message[5]
         data['percentage'] = {}
         data['percentage']['Communication'] = percentage[0]
         data['percentage']['Modularity'] = percentage[1]
         data['percentage']['Flexibility'] = percentage[2]
         data['percentage']['Java Notes'] = percentage[3]
         data['percentage']['Code Smells'] = percentage[4]
-
+        data['percentage']['Duplications'] = percentage[5]
         return data

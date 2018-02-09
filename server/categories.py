@@ -52,13 +52,13 @@ class categories ():
     'squid:S2885', 'squid:S2386', 'squid:S2786', 'squid:S1185', 'squid:S2638',
     }
     flexibility = {
-    'common - java:DuplicatedBlocks', 'squid:S3047', 'squid:S1939','squid:S1871', 'squid:S1700','squid:S1192','squid:S1319','squid:S3776', 'squid:S2176',
-    'squid:MethodCyclomaticComplexity', 'squid:S138', 'squid:S1067', 'squid:S00107','squid:S1479', 'squid:S1219', 'squid:S1151','squid:S3400'
+    'squid:S1319','squid:S3776', 'squid:S2176', 'squid:MethodCyclomaticComplexity',
+        'squid:S138', 'squid:S1067', 'squid:S00107','squid:S1479', 'squid:S1219', 'squid:S1151','squid:S3400'
     }
     codesmell = {
 
     'squid:S2189', 'squid:S2252', 'squid:S2251', 'squid:S1994', 'squid:S1862', 'squid:S134', 'squid:S1905',
-    'squid:ForLoopCounterChangedCheck', 'squid:IndentationCheck', 'squid:S1226'
+    'squid:ForLoopCounterChangedCheck', 'squid:S1226'
     }
     javanote = {
     'squid:EmptyFile', 'squid:S2094', 'squid:S2177', 'squid:S1698', 'squid:S1596', 'squid:S1181', 'squid:S2275',
@@ -71,16 +71,18 @@ class categories ():
     'squid:S2166', 'squid:S1118', 'squid:CallToDeprecatedMethod', 'squid:UndocumentedApi', 'squid:S1610', 'squid:S2162',
     'squid:S2301', 'squid:S1228', 'squid:S1213'
     }
+    duplicationsID = {
+    'common-java:DuplicatedBlocks','squid:S3047',  'squid:S1939','squid:S1871','squid:S1700','squid:S1192'
+    }
 
     #id : [main, sub]
-    #main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell
+    #main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
     rules = {'squid:S1942' : [0,1],
              'squid:S00115' : [0,1],
              'squid:S1223' : [0,1],
              'squid:S1190' : [0,1],
              'squid:S1221' : [0,1],
              'squid:S00101' : [0,1],
-             'squid:S1700' : [2,1],
              'squid:S109' : [0, 2],
              'squid:S00122': [0, 3],
              'squid:S00121': [0, 3],
@@ -94,12 +96,10 @@ class categories ():
              'squid:S2293': [0, 6],
              'squid:S2200': [0, 6],
              'squid:S2589': [0, 6],
-             'squid:S1871': [2, 1],
              'squid:S1656': [0, 6],
              'squid:S2178': [0, 6],
              'squid:S2959': [0, 6],
              'squid:S2185': [0, 6],
-             'squid:S1192': [2, 1],
              'squid:S3923': [0, 6],
              'squid:S1481': [0, 6],
              'squid:S1125': [0, 6],
@@ -144,9 +144,6 @@ class categories ():
              'squid:S1444': [1, 4],
              'squid:S1185' : [1, 7],
              'squid:S2638' : [1, 7],
-             'common-java:DuplicatedBlocks' : [2, 1],
-             'squid:S3047' : [2, 1],
-             'squid:S1939' : [2, 1],
              'squid:S1319' : [2, 2],
              'squid:S138': [2, 3],
              'squid:S1067': [2, 3],
@@ -223,10 +220,15 @@ class categories ():
              'squid:S2252': [4],
              'squid:S2251': [4],
              'squid:S134': [4],
-             'squid:IndentationCheck': [4],
              'squid:S1905': [4],
              'squid:S2189': [4],
-             'squid:ForLoopCounterChangedCheck': [4]
+             'squid:ForLoopCounterChangedCheck': [4],
+             'common-java:DuplicatedBlocks': [5],
+             'squid:S3047': [5],
+             'squid:S1939': [5],
+             'squid:S1871': [5],
+             'squid:S1700': [5],
+             'squid:S1192': [5]
     }
 
     def getRuleDetail (self, ruleID):
@@ -234,3 +236,10 @@ class categories ():
             return self.rules[ruleID]
         return []
 
+
+    def allrules (self):
+        return self.communication.union(
+            self.flexibility.union(
+            self.javanote.union(
+            self.codesmell.union(
+            self.modularity.union(self.duplicationsID)))))
