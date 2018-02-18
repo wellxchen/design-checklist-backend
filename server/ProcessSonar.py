@@ -22,12 +22,12 @@ class ProcessSonar (object):
             self.rulesViolated.append([])
             self.message.append([])
             k = 0
-            if i == 0:
+            if i == 0: #communication
                 k = 7
-            if i == 1:
+            if i == 1: #modularity
                 k = 8
-            if i == 2:
-                k = 5
+            if i == 2: #flexibility
+                k = 4
             for j in range(k):
                 self.message[i].append([])
 
@@ -89,8 +89,24 @@ class ProcessSonar (object):
                             errmessage['code'].append(entry)
                     utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
-        #handle duplicated block
-        return json.dumps(dup_errmessages)
+        if len(dup_errmessages) > 0:
+            utility().duplicatedBlockHandlerStore(self.SONAR_URL,
+                                                  dup_errmessages,
+                                                  self.message,
+                                                  self.rulesViolated)
+        # cal percentage
+        percentage = []
+        percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
+        percentage.append(utility().calPercentage(categories().modularity, self.rulesViolated[1]))
+        percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
+        percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
+        percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
+        percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
+
+        data = utility().dataHandler(self.message, percentage, onlyDup)
+
+        res = json.dumps(data, indent=4, separators=(',', ': '))
+        return res
 
     def statistics(self):
 
@@ -157,23 +173,5 @@ if __name__ == '__main__':
     ProcessSonar("cell_society_team18").process(True)
 
     '''
-        if len(dup_errmessages) > 0:
-
-            utility().duplicatedBlockHandlerStore(self.SONAR_URL, dup_errmessages, self.message, self.rulesViolated)
-
-        print self.message
-
-        #cal percentage
-        percentage = []
-        percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
-        percentage.append(utility().calPercentage(categories().modularity, self.rulesViolated[1]))
-        percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
-        percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
-        percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
-        percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
-
-        data = utility().dataHandler(self.message, percentage, onlyDup)
-
-        res = json.dumps(data, indent=4, separators=(',', ': '))
-        return res
+        
     '''

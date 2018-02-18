@@ -1,12 +1,7 @@
 
 class categories ():
 
-    duplications = [{'key':'common-java:DuplicatedBlocks', 'name':'Source files should not have any duplicated blocks'},
-            {'key':'squid:S3047', 'name':'Multiple loops over the same set should be combined'},
-            {'key':'squid:S1939','name':'Extensions and implementations should not be redundant'},
-            {'key':'squid:S1871', 'name' : 'Two branches in a conditional structure should not have exactly the same implementation'},
-            {'key': 'squid:S1700', 'name':'A field should not duplicate the name of its containing class'},
-            {'key': 'squid:S1192', 'name':'String literals should not be duplicated'}]
+
 
     Communication_Sub = [
                 "",
@@ -31,11 +26,15 @@ class categories ():
 
     Flexibility_sub = [
                 "",
-                'DRY: no duplicated code, either exactly (from cutting and pasting), structurally (in flow of control or decisions), or in setup ("boilerplate" code)',
                 'Declared types should be as general as possible (i.e., ArrayList should never be visible in your public interface)',
                 'Single Purpose: keep classes, methods, and variables short and well named by giving them only one purpose',
                 'Behavior Driven Design: give each class a purpose by focusing on the behavior (or services) it provides first, its state later',
                 'Polymorphism: use subclassing to avoid "case-based code logic" (i.e., conditional chains or case statements on "type" information)']
+
+    Duplication_sub = [
+        "",
+        'DRY: no duplicated code, either exactly (from cutting and pasting), structurally (in flow of control or decisions), or in setup ("boilerplate" code)'
+    ]
 
     communication = {
     'squid:S00115', 'squid:S1190', 'squid:S00101', 'squid:S1942', 'squid:S1221', 'squid:S1223', 'squid:S109',
@@ -74,6 +73,14 @@ class categories ():
     duplicationsID = {
     'common-java:DuplicatedBlocks','squid:S3047',  'squid:S1939','squid:S1871','squid:S1700','squid:S1192'
     }
+    duplications = [
+        {'key': 'common-java:DuplicatedBlocks', 'name': 'Source files should not have any duplicated blocks'},
+        {'key': 'squid:S3047', 'name': 'Multiple loops over the same set should be combined'},
+        {'key': 'squid:S1939', 'name': 'Extensions and implementations should not be redundant'},
+        {'key': 'squid:S1871',
+         'name': 'Two branches in a conditional structure should not have exactly the same implementation'},
+        {'key': 'squid:S1700', 'name': 'A field should not duplicate the name of its containing class'},
+        {'key': 'squid:S1192', 'name': 'String literals should not be duplicated'}]
 
     #id : [main, sub]
     #main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
