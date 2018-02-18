@@ -158,7 +158,7 @@ class ProcessSonar (object):
         entries.sort(key=lambda x: x['methodlen'], reverse=False)
         res = {}
         res['methods'] = []
-        res['methods'].extend(entries[:5])
+        res['methods'].extend(entries[:10])
 
         return json.dumps(res)
 
