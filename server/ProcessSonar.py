@@ -88,7 +88,7 @@ class ProcessSonar (object):
                                 entry['code'].append(item[1])
                             errmessage['code'].append(entry)
                     utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
-
+        
         if len(dup_errmessages) > 0:
             utility().duplicatedBlockHandlerStore(self.SONAR_URL,
                                                   dup_errmessages,
@@ -102,6 +102,7 @@ class ProcessSonar (object):
         percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
         percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
         percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
+
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
 
@@ -170,7 +171,7 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    ProcessSonar("cell_society_team18").process(True)
+    ProcessSonar("cell_society_team18").process(False)
 
     '''
         

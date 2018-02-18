@@ -76,6 +76,8 @@ class utility ():
         else:
             for line in issue['flows']:
                 res.append(line['locations'][0])
+        res.sort(key=lambda x: x['textRange']['startLine'], reverse=False)
+
         return res
 
     #store the issue in message
