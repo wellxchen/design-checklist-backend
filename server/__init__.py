@@ -15,7 +15,7 @@ def process():
     project = request.args.get('project')
     return ProcessSonar(project).process(False)
 
-@app.route("/api/statistics") #partly finished
+@app.route("/api/statistics")
 def statistics():
     project = request.args.get('project')
     return ProcessSonar(project).statistics()
@@ -39,6 +39,11 @@ def uploadyml ():
 def duplications():
     project = request.args.get('project')
     return ProcessSonar(project).process(True)
+
+@app.route("/api/lmethod")
+def lmethod():
+    project = request.args.get('project')
+    return ProcessSonar(project).longestmethods()
 
 if __name__ == '__main__':
     app.run(threaded=True)

@@ -44,7 +44,7 @@ class ProcessSonar (object):
         total_pages = utility().getNumOfPages(self.SONAR_URL, self.TEST_PROJECT)
 
         #get all issues that are open
-        issues = utility().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages)
+        issues = utility().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages, "")
 
 
         #get all rules associate with quanlity profile
@@ -58,10 +58,12 @@ class ProcessSonar (object):
         #store details
         dup_errmessages = []
         for issue in issues:
+
             ruleID = issue['rule']
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)  #rulename = ruleResult[0]['name']
 
             if len(ruleResult) > 0:
+
                 errmessage = {}
                 errmessage['path'] = [issue['component']]
                 errmessage['rule'] = ruleResult[0]['name']
@@ -88,21 +90,7 @@ class ProcessSonar (object):
                     utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
         #handle duplicated block
-        if len(dup_errmessages) > 0:
-            utility().duplicatedBlockHandlerStore(self.SONAR_URL, dup_errmessages, self.message, self.rulesViolated)
-
-        #cal percentage
-        percentage = []
-        percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
-        percentage.append(utility().calPercentage(categories().modularity, self.rulesViolated[1]))
-        percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
-        percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
-        percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
-        percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
-
-        data = utility().dataHandler(self.message, percentage, onlyDup)
-        res = json.dumps(data, indent=4, separators=(',', ': '))
-        return res
+        return json.dumps(dup_errmessages)
 
     def statistics(self):
 
@@ -127,7 +115,36 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
+    def longestmethods (self):
+        total_pages = utility().getNumOfPages(self.SONAR_URL, self.TEST_PROJECT)
+        issues = utility().getIssues(self.SONAR_URL, self.TEST_PROJECT, total_pages, "squid:S138") #array
 
+        entries = []
+
+        count = 0
+
+        for issue in issues:
+            entries.append({})
+            entries[count]['methodlen'] = int(issue['message'].split()[3])
+            entries[count]['startline'] = issue['line']
+            entries[count]['path'] = issue['component']
+
+            r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(issue['textRange']['startLine']) +
+                             "&to=" + str(issue['textRange']['endLine']) +
+                             "&key=" + issue['component'])
+            items = r.json()["sources"]
+
+            entries[count]['code'] = []
+            for item in items:
+                entries[count]['code'].append(item[1])
+
+            count += 1
+        entries.sort(key=lambda x: x['methodlen'], reverse=False)
+        res = {}
+        res['methods'] = []
+        res['methods'].extend(entries)
+
+        return json.dumps(res)
 
     def getrules (self, main, sub):
         #TODO
@@ -137,5 +154,26 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    ProcessSonar("test").process(False)
+    ProcessSonar("cell_society_team18").process(True)
 
+    '''
+        if len(dup_errmessages) > 0:
+
+            utility().duplicatedBlockHandlerStore(self.SONAR_URL, dup_errmessages, self.message, self.rulesViolated)
+
+        print self.message
+
+        #cal percentage
+        percentage = []
+        percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
+        percentage.append(utility().calPercentage(categories().modularity, self.rulesViolated[1]))
+        percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
+        percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
+        percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
+        percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
+
+        data = utility().dataHandler(self.message, percentage, onlyDup)
+
+        res = json.dumps(data, indent=4, separators=(',', ': '))
+        return res
+    '''

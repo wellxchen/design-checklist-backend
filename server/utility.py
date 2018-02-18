@@ -44,13 +44,17 @@ class utility ():
                 total_pages += 1
         return total_pages
 
-    #get all issues
+    #get all issues or for specific rule
 
-    def getIssues (self, SONAR_URL, TEST_PROJECT, total_pages):
+    def getIssues (self, SONAR_URL, TEST_PROJECT, total_pages, rule):
         issues = []
+        ruleToCheck = ""
+        if len(rule) > 0:
+            ruleToCheck += "&rules="
+            ruleToCheck += rule
         for i in range(1, total_pages):
             r = requests.get(
-                SONAR_URL + '/api/issues/search?ps=500&p=' + str(i) + '&componentKeys=' + TEST_PROJECT)
+                SONAR_URL + '/api/issues/search?ps=500&p=' + str(i) + '&componentKeys=' + TEST_PROJECT + ruleToCheck)
             allissues = r.json()['issues']  # all issues it has
             openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
             issues.extend(openissue)
@@ -88,6 +92,7 @@ class utility ():
             message[mainindex].append(errmessage)
         if not ruleID in rulesViolated[mainindex]:
             rulesViolated[mainindex].append(ruleID)
+
 
     #handle duplicated block
 
