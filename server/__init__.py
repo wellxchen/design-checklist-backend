@@ -43,7 +43,10 @@ def duplications():
 @app.route("/api/lmethod")
 def lmethod():
     project = request.args.get('project')
-    return ProcessSonar(project).longestmethods()
+    res = {}
+    res['method'] = []
+    res['method'].extend(ProcessSonar(project).longestmethods())
+    return res
 
 if __name__ == '__main__':
     app.run(threaded=True)

@@ -113,23 +113,26 @@ class ProcessSonar (object):
     def statistics(self):
 
         #http://coursework.cs.duke.edu:9000/api/measures/component?componentKey=duke-compsci308:test&metricKeys=lines
-        lines_of_code = "ncloc,"
-        lines = "lines,"
+
         functions = "functions,"
         classes = "classes,"
-        files = "files,"
+        directories = "directories,"
         comment_lines = "comment_lines,"
         comment_lines_density = "comment_lines_density,"
 
+
         r = requests.get(
             self.SONAR_URL + '/api/measures/component?componentKey=' +
-            self.TEST_PROJECT + "&metricKeys=" + lines_of_code + lines + functions +
-            classes + files + comment_lines + comment_lines_density)
+            self.TEST_PROJECT + "&metricKeys="  + functions +
+            classes + directories + comment_lines + comment_lines_density)
         measures = r.json()['component']['measures']
         res = {}
         res ['measures'] = {}
         for measure in measures:
             res['measures'][measure['metric']] = measure['value']
+
+        res['measures']['lmethods'] = []
+        res['measures']['lmethods'].extend(self.longestmethods())
 
         return json.dumps(res)
 
@@ -158,11 +161,7 @@ class ProcessSonar (object):
 
             count += 1
         entries.sort(key=lambda x: x['methodlen'], reverse=False)
-        res = {}
-        res['methods'] = []
-        res['methods'].extend(entries[:10])
-
-        return json.dumps(res)
+        return entries[:10]
 
     def getrules (self, main, sub):
         #TODO
