@@ -119,12 +119,12 @@ class ProcessSonar (object):
         directories = "directories,"
         comment_lines = "comment_lines,"
         comment_lines_density = "comment_lines_density,"
-
+        ncloc = "ncloc"
 
         r = requests.get(
             self.SONAR_URL + '/api/measures/component?componentKey=' +
             self.TEST_PROJECT + "&metricKeys="  + functions +
-            classes + directories + comment_lines + comment_lines_density)
+            classes + directories + comment_lines + comment_lines_density + ncloc)
         measures = r.json()['component']['measures']
         res = {}
         res ['measures'] = {}
