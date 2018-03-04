@@ -5,6 +5,17 @@ import requests
 
 class utility ():
 
+    def writeData (self, data):
+
+        with open('data.txt', 'w') as outfile:
+            outfile.write(data)
+
+    def displayData(self, data):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(data)
+
+
     def activateRule (self, SONAR_URL, QUALITY_PROFILE, ruleID):
 
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=' ,
@@ -98,22 +109,36 @@ class utility ():
 
     #handle duplicated block
 
-    def duplicatedBlockHandlerStore(self, SONAR_URL, dup_errmessages, message, rulesViolated):
+    def duplicatedBlockHandlerStore(self, SONAR_URL, dup_errmessages, message, rulesViolated, filesChecked):
         dup_block_id = "common-java:DuplicatedBlocks"
+        #out = ""
         for dup_errmessage in dup_errmessages:
+
             r = requests.get(SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
             items = r.json()
             duplications = items['duplications']
             files = items['files']
             dup_errmessage['duplications'] = []
+
+            #out += dup_errmessage['path'][0]
+            #out += "\n"
+            #out += "-"
+            #out += '\n'
             for duplication in duplications:
+
                 blocks = duplication['blocks']
                 single_dup = []
+                discard = False
                 for block in blocks:
                     entry = {}
                     entry['startLine'] = block['from']
                     entry['endLine'] = entry['startLine'] - 1 + block['size']
                     entry['loc'] = files[block['_ref']]['key']
+                    #out += entry['loc']
+                    #out += '\n'
+                    if entry['loc'] in filesChecked:
+                        discard = True
+                        break
                     r1 = requests.get(SONAR_URL + "/api/sources/show?from=" + str(entry['startLine']) +
                                       "&to=" + str(entry['endLine']) +
                                       "&key=" + entry['loc'])
@@ -122,9 +147,18 @@ class utility ():
                     for item in items:
                         entry['code'].append(item[1])
                     single_dup.append(entry)
-                dup_errmessage['duplications'].append(single_dup)
+                #out += "*************"
+                #out += '\n'
+                if not discard:
+                    dup_errmessage['duplications'].append(single_dup)
+
             #print dup_errmessage
-            self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
+            #out += "============="
+            #out += '\n'
+            filesChecked.add(dup_errmessage['path'][0])
+            if len(dup_errmessage['duplications']) > 0:
+                self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
+        #utility().writeData(out)
 
     def errHandler (self):
         data = {}

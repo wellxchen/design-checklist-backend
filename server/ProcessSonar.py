@@ -15,6 +15,7 @@ class ProcessSonar (object):
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
 
+        self.fileChecked = set()
         self.rulesViolated = []
         self.message = []
 
@@ -89,12 +90,13 @@ class ProcessSonar (object):
                                 entry['code'].append(item[1])
                             errmessage['code'].append(entry)
                     utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
-        
+
         if len(dup_errmessages) > 0:
             utility().duplicatedBlockHandlerStore(self.SONAR_URL,
                                                   dup_errmessages,
                                                   self.message,
-                                                  self.rulesViolated)
+                                                  self.rulesViolated,
+                                                  self.fileChecked)
         # cal percentage
         percentage = []
         percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
@@ -106,8 +108,9 @@ class ProcessSonar (object):
 
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
-
+        #utility().displayData(data)
         res = json.dumps(data, indent=4, separators=(',', ': '))
+
         return res
 
     def statistics(self):
@@ -171,7 +174,8 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    ProcessSonar("cell_society_team18").process(False)
+    data = ProcessSonar("slogo_team12").process(True)
+
 
     '''
         

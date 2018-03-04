@@ -68,7 +68,7 @@ class categories ():
     'squid:S2129', 'squid:S1150', 'squid:S1165', 'squid:S1160', 'squid:S2972', 'squid:ObjectFinalizeOverridenCallsSuperFinalizeCheck',
     'squid:S1201', 'squid:S1206', 'squid:S2160', 'squid:S1611', 'squid:S1850', 'squid:S1858', 'squid:S1711', 'squid:S3422',
     'squid:S2166', 'squid:S1118', 'squid:CallToDeprecatedMethod', 'squid:UndocumentedApi', 'squid:S1610', 'squid:S2162',
-    'squid:S2301', 'squid:S1228', 'squid:S1213'
+    'squid:S2301', 'squid:S1213'
     }
     duplicationsID = {
     'common-java:DuplicatedBlocks','squid:S3047',  'squid:S1939','squid:S1871','squid:S1700','squid:S1192'
@@ -207,7 +207,6 @@ class categories ():
              'squid:S1168': [3],
              'squid:S2384': [3],
              'squid:S2387': [3],
-             'squid:S1228': [3],
              'squid:S3038': [3],
              'squid:S1165': [3],
              'squid:S2440': [3],
