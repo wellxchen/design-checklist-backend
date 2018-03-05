@@ -48,7 +48,7 @@ def lmethod():
     res['method'].extend(ProcessSonar(project).longestmethods())
     return res
 
-@app.route("api/commit")
+@app.route("/api/commit")
 def getcommit ():
     project = request.args.get('project')
     return ProcessSonar(project).getcommit()
