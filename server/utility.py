@@ -15,7 +15,6 @@ class utility ():
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(data)
 
-
     def activateRule (self, SONAR_URL, QUALITY_PROFILE, ruleID):
 
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=' ,
@@ -41,17 +40,32 @@ class utility ():
         p = p.replace('&ge;', '>=')
         return p
 
-    #get number of pages
 
-    def getNumOfPages (self, SONAR_URL, TEST_PROJECT):
-        r = requests.get(
-            SONAR_URL + '/api/issues/search?ps=500&componentKeys=' + TEST_PROJECT)
-        total_number_issues = r.json()['total']
+    #get number of pages for issues
+
+    def getNumOfPagesIssues (self, SONAR_URL, TEST_PROJECT):
+        QUERY = '/api/issues/search?ps=500&componentKeys='
+        r = requests.get(SONAR_URL + QUERY + TEST_PROJECT)
+        total_number_entries = r.json()['total']
         page_size = r.json()['ps']
         total_pages = 2
-        if total_number_issues > page_size:
-            total_pages += total_number_issues / page_size
-            if total_number_issues % page_size != 0:
+        if total_number_entries > page_size:
+            total_pages += total_number_entries / page_size
+            if total_number_entries % page_size != 0:
+                total_pages += 1
+        return total_pages
+
+    # get number of pages for tree
+
+    def getNumOfPagesTree(self, SONAR_URL, TEST_PROJECT):
+        QUERY = '/api/components/tree?ps=500&component='
+        r = requests.get(SONAR_URL + QUERY + TEST_PROJECT)
+        total_number_entries = r.json()['paging']['total']
+        page_size = r.json()['paging']['pageSize']
+        total_pages = 2
+        if total_number_entries > page_size:
+            total_pages += total_number_entries / page_size
+            if total_number_entries % page_size != 0:
                 total_pages += 1
         return total_pages
 
@@ -70,6 +84,18 @@ class utility ():
             openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
             issues.extend(openissue)
         return issues
+
+    # get all files or for specific project
+
+    def getFiles (self, SONAR_URL, TEST_PROJECT, total_pages):
+        files = []
+        for i in range(1, total_pages):
+            r = requests.get(
+                SONAR_URL + '/api/components/tree??ps=500&p=' + str(i) + '&component=' + TEST_PROJECT)
+            allfiles = r.json()['components']
+            nondirfiles = filter(lambda r: r['qualifier'] != 'DIR', allfiles)
+            files.extend(nondirfiles)
+        return files
 
     #calcualte percentage for the category
 

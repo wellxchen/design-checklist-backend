@@ -48,6 +48,12 @@ def lmethod():
     res['method'].extend(ProcessSonar(project).longestmethods())
     return res
 
+@app.route("api/commit")
+def getcommit ():
+    project = request.args.get('project')
+    return ProcessSonar(project).getcommit()
+
+
 if __name__ == '__main__':
     app.run(threaded=True)
 
