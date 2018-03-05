@@ -200,23 +200,38 @@ class ProcessSonar (object):
                     if author not in authors:
                         authors[author] = []
                     authors[author].append(commitId)
-        
+
         res = {}
         res['authors'] = {}
         for author in authors:
             res['authors'][author] = {}
             res['authors'][author]['commitlist'] = []
+            res['authors'][author]['commitdates'] = []
+            dates = {}
             for commitId in authors[author]:
                 commit = commitIds[commitId]
                 entry = {}
                 entry['commitId'] = commitId
                 entry['files'] = commit['files']
                 entry['date'] = commit['date']
+                if commit['date'][:10] not in dates:
+                    dates[commit['date'][:10]] = 1
+                else:
+                    dates[commit['date'][:10]] += 1
                 res['authors'][author]['commitlist'].append(entry)
+            ls = sorted(dates.iterkeys())
+            for l in ls:
+                entry = {}
+                entry[l] = dates[l]
+                res['authors'][author]['commitdates'].append(entry)
+
             res['authors'][author]['commitlist'].sort(key=lambda x: x['date'], reverse=False)
             numofcommits = len(res['authors'][author]['commitlist'])
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
+
+        utility().displayData(res)
+
 
         return json.dumps(res)
 
