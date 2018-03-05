@@ -173,6 +173,8 @@ class ProcessSonar (object):
     def getcommit (self):
 
         total_pages = utility().getNumOfPagesTree(self.SONAR_URL, self.TEST_PROJECT)
+        if total_pages == -1:
+            return {}
         files = utility().getFiles(self.SONAR_URL, self.TEST_PROJECT, total_pages)
 
         commitIds = {}
@@ -198,7 +200,7 @@ class ProcessSonar (object):
                     if author not in authors:
                         authors[author] = []
                     authors[author].append(commitId)
-        utility().displayData(commitIds)
+        
         res = {}
         res['authors'] = {}
         for author in authors:
@@ -211,6 +213,7 @@ class ProcessSonar (object):
                 entry['files'] = commit['files']
                 entry['date'] = commit['date']
                 res['authors'][author]['commitlist'].append(entry)
+            res['authors'][author]['commitlist'].sort(key=lambda x: x['date'], reverse=False)
             numofcommits = len(res['authors'][author]['commitlist'])
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
@@ -239,7 +242,7 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    data = ProcessSonar("slogo_team09").getcommitv2()
+    data = ProcessSonar("test").getcommit()
 
 
     '''

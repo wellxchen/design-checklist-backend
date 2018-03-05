@@ -60,6 +60,8 @@ class utility ():
     def getNumOfPagesTree(self, SONAR_URL, TEST_PROJECT):
         QUERY = '/api/components/tree?ps=500&component='
         r = requests.get(SONAR_URL + QUERY + TEST_PROJECT)
+        if 'errors' in r.json():
+            return -1
         total_number_entries = r.json()['paging']['total']
         page_size = r.json()['paging']['pageSize']
         total_pages = 2
