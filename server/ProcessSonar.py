@@ -214,10 +214,11 @@ class ProcessSonar (object):
                 entry['commitId'] = commitId
                 entry['files'] = commit['files']
                 entry['date'] = commit['date']
-                if commit['date'][:10] not in dates:
-                    dates[commit['date'][:10]] = 1
+                d = commit['date'][:10]
+                if d not in dates:
+                    dates[d] = 1
                 else:
-                    dates[commit['date'][:10]] += 1
+                    dates[d] += 1
                 res['authors'][author]['commitlist'].append(entry)
             ls = sorted(dates.iterkeys())
             for l in ls:
