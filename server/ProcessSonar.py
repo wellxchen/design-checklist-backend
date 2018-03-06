@@ -4,8 +4,11 @@ import json
 from categories import categories
 from utility import utility
 import os
+from os.path import join, dirname
+from dotenv import load_dotenv
 
-
+dotenv_path = join(dirname(__file__), 'app-env')
+load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
 
@@ -17,8 +20,8 @@ class ProcessSonar (object):
         self.TEST_PROJECT = self.GROUPID + arg
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
-        self.TOKEN = '' #put gitlab TOKEN here
-
+        self.TOKEN = os.environ.get("GITLAB_TOKEN")
+        print self.TOKEN
         self.fileChecked = set()
         self.rulesViolated = []
         self.message = []
@@ -51,7 +54,6 @@ class ProcessSonar (object):
 
         #get all issues that are open
         issues = utility().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages, "")
-
 
         #get all rules associate with quanlity profile
         rules = []
