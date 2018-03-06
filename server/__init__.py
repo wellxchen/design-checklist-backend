@@ -48,17 +48,17 @@ def lmethod():
     res['method'].extend(ProcessSonar(project).longestmethods())
     return res
 
+@app.route("/api/commitsonar")
+def getcommitsonar ():
+    project = request.args.get('project')
+    return ProcessSonar(project).getcommitsonar()
+
+
 @app.route("/api/commit")
 def getcommit ():
     project = request.args.get('project')
-    return ProcessSonar(project).getcommit()
-
-
-@app.route("/api/commitv2")
-def getcommitv2 ():
-    project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(project).getcommitv2(group, project)
+    return ProcessSonar(project).getcommit(group, project)
 
 
 if __name__ == '__main__':

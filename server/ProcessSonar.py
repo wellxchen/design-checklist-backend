@@ -15,7 +15,7 @@ class ProcessSonar (object):
         self.TEST_PROJECT = self.GROUPID + arg
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
-        self.TOKEN = 'e1Wh-viL3xFYskHgirxR'
+        self.TOKEN = ''
 
         self.fileChecked = set()
         self.rulesViolated = []
@@ -176,7 +176,7 @@ class ProcessSonar (object):
         return entries[:10]
 
 
-    def getcommit (self):
+    def getcommitsonar (self):
 
         total_pages = utility().getNumOfPagesTree(self.SONAR_URL, self.TEST_PROJECT)
         if total_pages == -1:
@@ -241,7 +241,7 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def getcommitv2 (self,group, project):
+    def getcommit (self,group, project):
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL +"/groups/" + group + "/projects?search=" + project
