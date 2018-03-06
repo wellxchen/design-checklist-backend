@@ -15,7 +15,7 @@ class ProcessSonar (object):
         self.TEST_PROJECT = self.GROUPID + arg
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
-        self.TOKEN = ''
+        self.TOKEN = '' #put gitlab TOKEN here
 
         self.fileChecked = set()
         self.rulesViolated = []
