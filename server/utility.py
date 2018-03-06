@@ -116,16 +116,16 @@ class utility ():
         return files
 
     #get all commits
-    def getcommits (self, GITLAB_URL, projectid):
+    def getcommits (self, GITLAB_URL, projectid, TOKEN):
         commits = []
         counter = 1
         URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits?&per_page=500&page="
-        r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': 'e1Wh-viL3xFYskHgirxR'})
+        r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
 
         while len(r.json()) > 0:
             commits.extend(r.json())
             counter += 1
-            r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': 'e1Wh-viL3xFYskHgirxR'})
+            r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
 
         return commits
 

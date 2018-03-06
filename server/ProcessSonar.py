@@ -15,6 +15,7 @@ class ProcessSonar (object):
         self.TEST_PROJECT = self.GROUPID + arg
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
+        self.TOKEN = 'e1Wh-viL3xFYskHgirxR'
 
         self.fileChecked = set()
         self.rulesViolated = []
@@ -245,7 +246,7 @@ class ProcessSonar (object):
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL +"/groups/" + group + "/projects?search=" + project
 
-        r  = requests.get(URL, headers={'PRIVATE-TOKEN': 'e1Wh-viL3xFYskHgirxR'})
+        r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
         projects = r.json()
         projectid = -1
         for p in projects:
@@ -260,7 +261,7 @@ class ProcessSonar (object):
         dates = {}
 
 
-        commits = utility().getcommits(GITLAB_URL, projectid)
+        commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
 
         for commit in commits:
             authorname = commit['author_name']
@@ -299,7 +300,7 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-        utility().displayData(res)
+        return json.dumps(res)
 
     def getrules (self, main, sub):
         #TODO
