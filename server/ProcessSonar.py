@@ -3,7 +3,9 @@ import json
 
 from categories import categories
 from utility import utility
-import gitlab
+import os
+
+
 
 class ProcessSonar (object):
 
@@ -237,7 +239,7 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-
+        utility().displayData(res)
         return json.dumps(res)
 
 
@@ -259,8 +261,6 @@ class ProcessSonar (object):
         res = {}
         res['authors'] = {}
         dates = {}
-
-
         commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
 
         for commit in commits:
@@ -295,11 +295,12 @@ class ProcessSonar (object):
         totalnumofcommits = len(commits)
 
         for author in res['authors']:
+            res['authors'][author]['commitdates'].sort(key=lambda x: x.keys(), reverse=False)
             res['authors'][author]['commitlist'].sort(key=lambda x: x['date'], reverse=False)
             numofcommits = len(res['authors'][author]['commitlist'])
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
-
+        utility().displayData(res)
         return json.dumps(res)
 
     def getrules (self, main, sub):
@@ -309,7 +310,8 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-  
+
+    #ProcessSonar("sonar_test").getcommitsonar()
     data = ProcessSonar("test").getcommit("CompSci308_2017Fall", "sonar_test")
 
 
