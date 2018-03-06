@@ -162,7 +162,12 @@ class ProcessSonar (object):
             items = r.json()["sources"]
 
             entries[count]['code'] = []
+            title = 0
             for item in items:
+                mname = ""
+                if title == 0:
+                    mname = utility().stripmethodname(item[1])
+                entries[count]['methodname'] = mname
                 entries[count]['code'].append(item[1])
 
             count += 1
@@ -258,7 +263,7 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    data = ProcessSonar("test").getcommit()
+    data = ProcessSonar("test").statistics()
 
 
     '''

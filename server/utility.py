@@ -31,6 +31,22 @@ class utility ():
 
         return res
 
+
+    def stripmethodname (self, line):
+        index = line.find('(')
+
+        if line[index - 1] == ' ':
+            index -= 2
+        else:
+            index -= 1
+        i = index
+        while i >= 0:
+            if line[i] == ' ':
+                i += 1
+                break
+            i -= 1
+        return line[i + 5:index - 6]
+
     def striphtml(self, data):
         p = re.compile(r'<.*?>')
         p = p.sub('', data)
@@ -302,3 +318,8 @@ class utility ():
         data['percentage']['Code Smells'] = percentage[4]
         data['percentage']['Duplications'] = percentage[5]
         return data
+
+if __name__ == '__main__':
+
+    print utility().stripmethodname("public class test")
+
