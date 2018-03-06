@@ -310,7 +310,7 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
     #ProcessSonar("test").getcommit()
-    data = ProcessSonar("test").getcommitv2("CompSci308_2017Fall", "sonar_test")
+    data = ProcessSonar("test").getcommit("CompSci308_2017Fall", "sonar_test")
 
 
     '''
