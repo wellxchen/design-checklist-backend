@@ -236,24 +236,70 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-        utility().displayData(res)
-
 
         return json.dumps(res)
 
 
-    def getcommitv2 (self):
+    def getcommitv2 (self,group, project):
 
-        gl = gitlab.Gitlab('https://coursework.cs.duke.edu', private_token='e1Wh-viL3xFYskHgirxR')
+        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
+        URL = GITLAB_URL +"/groups/" + group + "/projects?search=" + project
 
-        group = gl.groups.get('CompSci308_2018Spring')
-        print len(group.projects.list())
+        r  = requests.get(URL, headers={'PRIVATE-TOKEN': 'e1Wh-viL3xFYskHgirxR'})
+        projects = r.json()
+        projectid = -1
+        for p in projects:
+            if p['name'] ==project:
+                projectid = p['id']
+                break
+        if projectid == -1:
+            return []
+
+        res = {}
+        res['authors'] = {}
+        dates = {}
 
 
-        #URL = "https://coursework.cs.duke.edu/api/v4/groups/CompSci308_2018Spring/projects"
-        #r  = requests.get(URL, headers={'newone': 'rFzVvatCzFXqqwJNG9pp'})
-        #print len(r.json()), r
-        #utility().displayData(r.json())
+        commits = utility().getcommits(GITLAB_URL, projectid)
+
+        for commit in commits:
+            authorname = commit['author_name']
+            commitdate = commit['committed_date']
+            commitid = commit['id']
+            if authorname not in res['authors']:
+                res['authors'][authorname] = {}
+                res['authors'][authorname]['commitlist'] = []
+                res['authors'][authorname]['commitdates'] = []
+                dates[authorname] = {}
+            entry = {}
+            entry['commitId'] = commitid
+            entry['date'] = commitdate
+            entry['files'] = []
+            res['authors'][authorname]['commitlist'].append(entry)
+
+            #handle date
+
+            shortdate = commitdate[:10]
+            curnumdates = len(res['authors'][authorname]['commitdates'])
+            if shortdate not in dates[authorname]:
+                dates[authorname][shortdate] = curnumdates
+            datesindex = dates[authorname][shortdate]
+            if datesindex == curnumdates:
+                entry = {}
+                entry[shortdate] = 1
+                res['authors'][authorname]['commitdates'].append(entry)
+            else:
+                res['authors'][authorname]['commitdates'][datesindex][shortdate] += 1
+
+        totalnumofcommits = len(commits)
+
+        for author in res['authors']:
+            res['authors'][author]['commitlist'].sort(key=lambda x: x['date'], reverse=False)
+            numofcommits = len(res['authors'][author]['commitlist'])
+            res['authors'][author]['numofcommits'] = numofcommits
+            res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
+
+        utility().displayData(res)
 
     def getrules (self, main, sub):
         #TODO
@@ -262,8 +308,8 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-
-    data = ProcessSonar("test").statistics()
+    #ProcessSonar("test").getcommit()
+    data = ProcessSonar("test").getcommitv2("CompSci308_2017Fall", "sonar_test")
 
 
     '''

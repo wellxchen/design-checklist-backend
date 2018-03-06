@@ -115,6 +115,20 @@ class utility ():
             files.extend(nondirfiles)
         return files
 
+    #get all commits
+    def getcommits (self, GITLAB_URL, projectid):
+        commits = []
+        counter = 1
+        URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits?&per_page=500&page="
+        r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': 'e1Wh-viL3xFYskHgirxR'})
+
+        while len(r.json()) > 0:
+            commits.extend(r.json())
+            counter += 1
+            r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': 'e1Wh-viL3xFYskHgirxR'})
+
+        return commits
+
     #calcualte percentage for the category
 
     def calPercentage (self, category, rules_under_category):

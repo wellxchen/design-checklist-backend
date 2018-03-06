@@ -54,6 +54,13 @@ def getcommit ():
     return ProcessSonar(project).getcommit()
 
 
+@app.route("/api/commitv2")
+def getcommitv2 ():
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return ProcessSonar(project).getcommitv2(group, project)
+
+
 if __name__ == '__main__':
     app.run(threaded=True)
 
