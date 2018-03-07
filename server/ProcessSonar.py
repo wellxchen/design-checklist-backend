@@ -7,6 +7,8 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 
+import copy
+
 dotenv_path = join(dirname(__file__), 'app-env')
 load_dotenv(dotenv_path)
 
@@ -65,20 +67,29 @@ class ProcessSonar (object):
             rules.extend(categories().duplications)
         #store details
         dup_errmessages = []
+        scores = utility().calTotalScoreAllCategory(self.SONAR_URL)
+        scores_rem = copy.deepcopy(scores)
+        scores_checked_Id = set()
         for issue in issues:
 
             ruleID = issue['rule']
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)  #rulename = ruleResult[0]['name']
 
             if len(ruleResult) > 0:
-
                 errmessage = {}
                 errmessage['path'] = [issue['component']]
                 errmessage['rule'] = ruleResult[0]['name']
                 errmessage['message'] = issue['message']
                 errmessage['severity'] = issue['severity']
-                if ruleID == "common-java:DuplicatedBlocks":
 
+                #deduct score
+                maincategoryname = categories().getMainCateNameById(ruleID)
+                if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
+                    scores[maincategoryname] -= utility().getScoreForSeverity(issue['severity'])
+                    scores_checked_Id.add(ruleID)
+
+                #add code
+                if ruleID == "common-java:DuplicatedBlocks":
                     dup_errmessages.append(errmessage)
                 else:
                     errmessage['code'] = []
@@ -105,14 +116,8 @@ class ProcessSonar (object):
                                                   self.rulesViolated,
                                                   self.fileChecked)
         # cal percentage
-        percentage = []
-        percentage.append(utility().calPercentage(categories().communication, self.rulesViolated[0]))
-        percentage.append(utility().calPercentage(categories().modularity, self.rulesViolated[1]))
-        percentage.append(utility().calPercentage(categories().flexibility, self.rulesViolated[2]))
-        percentage.append(utility().calPercentage(categories().javanote, self.rulesViolated[3]))
-        percentage.append(utility().calPercentage(categories().codesmell, self.rulesViolated[4]))
-        percentage.append(utility().calPercentage(categories().duplicationsID, self.rulesViolated[5]))
 
+        percentage = utility().calPercentByScore(scores, scores_rem)
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
         #utility().displayData(data)
@@ -314,7 +319,7 @@ class ProcessSonar (object):
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    data = ProcessSonar("test").getcommit("CompSci308_2017Fall", "sonar_test")
+    data = ProcessSonar("test").process(False)
 
 
     '''

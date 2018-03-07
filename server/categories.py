@@ -54,11 +54,6 @@ class categories ():
     'squid:S1319','squid:S3776', 'squid:S2176', 'squid:MethodCyclomaticComplexity',
         'squid:S138', 'squid:S1067', 'squid:S00107','squid:S1479', 'squid:S1219', 'squid:S1151','squid:S3400'
     }
-    codesmell = {
-
-    'squid:S2189', 'squid:S2252', 'squid:S2251', 'squid:S1994', 'squid:S1862', 'squid:S134', 'squid:S1905',
-    'squid:ForLoopCounterChangedCheck', 'squid:S1226'
-    }
     javanote = {
     'squid:EmptyFile', 'squid:S2094', 'squid:S2177', 'squid:S1698', 'squid:S1596', 'squid:S1181', 'squid:S2275',
     'squid:S3457', 'squid:S1872', 'squid:S1197', 'squid:S2133', 'squid:S1641', 'squid:S1640', 'squid:S1155', 'squid:S2864',
@@ -69,6 +64,11 @@ class categories ():
     'squid:S1201', 'squid:S1206', 'squid:S2160', 'squid:S1611', 'squid:S1850', 'squid:S1858', 'squid:S1711', 'squid:S3422',
     'squid:S2166', 'squid:S1118', 'squid:CallToDeprecatedMethod', 'squid:UndocumentedApi', 'squid:S1610', 'squid:S2162',
     'squid:S2301', 'squid:S1213'
+    }
+    codesmell = {
+
+        'squid:S2189', 'squid:S2252', 'squid:S2251', 'squid:S1994', 'squid:S1862', 'squid:S134', 'squid:S1905',
+        'squid:ForLoopCounterChangedCheck', 'squid:S1226'
     }
     duplicationsID = {
     'common-java:DuplicatedBlocks','squid:S3047',  'squid:S1939','squid:S1871','squid:S1700','squid:S1192'
@@ -242,6 +242,37 @@ class categories ():
             return self.rules[ruleID]
         return []
 
+    def getMainCateNameById(self, ruleID):
+        if ruleID in self.rules:
+            cates = self.rules[ruleID]
+            if cates[0] == 0:
+                return "communication"
+            if cates[0] == 1:
+                return "modularity"
+            if cates[0] == 2:
+                return "flexibility"
+            if cates[0] == 3:
+                return "javanote"
+            if cates[0] == 4:
+                return "codesmell"
+            if cates[0] == 5:
+                return "duplications"
+        return ""
+
+    def getCategoryNumberByName(self, name):
+        if name == "communication":
+            return 0
+        if name ==  "modularity":
+            return 1
+        if name ==  "flexibility":
+            return 2
+        if name ==  "javanote":
+            return 3
+        if name == "codesmell":
+            return 4
+        if name == "duplications":
+            return 5
+        return -1
 
     def allrules (self):
         return self.communication.union(

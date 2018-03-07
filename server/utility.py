@@ -129,9 +129,55 @@ class utility ():
 
         return commits
 
-    #calcualte percentage for the category
+    #calcualte total score for rules under one category
+    def calTotalScorePerCategory (self, SONAR_URL, rules):
+        score = 0.00
+        for rule in rules:
+            r = requests.get(SONAR_URL + '/api/rules/search?rule_key='+rule)
+            ruleInfo = r.json()['rules'][0]
+            ruleseverity =  ruleInfo["severity"]
+            score += self.getScoreForSeverity(ruleseverity)
+        return score
 
-    def calPercentage (self, category, rules_under_category):
+    # calcualte total score for rules under all categories
+    def calTotalScoreAllCategory (self, SONAR_URL):
+        l = {}
+        l["communication"] = self.calTotalScorePerCategory(SONAR_URL, categories().communication)
+        l["modularity"] = self.calTotalScorePerCategory(SONAR_URL, categories().modularity)
+        l["flexibility"] = self.calTotalScorePerCategory(SONAR_URL, categories().flexibility)
+        l["codesmell"] = self.calTotalScorePerCategory(SONAR_URL, categories().codesmell)
+        l["javanote"] = self.calTotalScorePerCategory(SONAR_URL, categories().javanote)
+        l["duplications"] = self.calTotalScorePerCategory(SONAR_URL, categories().duplicationsID)
+        return l
+
+    #get score for the category
+    def getScoreForSeverity (self, ruleseverity):
+
+        if ruleseverity == "BLOCKER":
+            return 100.00
+        if ruleseverity == "CRITICAL":
+            return 50.00
+        if ruleseverity == "MAJOR":
+            return 20.00
+        if ruleseverity == "MINOR":
+            return 10.00
+        if ruleseverity == "INFO":
+            return 5.00
+        return 0.0
+
+    #
+    def calPercentByScore (self, scores, scores_rem):
+        l = []
+        for i in range(0,6):
+            l.append(0)
+
+        for catename, score in scores.iteritems():
+            index = categories().getCategoryNumberByName(catename)
+            l[index] = (score / scores_rem[catename]) * 100.00
+        return l
+
+    #calcualte percentage for the category (SIMPLY BY NUMBER OF RULES VIOLATED)
+    def calPercentByNum (self, category, rules_under_category):
         if len(category) > 0:
                 return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
         return 100.0
@@ -178,10 +224,6 @@ class utility ():
             files = items['files']
             dup_errmessage['duplications'] = []
 
-            #out += dup_errmessage['path'][0]
-            #out += "\n"
-            #out += "-"
-            #out += '\n'
             for duplication in duplications:
 
                 blocks = duplication['blocks']
@@ -192,8 +234,7 @@ class utility ():
                     entry['startLine'] = block['from']
                     entry['endLine'] = entry['startLine'] - 1 + block['size']
                     entry['loc'] = files[block['_ref']]['key']
-                    #out += entry['loc']
-                    #out += '\n'
+
                     if entry['loc'] in filesChecked:
                         discard = True
                         break
@@ -205,18 +246,14 @@ class utility ():
                     for item in items:
                         entry['code'].append(item[1])
                     single_dup.append(entry)
-                #out += "*************"
-                #out += '\n'
+
                 if not discard:
                     dup_errmessage['duplications'].append(single_dup)
 
-            #print dup_errmessage
-            #out += "============="
-            #out += '\n'
             filesChecked.add(dup_errmessage['path'][0])
             if len(dup_errmessage['duplications']) > 0:
                 self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
-        #utility().writeData(out)
+
 
     def errHandler (self):
         data = {}
