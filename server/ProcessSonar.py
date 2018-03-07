@@ -21,7 +21,7 @@ class ProcessSonar (object):
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
         self.TOKEN = os.environ.get("GITLAB_TOKEN")
-        print self.TOKEN
+
         self.fileChecked = set()
         self.rulesViolated = []
         self.message = []
