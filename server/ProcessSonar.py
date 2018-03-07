@@ -120,7 +120,7 @@ class ProcessSonar (object):
         percentage = utility().calPercentByScore(scores, scores_rem)
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
-        #utility().displayData(data)
+      
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
         return res
@@ -246,7 +246,7 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-        utility().displayData(res)
+
         return json.dumps(res)
 
 
@@ -307,7 +307,7 @@ class ProcessSonar (object):
             numofcommits = len(res['authors'][author]['commitlist'])
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
-        utility().displayData(res)
+
         return json.dumps(res)
 
     def getrules (self, main, sub):
