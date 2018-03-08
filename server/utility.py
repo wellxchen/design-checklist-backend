@@ -202,6 +202,7 @@ class utility ():
         if len(ruleInfo) == 0:
             return
         mainindex = ruleInfo[0]
+
         if len(ruleInfo) == 2:
             subindex = ruleInfo[1]
             message[mainindex][subindex - 1].append(errmessage)

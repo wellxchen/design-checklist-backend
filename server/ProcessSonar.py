@@ -37,7 +37,7 @@ class ProcessSonar (object):
             if i == 1: #modularity
                 k = 8
             if i == 2: #flexibility
-                k = 4
+                k = 5
             for j in range(k):
                 self.message[i].append([])
 
@@ -120,7 +120,7 @@ class ProcessSonar (object):
         percentage = utility().calPercentByScore(scores, scores_rem)
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
-      
+
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
         return res
@@ -319,7 +319,7 @@ class ProcessSonar (object):
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    data = ProcessSonar("test").process(False)
+    data = ProcessSonar("slogo_team08").process(False)
 
 
     '''
