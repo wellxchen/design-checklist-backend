@@ -33,9 +33,9 @@ class ProcessSonar (object):
             self.message.append([])
             k = 0
             if i == 0: #communication
-                k = 7
-            if i == 1: #modularity
                 k = 8
+            if i == 1: #modularity
+                k = 9
             if i == 2: #flexibility
                 k = 5
             for j in range(k):
@@ -120,6 +120,8 @@ class ProcessSonar (object):
         percentage = utility().calPercentByScore(scores, scores_rem)
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
+
+        utility().displayData(data)
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
