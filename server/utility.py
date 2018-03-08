@@ -3,6 +3,12 @@ from categories import categories
 import json
 import requests
 
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+dotenv_path = join(dirname(__file__), 'app-env')
+load_dotenv(dotenv_path)
+
 class utility ():
 
     def writeData (self, data):
@@ -16,10 +22,11 @@ class utility ():
         pp.pprint(data)
 
     def activateRule (self, SONAR_URL, QUALITY_PROFILE, ruleID):
-
+        SONAR_LOGIN = os.environ.get("SONAR_LOGIN")
+        SONAR_PASSWORD = os.environ.get("SONAR_PASSWORD")
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=' ,
                           data={'profile_key':QUALITY_PROFILE, 'rule_key' : ruleID},
-                          auth=('rcd', 'wzuA3F4g27'))
+                          auth=(SONAR_LOGIN, SONAR_PASSWORD))
 
     def makeMap(self, rules, main, sub):
         res = ""
@@ -31,7 +38,7 @@ class utility ():
 
         return res
 
-
+    #strip method name
     def stripmethodname (self, line):
         index = line.find('(')
 
@@ -47,6 +54,8 @@ class utility ():
             i -= 1
         return line[i + 5:index - 6]
 
+
+    #strip html code
     def striphtml(self, data):
         p = re.compile(r'<.*?>')
         p = p.sub('', data)
