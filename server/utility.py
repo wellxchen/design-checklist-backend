@@ -278,31 +278,31 @@ class utility ():
 
         data['error']['Communication'] = {}
         data['error']['Communication']['Meaningful names'] = {}
-        data['error']['Communication']['Meaningful names']["category description"] = categories().Communication_Sub[1]
+        data['error']['Communication']['Meaningful names']["category description"] = categories().Communication_sub[1]
         data['error']['Communication']['Meaningful names']["detail"] = message[0][0]
 
         data['error']['Communication']['No magic values'] = {}
-        data['error']['Communication']['No magic values']["category description"] = categories().Communication_Sub[2]
+        data['error']['Communication']['No magic values']["category description"] = categories().Communication_sub[2]
         data['error']['Communication']['No magic values']["detail"] = message[0][1]
 
         data['error']['Communication']['Readable code'] = {}
-        data['error']['Communication']['Readable code']["category description"] = categories().Communication_Sub[3]
+        data['error']['Communication']['Readable code']["category description"] = categories().Communication_sub[3]
         data['error']['Communication']['Readable code']["detail"] = message[0][2]
 
         data['error']['Communication']['Use scope wisely'] = {}
-        data['error']['Communication']['Use scope wisely']["category description"] = categories().Communication_Sub[4]
+        data['error']['Communication']['Use scope wisely']["category description"] = categories().Communication_sub[4]
         data['error']['Communication']['Use scope wisely']["detail"] = message[0][3]
 
         data['error']['Communication']['Same level code'] = {}
-        data['error']['Communication']['Same level code']["category description"] = categories().Communication_Sub[5]
+        data['error']['Communication']['Same level code']["category description"] = categories().Communication_sub[5]
         data['error']['Communication']['Same level code']["detail"] = message[0][4]
 
         data['error']['Communication']['Concise code'] = {}
-        data['error']['Communication']['Concise code']["category description"] = categories().Communication_Sub[6]
+        data['error']['Communication']['Concise code']["category description"] = categories().Communication_sub[6]
         data['error']['Communication']['Concise code']["detail"] = message[0][5]
 
         data['error']['Communication']['No warning'] = {}
-        data['error']['Communication']['No warning']["category description"] = categories().Communication_Sub[7]
+        data['error']['Communication']['No warning']["category description"] = categories().Communication_sub[7]
         data['error']['Communication']['No warning']["detail"] = message[0][6]
 
         data['error']['Modularity'] = {}

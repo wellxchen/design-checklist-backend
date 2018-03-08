@@ -3,7 +3,7 @@ class categories ():
 
 
 
-    Communication_Sub = [
+    Communication_sub = [
                 "",
                 'Meaningful names: give variables, methods, classes, and packages non-abbreviated, intention-revealing names',
                 'No magic values: use constants for all values used multiple times or in program logic',
@@ -159,9 +159,9 @@ class categories ():
              'squid:S3776': [2, 3],
              'squid:S2176': [2, 3],
              'squid:S3400' : [2, 4],
-             'squid:S1479' : [2, 5],
-             'squid:S1219' : [2, 5],
-             'squid:S1151' : [2, 5],
+             'squid:S1479' : [2, 4],
+             'squid:S1219' : [2, 4],
+             'squid:S1151' : [2, 4],
              'squid:S1181': [3],
              'squid:S2129': [3],
              'squid:S2141': [3],
