@@ -1,3 +1,4 @@
 *.pyc
 server/documents/*
-!server/documenrs/.gitkeep
+!server/documents/.gitkeep
+!server/documents/example.json
