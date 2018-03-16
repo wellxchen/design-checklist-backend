@@ -80,7 +80,7 @@ class ProcessSonar (object):
                 errmessage['path'] = [issue['component']]
                 errmessage['rule'] = ruleResult[0]['name']
                 errmessage['message'] = issue['message']
-                errmessage['severity'] = issue['severity']
+                errmessage['severity'] = utility().renameSeverity(issue['severity'])
 
                 #deduct score
                 maincategoryname = categories().getMainCateNameById(ruleID)
@@ -308,6 +308,9 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
+        #merge
+
+
         return json.dumps(res)
 
     def getrules (self, main, sub):
@@ -315,11 +318,40 @@ class ProcessSonar (object):
         res = ""
         return res
 
+    def trygetuserid (self,group, project):
+        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
+        URL = GITLAB_URL + "/groups/" + group + "/projects?search=" + project
+
+        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
+        projects = r.json()
+        projectid = -1
+        for p in projects:
+            if p['name'] == project:
+                projectid = p['id']
+                break
+        if projectid == -1:
+            return []
+
+
+        commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
+        res = []
+        for commit in commits:
+            authoremail = commit['author_email']
+            print authoremail
+            indexofat = authoremail.find("@")
+            authorusername = authoremail[:indexofat]
+            print authorusername
+            URL = GITLAB_URL + "/users?search=" + authorusername
+            r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
+
+            utility().displayData(r.json())
+            print "********"
 
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    data = ProcessSonar("slogo_team08").process(False)
+    data = ProcessSonar("slogo_team08").trygetuserid("CompSci308_2018Spring", "slogo_team13")
+
 
 
     '''

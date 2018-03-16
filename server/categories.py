@@ -280,3 +280,6 @@ class categories ():
             self.javanote.union(
             self.codesmell.union(
             self.modularity.union(self.duplicationsID)))))
+
+    def getNumberOfMainCategories(self):
+        return 6

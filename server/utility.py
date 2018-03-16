@@ -174,10 +174,22 @@ class utility ():
             return 5.00
         return 0.0
 
+    def renameSeverity(self, ruleseverity ):
+        if ruleseverity == "BLOCKER":
+            return "fail"
+        if ruleseverity == "CRITICAL":
+            return "high"
+        if ruleseverity == "MAJOR":
+            return "medium"
+        if ruleseverity == "MINOR":
+            return "low"
+        if ruleseverity == "INFO":
+            return "info"
+        return ""
     #
     def calPercentByScore (self, scores, scores_rem):
         l = []
-        for i in range(0,6):
+        for i in range(0,categories().getNumberOfMainCategories()):
             l.append(0)
 
         for catename, score in scores.iteritems():
