@@ -8,8 +8,10 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 
 import copy
+import csv
 
-dotenv_path = join(dirname(__file__), 'app-env')
+
+dotenv_path = join(dirname(__file__), './documents/local/app-env')
 load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
@@ -269,9 +271,22 @@ class ProcessSonar (object):
         res['authors'] = {}
         dates = {}
         commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
+        studentidmaps = utility().readStudentInfo()
 
         for commit in commits:
-            authorname = commit['author_name']
+            # retrieve gitlab id
+            authoremail = commit['author_email']
+
+            indexofat = authoremail.find("@")
+            authorname = authoremail[:indexofat]
+
+            if authorname in studentidmaps["email"]:
+                authorname = studentidmaps["email"][authorname]
+            elif authorname in studentidmaps["netid"]:
+                authorname = studentidmaps["netid"][authorname]
+
+            #get other info
+
             commitdate = commit['committed_date']
             commitid = commit['id']
             if authorname not in res['authors']:
@@ -308,9 +323,7 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-        #merge
-
-
+        
         return json.dumps(res)
 
     def getrules (self, main, sub):
@@ -318,39 +331,12 @@ class ProcessSonar (object):
         res = ""
         return res
 
-    def trygetuserid (self,group, project):
-        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL + "/groups/" + group + "/projects?search=" + project
 
-        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
-        projects = r.json()
-        projectid = -1
-        for p in projects:
-            if p['name'] == project:
-                projectid = p['id']
-                break
-        if projectid == -1:
-            return []
-
-
-        commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
-        res = []
-        for commit in commits:
-            authoremail = commit['author_email']
-            print authoremail
-            indexofat = authoremail.find("@")
-            authorusername = authoremail[:indexofat]
-            print authorusername
-            URL = GITLAB_URL + "/users?search=" + authorusername
-            r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
-
-            utility().displayData(r.json())
-            print "********"
 
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    data = ProcessSonar("slogo_team08").trygetuserid("CompSci308_2018Spring", "slogo_team13")
+    data = ProcessSonar("slogo_team08").getcommit("CompSci308_2018Spring", "slogo_team13")
 
 
 

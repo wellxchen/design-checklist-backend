@@ -6,7 +6,7 @@ import requests
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-dotenv_path = join(dirname(__file__), 'app-env')
+dotenv_path = join(dirname(__file__), './documents/local/app-env')
 load_dotenv(dotenv_path)
 
 class utility ():
@@ -137,6 +137,26 @@ class utility ():
             r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
 
         return commits
+
+    #extract gitlabid
+    def readStudentInfo (self):
+        emails = {}
+        netids = {}
+        netidindex = 2
+        emailindex = 3
+        gitlabidindex = 4
+
+        import csv
+        with open('./documents/local/308students.csv', 'rb') as csvfile:
+            spamreader = csv.reader(csvfile)
+
+            for row in spamreader:
+                emails[row[emailindex]] =row [gitlabidindex]
+                netids[row[netidindex]] = row [gitlabidindex]
+        res = {}
+        res["email"] = emails
+        res["netid"] = netids
+        return res
 
     #calcualte total score for rules under one category
     def calTotalScorePerCategory (self, SONAR_URL, rules):
@@ -283,6 +303,7 @@ class utility ():
         data['description'] = "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
         return json.dumps(data)
 
+
     def dataHandler(self, message, percentage, onlyDup):
 
         data = {}
@@ -392,7 +413,9 @@ class utility ():
         data['percentage']['Duplications'] = percentage[5]
         return data
 
+
+
 if __name__ == '__main__':
 
-    print utility().stripmethodname("public class test")
+   utility().readStudentInfo()
 
