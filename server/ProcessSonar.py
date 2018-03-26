@@ -125,6 +125,7 @@ class ProcessSonar (object):
 
         data['severitylist'] = ['fail', 'high', 'medium', 'low', 'info']
 
+
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
         return res
@@ -338,7 +339,7 @@ class ProcessSonar (object):
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    data = ProcessSonar("slogo_team08").getcommit("CompSci308_2018Spring", "slogo_team02")
+    data = ProcessSonar("slogo_team08").process(True)#getcommit("CompSci308_2018Spring", "slogo_team02")
 
 
 
