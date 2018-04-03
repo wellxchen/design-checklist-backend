@@ -3,6 +3,8 @@ from flask import Flask
 from flask_cors import CORS
 from flask import request
 from flask import send_from_directory
+import json
+
 
 app = Flask(__name__)
 
@@ -46,13 +48,12 @@ def lmethod():
     res = {}
     res['method'] = []
     res['method'].extend(ProcessSonar(project).longestmethods())
-    return res
+    return json.dumps(res)
 
 @app.route("/api/commitsonar")
 def getcommitsonar ():
     project = request.args.get('project')
     return ProcessSonar(project).getcommitsonar()
-
 
 @app.route("/api/commit")
 def getcommit ():
@@ -60,6 +61,11 @@ def getcommit ():
     group = request.args.get('group')
     return ProcessSonar(project).getcommit(group, project)
 
+@app.route("/api/commit")
+def getalldirectory ():
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return ProcessSonar(project).getalldirectory(group, project)
 
 if __name__ == '__main__':
     app.run(threaded=True)

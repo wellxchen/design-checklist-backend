@@ -329,6 +329,12 @@ class ProcessSonar (object):
         
         return json.dumps(res)
 
+
+    def getalldirectory(self, group, project):
+        res = {}
+        res['root'] = {}
+        return res
+
     def getrules (self, main, sub):
         #TODO
         res = ""
@@ -339,8 +345,8 @@ class ProcessSonar (object):
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    data = ProcessSonar("slogo_team08").process(True)#getcommit("CompSci308_2018Spring", "slogo_team02")
-
+    #data = ProcessSonar("slogo_team08").process(True)#getcommit("CompSci308_2018Spring", "slogo_team02")
+    print ProcessSonar("cell_society_team18").longestmethods()
 
 
     '''
