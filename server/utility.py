@@ -128,7 +128,7 @@ class utility ():
     def getcommits (self, GITLAB_URL, projectid, TOKEN):
         commits = []
         counter = 1
-        URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits?&per_page=500&page="
+        URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits?ref_name=master&per_page=100&page="
         r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
 
         while len(r.json()) > 0:
@@ -137,6 +137,8 @@ class utility ():
             r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
 
         return commits
+
+
 
     #extract gitlabid
     def readStudentInfo (self):
@@ -157,6 +159,17 @@ class utility ():
         res["email"] = emails
         res["netid"] = netids
         return res
+
+    def convertEmailtoGitlabId(self, authoremail, studentidmaps):
+
+        indexofat = authoremail.find("@")
+        authorname = authoremail[:indexofat]
+
+        if authorname in studentidmaps["email"]:
+            authorname = studentidmaps["email"][authorname]
+        elif authorname in studentidmaps["netid"]:
+            authorname = studentidmaps["netid"][authorname]
+        return  authorname
 
     #calcualte total score for rules under one category
     def calTotalScorePerCategory (self, SONAR_URL, rules):

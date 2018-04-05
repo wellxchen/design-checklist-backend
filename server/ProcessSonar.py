@@ -255,7 +255,7 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def getcommit (self,group, project):
+    def getcommit (self,group, project, onlyStat):
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL +"/groups/" + group + "/projects?search=" + project
@@ -274,24 +274,22 @@ class ProcessSonar (object):
         res['authors'] = {}
         dates = {}
         commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
+
         studentidmaps = utility().readStudentInfo()
+
+        if onlyStat:
+            return self.getcommitstat(commits, studentidmaps,GITLAB_URL, projectid)
 
         for commit in commits:
             # retrieve gitlab id
             authoremail = commit['author_email']
-
-            indexofat = authoremail.find("@")
-            authorname = authoremail[:indexofat]
-
-            if authorname in studentidmaps["email"]:
-                authorname = studentidmaps["email"][authorname]
-            elif authorname in studentidmaps["netid"]:
-                authorname = studentidmaps["netid"][authorname]
+            authorname = utility().convertEmailtoGitlabId(authoremail,studentidmaps)
 
             #get other info
 
             commitdate = commit['committed_date']
             commitid = commit['id']
+
             if authorname not in res['authors']:
                 res['authors'][authorname] = {}
                 res['authors'][authorname]['commitlist'] = []
@@ -325,10 +323,35 @@ class ProcessSonar (object):
             numofcommits = len(res['authors'][author]['commitlist'])
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
+            res['authors'][author]['stats'] = {}
+            res['authors'][author]['stats']["additions"]  = 0
+            res['authors'][author]['stats']["deletions"] = 0
+            res['authors'][author]['stats']["total"] = 0
 
-        
+
         return json.dumps(res)
 
+    def getcommitstat (self, commits, studentidmaps,GITLAB_URL, projectid):
+
+        res = {}
+
+        for commit in commits:
+
+            authoremail = commit['author_email']
+            authorname = utility().convertEmailtoGitlabId(authoremail, studentidmaps)
+            if authorname not in res:
+                res[authorname] = {}
+                res[authorname]["additions"] = 0
+                res[authorname]["deletions"] = 0
+                res[authorname]["total"] = 0
+            URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits/" + commit["id"]
+            r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
+            stats = r.json()["stats"]
+            res[authorname]["additions"] += stats["additions"]
+            res[authorname]["deletions"] += stats["deletions"]
+            res[authorname]["total"] += stats["total"]
+            
+        return res
 
     def getalldirectory(self, group, project):
         res = {}
@@ -342,11 +365,13 @@ class ProcessSonar (object):
 
 
 
+
 if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
-    #data = ProcessSonar("slogo_team08").process(True)#getcommit("CompSci308_2018Spring", "slogo_team02")
-    print ProcessSonar("cell_society_team18").longestmethods()
+    #data = ProcessSonar("slogo_team08").process(True)#
+    ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02", True)
+    #print ProcessSonar("slogo_team11").longestmethods()
 
 
     '''
