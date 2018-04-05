@@ -350,7 +350,7 @@ class ProcessSonar (object):
             res[authorname]["additions"] += stats["additions"]
             res[authorname]["deletions"] += stats["deletions"]
             res[authorname]["total"] += stats["total"]
-            
+
         return res
 
     def getalldirectory(self, group, project):
