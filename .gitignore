@@ -1,4 +1,4 @@
 *.pyc
-codes
+student_code
 server/documents/local/*
 !server/documents/local/.gitkeep

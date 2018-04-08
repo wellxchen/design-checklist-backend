@@ -1,12 +1,15 @@
 #!/bin/sh
+
+ROOTDIR="student_code"
+
 cd ..
 
-if [ ! -d "code" ]
+if [ ! -d $ROOTDIR ]
 then
-	mkdir "code"
+	mkdir $ROOTDIR
 fi
 
-cd "code"
+cd $ROOTDIR
 
 if [ ! -d "$2" ]
 then
