@@ -62,7 +62,7 @@ def getcommit ():
     return ProcessSonar(project).getcommit(group, project, False)
 
 @app.route("/api/commit/stat")
-def getcommit ():
+def getcommitstat ():
     project = request.args.get('project')
     group = request.args.get('group')
     return ProcessSonar(project).getcommit(group, project, True)
