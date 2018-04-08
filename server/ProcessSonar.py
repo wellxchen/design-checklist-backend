@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import copy
 
 import subprocess
+import re
 
 
 dotenv_path = join(dirname(__file__), './documents/local/app-env')
@@ -279,7 +280,7 @@ class ProcessSonar (object):
         studentidmaps = utility().readStudentInfo()
 
         if onlyStat:
-            return self.getcommitstatslow(commits, studentidmaps,GITLAB_URL, projectid)
+            return self.getcommitstatfast(group, project, studentidmaps)
 
         for commit in commits:
             # retrieve gitlab id
@@ -327,31 +328,74 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
-    def getcommitstatslow (self, commits, studentidmaps,GITLAB_URL, projectid):
+
+    def getcommitstatfast(self, group, project, studentidmaps):
+        stats = subprocess.check_output(['./stats.sh', self.TOKEN, group, project])
+        parsed = re.split(r'\n--\n', stats)
+
         res = {}
+        res_dates = {}
+        current_author = ""
+        current_date = ""
+        for p in parsed:
+            lines = p.split("\n")
+            for line in lines:
 
-        for commit in commits:
+                if "Author:" in line:
+                    authorline = line.split()
+                    authoremail = authorline[-1]
+                    authoremail = authoremail[1:-1]
+                    current_author = utility().convertEmailtoGitlabId(authoremail,studentidmaps)
+                    if current_author not in res:
+                        res[current_author] = {}
+                        res[current_author]["dates"] = []
+                        res[current_author]["total"] = {}
+                        res[current_author]["total"]["files changed"] = 0
+                        res[current_author]["total"]["insertions"] = 0
+                        res[current_author]["total"]["deletions"] = 0
+                        res_dates[current_author] = {}
+                elif "Date:" in line:
+                    dateline = line.split()
+                    current_date = dateline[5] + " " + dateline[2] + " " + dateline[3]
+                    #utility().getDateFromTuple(dateline[5] + " " + dateline[2] + " " + dateline[3])
 
-            authoremail = commit['author_email']
-            authorname = utility().convertEmailtoGitlabId(authoremail, studentidmaps)
-            if authorname not in res:
-                res[authorname] = {}
-                res[authorname]["additions"] = 0
-                res[authorname]["deletions"] = 0
-                res[authorname]["total"] = 0
-            URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits/" + commit["id"]
-            r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
-            stats = r.json()["stats"]
-            res[authorname]["additions"] += stats["additions"]
-            res[authorname]["deletions"] += stats["deletions"]
-            res[authorname]["total"] += stats["total"]
+                    if current_date not in res_dates[current_author]:
+                        innerentry = {}
+                        innerentry["files changed"] = 0
+                        innerentry["insertions"] = 0
+                        innerentry["deletions"] = 0
+                        res_dates[current_author][current_date] = innerentry
+                        inentry = {}
+                        inentry["files changed"] = 0
+                        inentry["insertions"] = 0
+                        inentry["deletions"] = 0
+                        entry = {}
+                        entry[current_date] = inentry
+                        res[current_author]["dates"].append(entry)
+                elif "file changed," in line or "files changed," in line:
+                    statsline = line.split(", ")
+                    for stat in statsline:
 
-        return res
+                        key = ""
+                        if "files changed" in stat or 'file changed' in stat:
+                            key = "files changed"
+                        elif "insertions" in stat or "insertion" in stat:
+                            key = "insertions"
+                        elif "deletions" in stat or "deletion" in stat:
+                            key = "deletions"
 
-    def getcommitstatfast(self, group, project):
-        res = subprocess.check_output(['./stats.sh', self.TOKEN, group, project])
-        print res
-        return
+                        statdata = stat.split()
+                        res_dates[current_author][current_date][key] += int(statdata[0])
+                        res[current_author]["total"][key] += int(statdata[0])
+
+        for authorname, v in res.items():
+
+            for datedict in res[authorname]["dates"]:
+                for date, vii in datedict.items():
+                    datedict[date]["insertions"] = res_dates[authorname][date]["insertions"]
+                    datedict[date]["deletions"] = res_dates[authorname][date]["deletions"]
+                    datedict[date]["files changed"] = res_dates[authorname][date]["files changed"]
+        return json.dumps(res)
 
     def getalldirectory(self, group, project):
         #TODO
@@ -365,7 +409,7 @@ if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
     #data = ProcessSonar("slogo_team08").process(True)#
-    ProcessSonar("sonar_test").getcommitstatfast("CompSci308_2018Spring", "slogo_team02")
+    ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02",True)
     #print ProcessSonar("slogo_team11").longestmethods()
 
 

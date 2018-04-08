@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), './documents/local/app-env')
 load_dotenv(dotenv_path)
 
+import datetime
+
 class utility ():
 
     def writeData (self, data):
@@ -27,6 +29,9 @@ class utility ():
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=' ,
                           data={'profile_key':QUALITY_PROFILE, 'rule_key' : ruleID},
                           auth=(SONAR_LOGIN, SONAR_PASSWORD))
+
+    def getDateFromTuple(self, tuple):
+        return datetime.datetime.strptime(tuple, "%Y %b %d")
 
     def makeMap(self, rules, main, sub):
         res = ""
