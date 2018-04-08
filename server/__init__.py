@@ -50,7 +50,7 @@ def lmethod():
     res['method'].extend(ProcessSonar(project).longestmethods())
     return json.dumps(res)
 
-@app.route("/api/commit/sonar")
+@app.route("/api/commitsonar")
 def getcommitsonar ():
     project = request.args.get('project')
     return ProcessSonar(project).getcommitsonar()
@@ -61,8 +61,8 @@ def getcommit ():
     group = request.args.get('group')
     return ProcessSonar(project).getcommit(group, project, False)
 
-@app.route("/api/commit/stat")
-def getcommitstat ():
+@app.route("/api/stat")
+def getstat ():
     project = request.args.get('project')
     group = request.args.get('group')
     return ProcessSonar(project).getcommit(group, project, True)
