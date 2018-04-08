@@ -22,12 +22,7 @@ def statistics():
     project = request.args.get('project')
     return ProcessSonar(project).statistics()
 
-@app.route("/api/rules") #not finished
-def getrules():
-    main = request.args.get('main')
-    sub = request.args.get('sub')
-    project = request.args.get('project')
-    return ProcessSonar(project).getrules(main, sub)
+
 
 @app.route("/api/file/xml")
 def uploadxml():

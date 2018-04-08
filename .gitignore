@@ -1,3 +1,4 @@
 *.pyc
+codes
 server/documents/local/*
 !server/documents/local/.gitkeep

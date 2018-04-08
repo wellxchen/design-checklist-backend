@@ -8,7 +8,8 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 
 import copy
-import csv
+
+import subprocess
 
 
 dotenv_path = join(dirname(__file__), './documents/local/app-env')
@@ -278,7 +279,7 @@ class ProcessSonar (object):
         studentidmaps = utility().readStudentInfo()
 
         if onlyStat:
-            return self.getcommitstat(commits, studentidmaps,GITLAB_URL, projectid)
+            return self.getcommitstatslow(commits, studentidmaps,GITLAB_URL, projectid)
 
         for commit in commits:
             # retrieve gitlab id
@@ -323,16 +324,10 @@ class ProcessSonar (object):
             numofcommits = len(res['authors'][author]['commitlist'])
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
-            res['authors'][author]['stats'] = {}
-            res['authors'][author]['stats']["additions"]  = 0
-            res['authors'][author]['stats']["deletions"] = 0
-            res['authors'][author]['stats']["total"] = 0
-
 
         return json.dumps(res)
 
-    def getcommitstat (self, commits, studentidmaps,GITLAB_URL, projectid):
-
+    def getcommitstatslow (self, commits, studentidmaps,GITLAB_URL, projectid):
         res = {}
 
         for commit in commits:
@@ -353,16 +348,16 @@ class ProcessSonar (object):
 
         return res
 
+    def getcommitstatfast(self, group, project):
+        res = subprocess.check_output(['./stats.sh', self.TOKEN, group, project])
+        print res
+        return
+
     def getalldirectory(self, group, project):
+        #TODO
         res = {}
         res['root'] = {}
         return res
-
-    def getrules (self, main, sub):
-        #TODO
-        res = ""
-        return res
-
 
 
 
@@ -370,7 +365,7 @@ if __name__ == '__main__':
 
     #ProcessSonar("sonar_test").getcommitsonar()
     #data = ProcessSonar("slogo_team08").process(True)#
-    ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02", True)
+    ProcessSonar("sonar_test").getcommitstatfast("CompSci308_2018Spring", "slogo_team02")
     #print ProcessSonar("slogo_team11").longestmethods()
 
 
