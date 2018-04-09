@@ -334,6 +334,7 @@ class ProcessSonar (object):
         parsed = re.split(r'\n--\n', stats)
 
         res = {}
+        
         res_dates = {}
         current_author = ""
         current_date = ""
@@ -357,7 +358,6 @@ class ProcessSonar (object):
                 elif "Date:" in line:
                     dateline = line.split()
                     current_date = dateline[5] + " " + dateline[2] + " " + dateline[3]
-                    #utility().getDateFromTuple(dateline[5] + " " + dateline[2] + " " + dateline[3])
 
                     if current_date not in res_dates[current_author]:
                         innerentry = {}
