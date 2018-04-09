@@ -334,10 +334,11 @@ class ProcessSonar (object):
         parsed = re.split(r'\n--\n', stats)
 
         res = {}
-        
         res_dates = {}
         current_author = ""
-        current_date = ""
+        converted_date = ""
+        left_bound = utility().getDateFromTuple("2099 Dec 31")
+        right_bound = utility().getDateFromTuple("1999 Jan 1")
         for p in parsed:
             lines = p.split("\n")
             for line in lines:
@@ -349,29 +350,30 @@ class ProcessSonar (object):
                     current_author = utility().convertEmailtoGitlabId(authoremail,studentidmaps)
                     if current_author not in res:
                         res[current_author] = {}
-                        res[current_author]["dates"] = []
+                        res[current_author]["dates"] = {}
                         res[current_author]["total"] = {}
                         res[current_author]["total"]["files changed"] = 0
                         res[current_author]["total"]["insertions"] = 0
                         res[current_author]["total"]["deletions"] = 0
-                        res_dates[current_author] = {}
+                        res_dates[current_author] = []
                 elif "Date:" in line:
+                    #check bounds
                     dateline = line.split()
                     current_date = dateline[5] + " " + dateline[2] + " " + dateline[3]
-
-                    if current_date not in res_dates[current_author]:
-                        innerentry = {}
-                        innerentry["files changed"] = 0
-                        innerentry["insertions"] = 0
-                        innerentry["deletions"] = 0
-                        res_dates[current_author][current_date] = innerentry
+                    numerical_date = utility().getDateFromTuple(current_date)
+                    if numerical_date > right_bound:
+                        right_bound = numerical_date
+                    elif numerical_date < left_bound:
+                        left_bound = numerical_date
+                    converted_date = numerical_date.strftime('%Y/%m/%d')
+                    #modify res
+                    if converted_date not in res_dates[current_author]:
+                        res_dates[current_author].append(converted_date)
                         inentry = {}
                         inentry["files changed"] = 0
                         inentry["insertions"] = 0
                         inentry["deletions"] = 0
-                        entry = {}
-                        entry[current_date] = inentry
-                        res[current_author]["dates"].append(entry)
+                        res[current_author]["dates"][converted_date] = inentry
                 elif "file changed," in line or "files changed," in line:
                     statsline = line.split(", ")
                     for stat in statsline:
@@ -385,16 +387,25 @@ class ProcessSonar (object):
                             key = "deletions"
 
                         statdata = stat.split()
-                        res_dates[current_author][current_date][key] += int(statdata[0])
+                        res[current_author]["dates"][converted_date][key] += int(statdata[0])
                         res[current_author]["total"][key] += int(statdata[0])
-
-        for authorname, v in res.items():
-
-            for datedict in res[authorname]["dates"]:
+        '''
+        for authorname, v in res_dates.items():
+            for datedict in res_dates[authorname]:
                 for date, vii in datedict.items():
-                    datedict[date]["insertions"] = res_dates[authorname][date]["insertions"]
-                    datedict[date]["deletions"] = res_dates[authorname][date]["deletions"]
-                    datedict[date]["files changed"] = res_dates[authorname][date]["files changed"]
+                    datedict[date]["insertions"] = res[authorname]["dates"][date]["insertions"]
+                    datedict[date]["deletions"] = res[authorname]["dates"][date]["deletions"]
+                    datedict[date]["files changed"] = res[authorname]["dates"][date]["files changed"]
+        '''
+        for authorname, v in res_dates.items():
+            res[authorname]["sorteddates"] = []
+            res[authorname]["sorteddates"].extend(res_dates[authorname])
+
+        res["bounds"] = {
+            "left" : left_bound.strftime('%Y/%m/%d'),
+            "right" : right_bound.strftime('%Y/%m/%d')
+        }
+
         return json.dumps(res)
 
     def getalldirectory(self, group, project):
