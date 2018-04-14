@@ -77,7 +77,7 @@ class ProcessSonar (object):
         for issue in issues:
 
             ruleID = issue['rule']
-            ruleResult = filter(lambda r: r['key'] == ruleID, rules)  #rulename = ruleResult[0]['name']
+            ruleResult = filter(lambda r: r['key'] == ruleID, rules)
 
             if len(ruleResult) > 0:
                 errmessage = {}
