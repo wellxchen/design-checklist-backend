@@ -362,7 +362,10 @@ class ProcessSonar (object):
         if res['sonar'] == 'not found':
             return json.dumps({})
 
-        git = subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
+        #git = subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
+        #print git
+
+        git = subprocess.check_output(['./stats.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
         print git
         #if "Already up-to-date." in git:
             #return

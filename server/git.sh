@@ -1,6 +1,9 @@
 #!/bin/sh
 
 ROOTDIR="student_code"
+TOKEN="$1"
+GROUP="$2"
+PROJECT="$3"
 
 cd ..
 
@@ -11,18 +14,18 @@ fi
 
 cd $ROOTDIR
 
-if [ ! -d "$2" ]
+if [ ! -d $GROUP ]
 then
-	mkdir "$2"
+	mkdir $GROUP
 fi
 
-cd "$2"
+cd $GROUP
 
-if [ ! -d "$3" ]
+if [ ! -d $PROJECT ]
 then
-	git clone https://oauth2:"$1"@coursework.cs.duke.edu/"$2"/"$3".git
+	git clone https://oauth2:$TOKEN@coursework.cs.duke.edu/$GROUP/$PROJECT.git
 else 
-	cd "$3"
+	cd $PROJECT
 	git pull
 fi
 
