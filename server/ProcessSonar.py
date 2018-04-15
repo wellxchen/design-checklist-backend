@@ -362,18 +362,25 @@ class ProcessSonar (object):
         if res['sonar'] == 'not found':
             return json.dumps({})
 
-        #git = subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
-        #print git
+        git = subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
 
-        git = subprocess.check_output(['./stats.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
-        print git
         #if "Already up-to-date." in git:
             #return
 
+        res = {}
         path = "../student_code/" + self.GITLABGROUP + "/" + self.PLAIN_PROJECT
-        #for root, subdirs, files in os.walk(path):
-         #   print root, subdirs, files
-        return
+        for root, subdirs, files in os.walk(path):
+            if "/.git/" in root or root[-4:] == ".git":
+                continue
+            rootshort = re.sub("../student_code/"+self.GITLABGROUP+"/", "", root)
+            res[rootshort] = {}
+            res[rootshort]['directories'] = utility().getFullPath(rootshort, subdirs)
+            res[rootshort]['files'] = utility().getFullPath(rootshort, files)
+        utility().displayData(res)
+        r = requests.get(self.SONAR_URL + "/api/issues/search?componentKeys=" + self.TEST_PROJECT +
+                         "&directories=test")
+        print r.json()
+        return res
 
 
 

@@ -33,6 +33,14 @@ class utility ():
     def getDateFromTuple(self, tuple):
         return datetime.datetime.strptime(tuple, "%Y %b %d")
 
+    def getFullPath(self, prefix, suffixes):
+        res = []
+        for suffix in suffixes:
+            if suffix[-4:] == ".git":
+                continue
+            res.append(prefix + "/" + suffix)
+        return res
+
     def makeMap(self, rules, main, sub):
         res = ""
         for rule in rules:
