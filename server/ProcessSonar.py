@@ -20,12 +20,12 @@ class ProcessSonar (object):
 
     def __init__(self, group, project):
 
-        self.GROUPID = 'duke-compsci308:'
+        self.SONARGROUP = os.environ.get('SONAR_GROUPID') + ':'
         if project is None:
             project = ""
         self.GITLABGROUP = group
         self.PLAIN_PROJECT = project
-        self.TEST_PROJECT = self.GROUPID + project
+        self.TEST_PROJECT = self.SONARGROUP + project
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
         self.TOKEN = os.environ.get("GITLAB_TOKEN")
@@ -412,7 +412,7 @@ class ProcessSonar (object):
             res['sonar'] = "not found"
         else:
             res['sonar'] = "found"
-       
+
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL + "/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
         r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
@@ -423,10 +423,11 @@ class ProcessSonar (object):
         return json.dumps(res)
 
     def getalldirectory(self):
-        #TODO
-        res = {}
-        res['root'] = {}
-        return res
+        subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
+        path = "../student_code/" + self.GITLABGROUP + "/" + self.PLAIN_PROJECT
+        for root, subdirs, files in os.walk(path):
+            print root, subdirs, files
+        return
 
 
 
@@ -434,7 +435,7 @@ if __name__ == '__main__':
 
 
     #ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02",True)
-    print ProcessSonar("CompSci308_2018Spring", "slogo_team02").getproject()
+    ProcessSonar("CompSci308_2018Spring", "slogo_team02").getalldirectory()
 
 
     '''
