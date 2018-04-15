@@ -18,12 +18,14 @@ load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
 
-    def __init__(self, arg):
+    def __init__(self, group, project):
 
         self.GROUPID = 'duke-compsci308:'
-        if arg is None:
-            arg = ""
-        self.TEST_PROJECT = self.GROUPID + arg
+        if project is None:
+            project = ""
+        self.GITLABGROUP = group
+        self.PLAIN_PROJECT = project
+        self.TEST_PROJECT = self.GROUPID + project
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
         self.TOKEN = os.environ.get("GITLAB_TOKEN")
@@ -257,16 +259,16 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def getcommit (self,group, project, onlyStat):
+    def getcommit (self, onlyStat):
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL +"/groups/" + group + "/projects?search=" + project
+        URL = GITLAB_URL +"/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
 
         r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
         projects = r.json()
         projectid = -1
         for p in projects:
-            if p['name'] ==project:
+            if p['name'] ==self.PLAIN_PROJECT:
                 projectid = p['id']
                 break
         if projectid == -1:
@@ -280,7 +282,7 @@ class ProcessSonar (object):
         studentidmaps = utility().readStudentInfo()
 
         if onlyStat:
-            return self.getcommitstatfast(group, project, studentidmaps)
+            return self.getcommitstatfast(studentidmaps)
 
         for commit in commits:
             # retrieve gitlab id
@@ -329,8 +331,8 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def getcommitstatfast(self, group, project, studentidmaps):
-        stats = subprocess.check_output(['./stats.sh', self.TOKEN, group, project])
+    def getcommitstatfast(self, studentidmaps):
+        stats = subprocess.check_output(['./stats.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
         parsed = re.split(r'\n--\n', stats)
 
         res = {}
@@ -401,7 +403,7 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
-    def getproject(self, group, project):
+    def getproject(self):
         res = {}
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
@@ -411,7 +413,7 @@ class ProcessSonar (object):
             res['sonar'] = "found"
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL + "/groups/" + group + "/projects?search=" + project
+        URL = GITLAB_URL + "/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
         r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
         if len(r.json()) == 0:
             res['gitlab'] = "not found"
@@ -419,7 +421,7 @@ class ProcessSonar (object):
             res['gitlab'] = "found"
         return res
 
-    def getalldirectory(self, group, project):
+    def getalldirectory(self):
         #TODO
         res = {}
         res['root'] = {}
@@ -431,7 +433,7 @@ if __name__ == '__main__':
 
 
     #ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02",True)
-    ProcessSonar("sonar_test").getproject("CompSci308_2018Spring", "a")
+    print ProcessSonar("CompSci308_2018Spring", "slogo_team02").getproject()
 
 
     '''
