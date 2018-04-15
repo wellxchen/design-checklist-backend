@@ -23,7 +23,6 @@ def statistics():
     return ProcessSonar(project).statistics()
 
 
-
 @app.route("/api/file/xml")
 def uploadxml():
     return send_from_directory(app.config['UPLOAD_FOLDER'], "xml.txt")
@@ -45,11 +44,6 @@ def lmethod():
     res['method'].extend(ProcessSonar(project).longestmethods())
     return json.dumps(res)
 
-@app.route("/api/commitsonar")
-def getcommitsonar ():
-    project = request.args.get('project')
-    return ProcessSonar(project).getcommitsonar()
-
 @app.route("/api/commit")
 def getcommit ():
     project = request.args.get('project')
@@ -67,6 +61,11 @@ def getalldirectory ():
     project = request.args.get('project')
     group = request.args.get('group')
     return ProcessSonar(project).getalldirectory(group, project)
+
+@app.route("/api/project")
+def getproject ():
+    project = request.args.get('id')
+    return ProcessSonar(project).getproject()
 
 if __name__ == '__main__':
     app.run(threaded=True)

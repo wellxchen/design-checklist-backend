@@ -389,14 +389,7 @@ class ProcessSonar (object):
                         statdata = stat.split()
                         res[current_author]["dates"][converted_date][key] += int(statdata[0])
                         res[current_author]["total"][key] += int(statdata[0])
-        '''
-        for authorname, v in res_dates.items():
-            for datedict in res_dates[authorname]:
-                for date, vii in datedict.items():
-                    datedict[date]["insertions"] = res[authorname]["dates"][date]["insertions"]
-                    datedict[date]["deletions"] = res[authorname]["dates"][date]["deletions"]
-                    datedict[date]["files changed"] = res[authorname]["dates"][date]["files changed"]
-        '''
+
         for authorname, v in res_dates.items():
             res[authorname]["sorteddates"] = []
             res[authorname]["sorteddates"].extend(res_dates[authorname])
@@ -408,6 +401,24 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
+    def getproject(self, group, project):
+        res = {}
+        r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
+        found_project = r.json()
+        if 'errors' in found_project:
+            res['sonar'] = "not found"
+        else:
+            res['sonar'] = "found"
+
+        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
+        URL = GITLAB_URL + "/groups/" + group + "/projects?search=" + project
+        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
+        if len(r.json()) == 0:
+            res['gitlab'] = "not found"
+        else:
+            res['gitlab'] = "found"
+        return res
+
     def getalldirectory(self, group, project):
         #TODO
         res = {}
@@ -418,10 +429,9 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    #ProcessSonar("sonar_test").getcommitsonar()
-    #data = ProcessSonar("slogo_team08").process(True)#
-    ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02",True)
-    #print ProcessSonar("slogo_team11").longestmethods()
+
+    #ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02",True)
+    ProcessSonar("sonar_test").getproject("CompSci308_2018Spring", "a")
 
 
     '''
