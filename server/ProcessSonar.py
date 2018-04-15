@@ -404,6 +404,7 @@ class ProcessSonar (object):
         return json.dumps(res)
 
     def getproject(self):
+
         res = {}
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
@@ -411,7 +412,7 @@ class ProcessSonar (object):
             res['sonar'] = "not found"
         else:
             res['sonar'] = "found"
-
+        print self.PLAIN_PROJECT, self.GITLABGROUP
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL + "/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
         r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
@@ -419,7 +420,7 @@ class ProcessSonar (object):
             res['gitlab'] = "not found"
         else:
             res['gitlab'] = "found"
-        return res
+        return json.dumps(res)
 
     def getalldirectory(self):
         #TODO
