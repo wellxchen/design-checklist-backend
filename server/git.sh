@@ -22,6 +22,7 @@ if [ ! -d "$3" ]
 then
 	git clone https://oauth2:"$1"@coursework.cs.duke.edu/"$2"/"$3".git
 else 
+	cd "$3"
 	git pull
 fi
 

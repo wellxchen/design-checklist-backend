@@ -136,8 +136,6 @@ class ProcessSonar (object):
 
     def statistics(self):
 
-        #http://coursework.cs.duke.edu:9000/api/measures/component?componentKey=duke-compsci308:test&metricKeys=lines
-
         functions = "functions,"
         classes = "classes,"
         directories = "directories,"
@@ -192,71 +190,6 @@ class ProcessSonar (object):
             count += 1
         entries.sort(key=lambda x: x['methodlen'], reverse=False)
         return entries[:10]
-
-
-    def getcommitsonar (self):
-
-        total_pages = utility().getNumOfPagesTree(self.SONAR_URL, self.TEST_PROJECT)
-        if total_pages == -1:
-            return {}
-        files = utility().getFiles(self.SONAR_URL, self.TEST_PROJECT, total_pages)
-
-        commitIds = {}
-        authors = {}
-        totalnumofcommits = 0
-        for file in files:
-            r = requests.get(self.SONAR_URL + '/api/sources/scm?key='+ file['key'])
-            commits = r.json()['scm']
-            for commit in commits:
-                newcommit = False
-                author = commit[1]
-                date = commit[2]
-                commitId = commit[3]
-                if commitId not in commitIds:
-                    commitIds[commitId] = {}
-                    commitIds[commitId]['files'] = []
-                    commitIds[commitId]['date'] = date
-                    newcommit = True
-                if file['key'] not in commitIds[commitId]['files']:
-                    commitIds[commitId]['files'].append(file['key'])
-                if newcommit == True:
-                    totalnumofcommits += 1
-                    if author not in authors:
-                        authors[author] = []
-                    authors[author].append(commitId)
-
-        res = {}
-        res['authors'] = {}
-        for author in authors:
-            res['authors'][author] = {}
-            res['authors'][author]['commitlist'] = []
-            res['authors'][author]['commitdates'] = []
-            dates = {}
-            for commitId in authors[author]:
-                commit = commitIds[commitId]
-                entry = {}
-                entry['commitId'] = commitId
-                entry['files'] = commit['files']
-                entry['date'] = commit['date']
-                d = commit['date'][:10]
-                if d not in dates:
-                    dates[d] = 1
-                else:
-                    dates[d] += 1
-                res['authors'][author]['commitlist'].append(entry)
-            ls = sorted(dates.iterkeys())
-            for l in ls:
-                entry = {}
-                entry[l] = dates[l]
-                res['authors'][author]['commitdates'].append(entry)
-
-            res['authors'][author]['commitlist'].sort(key=lambda x: x['date'], reverse=False)
-            numofcommits = len(res['authors'][author]['commitlist'])
-            res['authors'][author]['numofcommits'] = numofcommits
-            res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
-
-
-        return json.dumps(res)
 
 
     def getcommit (self, onlyStat):
@@ -423,10 +356,20 @@ class ProcessSonar (object):
         return json.dumps(res)
 
     def getalldirectory(self):
-        subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
+
+        res = json.loads(self.getproject())
+
+        if res['sonar'] == 'not found':
+            return json.dumps({})
+
+        git = subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
+        print git
+        #if "Already up-to-date." in git:
+            #return
+
         path = "../student_code/" + self.GITLABGROUP + "/" + self.PLAIN_PROJECT
-        for root, subdirs, files in os.walk(path):
-            print root, subdirs, files
+        #for root, subdirs, files in os.walk(path):
+         #   print root, subdirs, files
         return
 
 
@@ -434,8 +377,7 @@ class ProcessSonar (object):
 if __name__ == '__main__':
 
 
-    #ProcessSonar("sonar_test").getcommit("CompSci308_2018Spring", "slogo_team02",True)
-    ProcessSonar("CompSci308_2018Spring", "slogo_team02").getalldirectory()
+    ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
 
 
     '''
