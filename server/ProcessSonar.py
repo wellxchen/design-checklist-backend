@@ -412,7 +412,7 @@ class ProcessSonar (object):
             res['sonar'] = "not found"
         else:
             res['sonar'] = "found"
-        print self.PLAIN_PROJECT, self.GITLABGROUP
+       
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL + "/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
         r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
