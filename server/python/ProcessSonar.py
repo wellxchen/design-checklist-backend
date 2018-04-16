@@ -13,7 +13,7 @@ import subprocess
 import re
 
 
-dotenv_path = join(dirname(__file__), '../documents/local/app-env')
+dotenv_path = dirname(__file__)[:-13] + "/server/documents/local/app-env"
 load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
@@ -23,16 +23,17 @@ class ProcessSonar (object):
         self.SONAR_GROUP = 'duke-compsci308:'
         if project is None:
             project = ""
+        self.ROOT_PATH = utility().getRootPath()
         self.GITLAB_GROUP = group
         self.PLAIN_PROJECT = project
         self.TEST_PROJECT = self.SONAR_GROUP + project
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
         self.TOKEN = os.environ.get("GITLAB_TOKEN")
-        self.CACHE_PATH = "../../cache"
+        self.CACHE_PATH = self.ROOT_PATH + "/cache"
         self.CODES_PATH = self.CACHE_PATH + "/codes"
         self.LOGS_PATH = self.CACHE_PATH + "/logs"
-        self.SHELL_PATH = "../shell"
+        self.SHELL_PATH = self.ROOT_PATH + "/server/shell"
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         self.LOG_ISSUES = self.LOG_DIR + "/issues.txt"
         self.LOG_DIRECTORIES = self.LOG_DIR + "/directories.txt"
@@ -410,9 +411,9 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-    print utility().getRootPath()
+    #print utility().getRootPath()
 
-    #ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
+    ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
 
 
     '''

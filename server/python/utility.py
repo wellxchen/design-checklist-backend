@@ -6,7 +6,7 @@ import requests
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-dotenv_path = dirname(__file__)[:-13] + "server/documents/local/app-env"
+dotenv_path = dirname(__file__)[:-14] + "/server/documents/local/app-env"
 load_dotenv(dotenv_path)
 
 import datetime
@@ -14,7 +14,7 @@ import datetime
 class utility ():
 
     def getRootPath(self):
-        return dirname(__file__)[:-13]
+        return dirname(__file__)[:-14]
 
     def writeData (self, data):
 
