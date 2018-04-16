@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ROOT="../.."
+ROOT="$3"
 TARGETCACHE="$1"
 GROUP="$2"
 CACHE="cache"

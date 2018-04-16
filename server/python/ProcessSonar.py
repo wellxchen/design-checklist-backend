@@ -277,7 +277,11 @@ class ProcessSonar (object):
 
 
     def getcommitstatfast(self, studentidmaps):
-        stats = subprocess.check_output([self.SHELL_PATH + '/stats.sh', self.TOKEN, self.GITLAB_GROUP, self.PLAIN_PROJECT])
+        stats = subprocess.check_output([self.SHELL_PATH + '/stats.sh',
+                                         self.TOKEN,
+                                         self.GITLAB_GROUP,
+                                         self.PLAIN_PROJECT,
+                                         self.ROOT_PATH])
         parsed = re.split(r'\n--\n', stats)
 
         res = {}
@@ -374,8 +378,15 @@ class ProcessSonar (object):
         if res['sonar'] == 'not found':
             return json.dumps({})
 
-        subprocess.check_output([self.SHELL_PATH + '/logs.sh', self.GITLAB_GROUP, self.PLAIN_PROJECT])
-        git = subprocess.check_output([self.SHELL_PATH + '/codes.sh', self.TOKEN, self.GITLAB_GROUP, self.PLAIN_PROJECT])
+        subprocess.check_output([self.SHELL_PATH + '/logs.sh',
+                                 self.GITLAB_GROUP,
+                                 self.PLAIN_PROJECT,
+                                 self.ROOT_PATH])
+        git = subprocess.check_output([self.SHELL_PATH + '/codes.sh',
+                                       self.TOKEN,
+                                       self.GITLAB_GROUP,
+                                       self.PLAIN_PROJECT,
+                                       self.ROOT_PATH])
 
         res = {}
         path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT

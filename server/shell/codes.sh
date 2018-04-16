@@ -1,15 +1,15 @@
 #!/bin/sh
 
-ROOT="../.."
+ROOT="$4"
 CODE="codes"
 TOKEN="$1"
 GROUP="$2"
 PROJECT="$3"
 CACHE="cache"
-SHELLDIR="../shell"
+SHELLDIR="$ROOT/server/shell"
 
 cd $SHELLDIR
-./makedir.sh $CODE $2
+./makedir.sh $CODE $GROUP $ROOT
 
 cd $ROOT/$CACHE/$CODE/$GROUP
 
