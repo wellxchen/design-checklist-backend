@@ -13,7 +13,7 @@ import subprocess
 import re
 
 
-dotenv_path = dirname(__file__)[:-13] + "/server/documents/local/app-env"
+dotenv_path = dirname(__file__)[:-14] + "/server/documents/local/app-env"
 load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
@@ -435,8 +435,8 @@ class ProcessSonar (object):
 if __name__ == '__main__':
     #print utility().getRootPath()
 
-
-    ProcessSonar("CompSci308_2018Spring", "test").process(False)
+    print dirname(__file__)[:-14]
+    #ProcessSonar("CompSci308_2018Spring", "test").process(False)
 
 
     '''
