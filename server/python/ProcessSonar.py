@@ -140,6 +140,10 @@ class ProcessSonar (object):
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
+        subprocess.check_output([self.SHELL_PATH + '/logs.sh',
+                                 self.GITLAB_GROUP,
+                                 self.PLAIN_PROJECT,
+                                 self.ROOT_PATH])
         if not onlyDup:
             with open(self.LOG_ISSUES, "w") as out:
                 out.write(res)
@@ -426,7 +430,7 @@ if __name__ == '__main__':
     #print utility().getRootPath()
 
 
-    ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
+    ProcessSonar("CompSci308_2018Spring", "test").process(False)
 
 
     '''
