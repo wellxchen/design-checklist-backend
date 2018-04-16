@@ -1,10 +1,10 @@
 #!/bin/sh
 
-ROOT="$4"
 CODE="codes"
 TOKEN="$1"
 GROUP="$2"
 PROJECT="$3"
+ROOT="$4"
 CACHE="cache"
 SHELLDIR="$ROOT/server/shell"
 

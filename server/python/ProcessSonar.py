@@ -58,6 +58,8 @@ class ProcessSonar (object):
 
     def process(self, onlyDup):
 
+
+
         #if project not been analysis return error
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
@@ -215,6 +217,7 @@ class ProcessSonar (object):
 
         r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
         projects = r.json()
+
         projectid = -1
         for p in projects:
             if p['name'] ==self.PLAIN_PROJECT:
@@ -232,6 +235,7 @@ class ProcessSonar (object):
 
         if onlyStat:
             return self.getcommitstatfast(studentidmaps)
+
 
         for commit in commits:
             # retrieve gitlab id
@@ -281,11 +285,13 @@ class ProcessSonar (object):
 
 
     def getcommitstatfast(self, studentidmaps):
+
         stats = subprocess.check_output([self.SHELL_PATH + '/stats.sh',
                                          self.TOKEN,
                                          self.GITLAB_GROUP,
                                          self.PLAIN_PROJECT,
                                          self.ROOT_PATH])
+        print stats
         parsed = re.split(r'\n--\n', stats)
 
         res = {}

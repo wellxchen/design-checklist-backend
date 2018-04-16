@@ -1,9 +1,11 @@
 #!/bin/sh
 
-ROOT="$3"
+
 TARGETCACHE="$1"
 GROUP="$2"
+ROOT="$3"
 CACHE="cache"
+
 
 cd $ROOT
 

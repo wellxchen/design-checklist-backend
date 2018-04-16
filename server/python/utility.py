@@ -176,9 +176,9 @@ class utility ():
         emailindex = 3
         gitlabidindex = 4
 
-
+        csvpath = dotenv_path = dirname(__file__)[:-14] + '/server/documents/local/308students.csv'
         import csv
-        with open('./documents/local/308students.csv', 'rb') as csvfile:
+        with open(csvpath, 'rb') as csvfile:
             spamreader = csv.reader(csvfile)
 
             for row in spamreader:

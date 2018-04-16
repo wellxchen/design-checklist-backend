@@ -15,12 +15,14 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.route("/api/show")
 def process():
     project = request.args.get('project')
-    return ProcessSonar("", project).process(False)
+    group = request.args.get('group')
+    return ProcessSonar(group, project).process(False)
 
 @app.route("/api/statistics")
 def statistics():
     project = request.args.get('project')
-    return ProcessSonar("", project).statistics()
+    group = request.args.get('group')
+    return ProcessSonar(group, project).statistics()
 
 
 @app.route("/api/file/xml")
@@ -34,14 +36,16 @@ def uploadyml ():
 @app.route("/api/duplications")
 def duplications():
     project = request.args.get('project')
-    return ProcessSonar("", project).process(True)
+    group = request.args.get('group')
+    return ProcessSonar(group, project).process(True)
 
 @app.route("/api/lmethod")
 def lmethod():
     project = request.args.get('project')
+    group = request.args.get('group')
     res = {}
     res['method'] = []
-    res['method'].extend(ProcessSonar("", project).longestmethods())
+    res['method'].extend(ProcessSonar(group, project).longestmethods())
     return json.dumps(res)
 
 @app.route("/api/commit")
