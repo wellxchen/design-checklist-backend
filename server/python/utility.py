@@ -6,7 +6,7 @@ import requests
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-dotenv_path = dirname(__file__)[:-13] + "server/documents/local/app-pro"
+dotenv_path = dirname(__file__)[:-13] + "server/documents/local/app-env"
 load_dotenv(dotenv_path)
 
 import datetime
