@@ -426,17 +426,16 @@ class ProcessSonar (object):
                utility().makeIssueEntryForDIR(mainissuelist, self.TEST_PROJECT,  res)
 
 
-        utility().displayData(res)
 
-        return res
+
+        return json.dumps(res)
 
 
 
 if __name__ == '__main__':
     #print utility().getRootPath()
 
-    print dirname(__file__)[:-14]
-    #ProcessSonar("CompSci308_2018Spring", "test").process(False)
+    ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
 
 
     '''
