@@ -142,8 +142,6 @@ class ProcessSonar (object):
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
-        print dirname(__file__)
-        print dirname(__file__)[:-14]
         subprocess.check_output([self.SHELL_PATH + '/logs.sh',
                                  self.GITLAB_GROUP,
                                  self.PLAIN_PROJECT,
