@@ -14,6 +14,7 @@ import datetime
 class utility ():
 
     def getRootPath(self):
+
         return abspath(dirname(__file__))[:-14]
 
     def writeData (self, data):
