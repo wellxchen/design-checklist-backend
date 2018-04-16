@@ -382,6 +382,7 @@ class ProcessSonar (object):
                                  self.GITLAB_GROUP,
                                  self.PLAIN_PROJECT,
                                  self.ROOT_PATH])
+
         git = subprocess.check_output([self.SHELL_PATH + '/codes.sh',
                                        self.TOKEN,
                                        self.GITLAB_GROUP,
@@ -423,6 +424,7 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
     #print utility().getRootPath()
+
 
     ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
 
