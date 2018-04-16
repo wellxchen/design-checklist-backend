@@ -1,25 +1,17 @@
 #!/bin/sh
 
-ROOTDIR="student_code"
+ROOT="../.."
+CODE="codes"
 TOKEN="$1"
 GROUP="$2"
 PROJECT="$3"
+CACHE="cache"
+SHELLDIR="../shell"
 
-cd ..
+cd $SHELLDIR
+./makedir.sh $CODE $2
 
-if [ ! -d $ROOTDIR ]
-then
-	mkdir $ROOTDIR
-fi
-
-cd $ROOTDIR
-
-if [ ! -d $GROUP ]
-then
-	mkdir $GROUP
-fi
-
-cd $GROUP
+cd $ROOT/$CACHE/$CODE/$GROUP
 
 if [ ! -d $PROJECT ]
 then
@@ -28,4 +20,3 @@ else
 	cd $PROJECT
 	git pull
 fi
-

@@ -13,22 +13,29 @@ import subprocess
 import re
 
 
-dotenv_path = join(dirname(__file__), './documents/local/app-env')
+dotenv_path = join(dirname(__file__), '../documents/local/app-env')
 load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
 
     def __init__(self, group, project):
 
-        self.SONARGROUP = os.environ.get('SONAR_GROUPID') + ':'
+        self.SONAR_GROUP = 'duke-compsci308:'
         if project is None:
             project = ""
-        self.GITLABGROUP = group
+        self.GITLAB_GROUP = group
         self.PLAIN_PROJECT = project
-        self.TEST_PROJECT = self.SONARGROUP + project
+        self.TEST_PROJECT = self.SONAR_GROUP + project
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
         self.TOKEN = os.environ.get("GITLAB_TOKEN")
+        self.CACHE_PATH = "../../cache"
+        self.CODES_PATH = self.CACHE_PATH + "/codes"
+        self.LOGS_PATH = self.CACHE_PATH + "/logs"
+        self.SHELL_PATH = "../shell"
+        self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
+        self.LOG_ISSUES = self.LOG_DIR + "/issues.txt"
+        self.LOG_DIRECTORIES = self.LOG_DIR + "/directories.txt"
 
         self.fileChecked = set()
         self.rulesViolated = []
@@ -132,6 +139,10 @@ class ProcessSonar (object):
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
+        if not onlyDup:
+            with open(self.LOG_ISSUES, "w") as out:
+                out.write(res)
+
         return res
 
     def statistics(self):
@@ -195,7 +206,7 @@ class ProcessSonar (object):
     def getcommit (self, onlyStat):
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL +"/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
+        URL = GITLAB_URL +"/groups/" + self.GITLAB_GROUP + "/projects?search=" + self.PLAIN_PROJECT
 
         r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
         projects = r.json()
@@ -265,7 +276,7 @@ class ProcessSonar (object):
 
 
     def getcommitstatfast(self, studentidmaps):
-        stats = subprocess.check_output(['./stats.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
+        stats = subprocess.check_output([self.SHELL_PATH + '/stats.sh', self.TOKEN, self.GITLAB_GROUP, self.PLAIN_PROJECT])
         parsed = re.split(r'\n--\n', stats)
 
         res = {}
@@ -347,7 +358,7 @@ class ProcessSonar (object):
             res['sonar'] = "found"
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL + "/groups/" + self.GITLABGROUP + "/projects?search=" + self.PLAIN_PROJECT
+        URL = GITLAB_URL + "/groups/" + self.GITLAB_GROUP + "/projects?search=" + self.PLAIN_PROJECT
         r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
         if len(r.json()) == 0:
             res['gitlab'] = "not found"
@@ -362,32 +373,46 @@ class ProcessSonar (object):
         if res['sonar'] == 'not found':
             return json.dumps({})
 
-        git = subprocess.check_output(['./git.sh', self.TOKEN, self.GITLABGROUP, self.PLAIN_PROJECT])
-
-        #if "Already up-to-date." in git:
-            #return
+        subprocess.check_output([self.SHELL_PATH + '/logs.sh', self.GITLAB_GROUP, self.PLAIN_PROJECT])
+        git = subprocess.check_output([self.SHELL_PATH + '/codes.sh', self.TOKEN, self.GITLAB_GROUP, self.PLAIN_PROJECT])
 
         res = {}
-        path = "../student_code/" + self.GITLABGROUP + "/" + self.PLAIN_PROJECT
+        path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
             if "/.git/" in root or root[-4:] == ".git":
                 continue
-            rootshort = re.sub("../student_code/"+self.GITLABGROUP+"/", "", root)
+            rootshort = re.sub(path, "", root)
+            if rootshort == "":
+                rootshort = "."
+            if rootshort[0] == '/':
+                rootshort = rootshort[1:]
             res[rootshort] = {}
             res[rootshort]['directories'] = utility().getFullPath(rootshort, subdirs)
             res[rootshort]['files'] = utility().getFullPath(rootshort, files)
+
+        issues = json.loads(self.process(False))
+
+        for category, mainissuelist in issues['error'].items():
+           if category == "Duplications":
+               continue
+           if isinstance(mainissuelist, dict):
+               for subcategory, subissuelist in mainissuelist.items():
+
+                   utility().makeIssueEntryForDIR(subissuelist['detail'], self.TEST_PROJECT,  res)
+           else:
+               utility().makeIssueEntryForDIR(mainissuelist, self.TEST_PROJECT,  res)
+
+
         utility().displayData(res)
-        r = requests.get(self.SONAR_URL + "/api/issues/search?componentKeys=" + self.TEST_PROJECT +
-                         "&directories=test")
-        print r.json()
+
         return res
 
 
 
 if __name__ == '__main__':
+    print utility().getRootPath()
 
-
-    ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
+    #ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
 
 
     '''

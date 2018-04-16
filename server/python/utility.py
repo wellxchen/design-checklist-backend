@@ -6,12 +6,15 @@ import requests
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-dotenv_path = join(dirname(__file__), './documents/local/app-env')
+dotenv_path = dirname(__file__)[:-13] + "server/documents/local/app-pro"
 load_dotenv(dotenv_path)
 
 import datetime
 
 class utility ():
+
+    def getRootPath(self):
+        return dirname(__file__)[:-13]
 
     def writeData (self, data):
 
@@ -34,12 +37,23 @@ class utility ():
         return datetime.datetime.strptime(tuple, "%Y %b %d")
 
     def getFullPath(self, prefix, suffixes):
-        res = []
+        res = {}
         for suffix in suffixes:
             if suffix[-4:] == ".git":
                 continue
-            res.append(prefix + "/" + suffix)
+            if prefix == ".":
+                res[suffix] = []
+                continue
+            res[prefix + "/" + suffix] = []
         return res
+
+    def makeIssueEntryForDIR (self, issuelist, TEST_PROJECT, res):
+        for issue in issuelist:
+            for filepath in issue['path']:
+                filepathshort = re.sub(TEST_PROJECT + ":", "", filepath)
+                lastslash = filepathshort.rfind("/")
+                parentdirectory = filepathshort[:lastslash]
+                res[parentdirectory]["files"][filepathshort].append(issue)
 
     def makeMap(self, rules, main, sub):
         res = ""
@@ -137,6 +151,7 @@ class utility ():
             files.extend(nondirfiles)
         return files
 
+
     #get all commits
     def getcommits (self, GITLAB_URL, projectid, TOKEN):
         commits = []
@@ -160,6 +175,7 @@ class utility ():
         netidindex = 2
         emailindex = 3
         gitlabidindex = 4
+
 
         import csv
         with open('./documents/local/308students.csv', 'rb') as csvfile:
