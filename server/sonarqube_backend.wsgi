@@ -2,5 +2,5 @@
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0,"/var/www/sonarqube_backend/")
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from python import app as application
