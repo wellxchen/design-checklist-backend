@@ -54,6 +54,8 @@ class utility ():
                 filepathshort = re.sub(TEST_PROJECT + ":", "", filepath)
                 lastslash = filepathshort.rfind("/")
                 parentdirectory = filepathshort[:lastslash]
+                if parentdirectory not in res or filepathshort not in res[parentdirectory]["files"]:
+                    continue
                 res[parentdirectory]["files"][filepathshort].append(issue)
 
     def makeMap(self, rules, main, sub):

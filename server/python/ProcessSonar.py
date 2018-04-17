@@ -1,3 +1,4 @@
+
 import requests
 import json
 
@@ -291,7 +292,7 @@ class ProcessSonar (object):
                                          self.GITLAB_GROUP,
                                          self.PLAIN_PROJECT,
                                          self.ROOT_PATH])
-        print stats
+
         parsed = re.split(r'\n--\n', stats)
 
         res = {}
@@ -398,7 +399,7 @@ class ProcessSonar (object):
                                        self.GITLAB_GROUP,
                                        self.PLAIN_PROJECT,
                                        self.ROOT_PATH])
-
+        print (git)
         res = {}
         path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
@@ -416,6 +417,7 @@ class ProcessSonar (object):
         issues = json.loads(self.process(False))
 
         for category, mainissuelist in issues['error'].items():
+
            if category == "Duplications":
                continue
            if isinstance(mainissuelist, dict):
