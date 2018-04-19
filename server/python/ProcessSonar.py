@@ -411,17 +411,23 @@ class ProcessSonar (object):
         res = {}
         path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
+
             if "/.git/" in root or root[-4:] == ".git":
                 continue
+
             rootshort = re.sub(path, "", root)
             if rootshort == "":
                 rootshort = "."
             if rootshort[0] == '/':
                 rootshort = rootshort[1:]
+            if utility().shouldSkipDir(rootshort, [".", "src"]):
+                continue
+
             res[rootshort] = {}
             res[rootshort]['directories'] = utility().getFullPath(rootshort, subdirs)
             res[rootshort]['files'] = utility().getFullPath(rootshort, files)
 
+        utility().displayData(res)
         issues = json.loads(self.process(False))
 
         for category, mainissuelist in issues['error'].items():
@@ -445,4 +451,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
     #print utility().getRootPath()
 
-    ProcessSonar("CompSci308_2018Spring", "cellsociety_team12").getcommit(True)
+    ProcessSonar("CompSci308_2018Spring", "cellsociety_team12").getalldirectory()

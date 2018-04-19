@@ -18,6 +18,12 @@ load_dotenv(dotenv_path)
 
 class utility ():
 
+    def shouldSkipDir (self, dir, returndirs):
+        for returndir in returndirs:
+            if dir == returndir:
+                return False
+        return True
+
     def readProjectDates (self, project):
         config = configparser.ConfigParser()
         config.read(ROOT + "/server/documents/config.ini")
