@@ -282,7 +282,6 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-        utility().displayData(res)
         return json.dumps(res)
 
 
@@ -370,7 +369,7 @@ class ProcessSonar (object):
             "left" : startdate,
             "right" : enddate
         }
-        utility().displayData(res)
+
         return json.dumps(res)
 
     def getproject(self):
