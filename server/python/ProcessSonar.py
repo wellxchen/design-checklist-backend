@@ -420,14 +420,15 @@ class ProcessSonar (object):
                 rootshort = "."
             if rootshort[0] == '/':
                 rootshort = rootshort[1:]
-            if utility().shouldSkipDir(rootshort, [".", "src"]):
+
+            if utility().shouldSkipDir(rootshort, ["src"]):
                 continue
 
             res[rootshort] = {}
             res[rootshort]['directories'] = utility().getFullPath(rootshort, subdirs)
             res[rootshort]['files'] = utility().getFullPath(rootshort, files)
 
-        utility().displayData(res)
+        #utility().displayData(res)
         issues = json.loads(self.process(False))
 
         for category, mainissuelist in issues['error'].items():

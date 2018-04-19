@@ -20,7 +20,7 @@ class utility ():
 
     def shouldSkipDir (self, dir, returndirs):
         for returndir in returndirs:
-            if dir == returndir:
+            if dir == returndir or dir[:4] == "src/":
                 return False
         return True
 
