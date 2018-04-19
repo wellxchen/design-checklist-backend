@@ -6,12 +6,34 @@ import requests
 import os
 from os.path import join, dirname, abspath
 from dotenv import load_dotenv
-dotenv_path = dirname(__file__)[:-14] + "/server/documents/local/app-env"
-load_dotenv(dotenv_path)
 
 import datetime
+import configparser
+
+ROOT = dirname(__file__)[:-14]
+dotenv_path = ROOT + "/server/documents/local/app-env"
+load_dotenv(dotenv_path)
+
+
 
 class utility ():
+
+    def readProjectDates (self, project):
+        config = configparser.ConfigParser()
+        config.read(ROOT + "/server/documents/config.ini")
+        res = {}
+        self.storeSingleConfigDate(res, config, "ENDDATE", project)
+        self.storeSingleConfigDate(res, config, "STARTDATE", project)
+
+        return res
+
+    def storeSingleConfigDate (self, res, config, key, project):
+        res[key] = {}
+        for k,v in config[key].items():
+            if k in project:
+                res[key][k] = v
+                return
+
 
     def getRootPath(self):
 

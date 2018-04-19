@@ -282,6 +282,7 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
+        utility().displayData(res)
         return json.dumps(res)
 
 
@@ -355,12 +356,21 @@ class ProcessSonar (object):
         for authorname, v in res_dates.items():
             res[authorname]["sorteddates"] = []
             res[authorname]["sorteddates"].extend(res_dates[authorname])
-
+        '''
         res["bounds"] = {
             "left" : left_bound.strftime('%Y/%m/%d'),
             "right" : right_bound.strftime('%Y/%m/%d')
         }
+        '''
+        projectdates = utility().readProjectDates(self.PLAIN_PROJECT)
+        startdate = projectdates['STARTDATE']
+        enddate = projectdates['ENDDATE']
 
+        res["bounds"] = {
+            "left" : startdate,
+            "right" : enddate
+        }
+        utility().displayData(res)
         return json.dumps(res)
 
     def getproject(self):
@@ -399,7 +409,6 @@ class ProcessSonar (object):
                                        self.GITLAB_GROUP,
                                        self.PLAIN_PROJECT,
                                        self.ROOT_PATH])
-        print (git)
         res = {}
         path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
@@ -437,9 +446,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
     #print utility().getRootPath()
 
-    ProcessSonar("CompSci308_2018Spring", "test").getalldirectory()
-
-
-    '''
-        
-    '''
+    ProcessSonar("CompSci308_2018Spring", "cellsociety_team12").getcommit(True)
