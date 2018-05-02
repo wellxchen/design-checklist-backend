@@ -5,7 +5,7 @@ import json
 from categories import categories
 from utility import utility
 import os
-from os.path import join, dirname
+from os.path import dirname
 from dotenv import load_dotenv
 
 import copy
@@ -221,9 +221,10 @@ class ProcessSonar (object):
 
         projectid = -1
         for p in projects:
-            if p['name'] ==self.PLAIN_PROJECT:
+            if p['path'] ==self.PLAIN_PROJECT or p['name'] == self.PLAIN_PROJECT:
                 projectid = p['id']
                 break
+
         if projectid == -1:
             return []
 
@@ -349,6 +350,11 @@ class ProcessSonar (object):
                             key = "deletions"
 
                         statdata = stat.split()
+                        utility().displayData(res[current_author]["dates"])
+                        utility().displayData(res[current_author]["dates"][converted_date])
+                        print res[current_author]["dates"][converted_date][key]
+                        print "********"
+
                         res[current_author]["dates"][converted_date][key] += int(statdata[0])
                         res[current_author]["total"][key] += int(statdata[0])
 
@@ -391,7 +397,7 @@ class ProcessSonar (object):
             res['gitlab'] = "found"
         return json.dumps(res)
 
-    def getalldirectory(self):
+    def getalldirectory(self): #delete packages that do not have any .java
 
         res = json.loads(self.getproject())
 
@@ -452,4 +458,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
     #print utility().getRootPath()
 
-    ProcessSonar("CompSci308_2018Spring", "cellsociety_team12").getalldirectory()
+    ProcessSonar("CompSci308_2018Spring", "voogasalad_IfTrueReturnTrue").getcommit(False)
