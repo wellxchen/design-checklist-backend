@@ -4,4 +4,4 @@ Flask server that retrieves analysis data as json from SonarQube hosting on Duke
 
 To start the server, run ```FLASK_APP=__init__.py flask run```, then enter the ```localhost:5000/``` + ```<project name you have analzed on sonarqube>``` in browser. 
 
-Currently hosting on duke'Apache server: http://compsci308.colab.duke.edu
+Currently hosting on duke's Apache server: http://compsci308.colab.duke.edu
