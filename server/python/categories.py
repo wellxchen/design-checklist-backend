@@ -3,7 +3,45 @@ class categories ():
 
 
 
-    Communication_sub = [
+    title = [{"Communication" : ["Meaningful names",
+                                   "No magic values",
+                                   "Readable code",
+                                   "Use scope wisely",
+                                   "Same level code",
+                                   "Concise code",
+                                   "No warning"]},
+             {"Modularity": ['Data responsibility',
+                             'No public instance variables',
+                             'No manager classes',
+                             'No static variables',
+                             'Active classes',
+                             'Get method give minimum info',
+                             'Get method validate input',
+                             'Superclasses are their own class']},
+             {"Flexibility", ['General type',
+                              'Single Purpose',
+                              'Behavior Driven Design',
+                              'Polymorphism']},
+             {"Java Notes", []},
+             {"Code Smells", []},
+             {"Duplications", []}]
+
+    def getNumMainTitle(self):
+        return len(title)
+
+    def getNumSubTitle(self, index):
+        return len(title[index].values())
+
+    def getMainTitle(self, index):
+        return title[index].key()
+
+    def getSubTitle(self, mindex, sindex):
+        return title[mindex][sindex]
+
+    def getDescription(self, mindex, sindex):
+        return descriptions[mindex][sindex + 1]
+
+    descriptions = [[
                 "",
                 'Meaningful names: give variables, methods, classes, and packages non-abbreviated, intention-revealing names',
                 'No magic values: use constants for all values used multiple times or in program logic',
@@ -11,10 +49,8 @@ class categories ():
                 'Use scope wisely: variables should be declared as close as possible to where they are used',
                 'At all points, code should be "at the same level" (try not to mix method calls and low-level if logic in same method)',
                 'Code should be "concise" (use booleans wisely, for-each loop where possible, use Java API calls instead of implementing yourself)',
-                'Code should contain no warnings from Java compiler or CheckStyle']
-
-    Modularity_sub = [
-                "",
+                'Code should contain no warnings from Java compiler or CheckStyle'],
+                ["",
                 "Tell, don't ask: classes should be responsible for their own data and delegate to other objects instead of doing it themselves",
                 "No public instance variables: keep implementation details of your class hidden from the public interface",
                 'No "manager" classes: create several classes that work together distributing intelligence, rather than one "smart" class and a few "dumb" helpers',
@@ -23,13 +59,12 @@ class categories ():
                 'get methods should give away the minimal information possible',
                 'set methods should validate data received',
                 'Superclasses are their own class: thus should not contain instance variables or methods specific to only some subclasses']
-
-    Flexibility_sub = [
+                [
                 "",
                 'Declared types should be as general as possible (i.e., ArrayList should never be visible in your public interface)',
                 'Single Purpose: keep classes, methods, and variables short and well named by giving them only one purpose',
                 'Behavior Driven Design: give each class a purpose by focusing on the behavior (or services) it provides first, its state later',
-                'Polymorphism: use subclassing to avoid "case-based code logic" (i.e., conditional chains or case statements on "type" information)']
+                'Polymorphism: use subclassing to avoid "case-based code logic" (i.e., conditional chains or case statements on "type" information)']]
 
     Duplication_sub = [
         "",
@@ -282,4 +317,4 @@ class categories ():
             self.modularity.union(self.duplicationsID)))))
 
     def getNumberOfMainCategories(self):
-        return 6
+        return len(maintitle)

@@ -376,6 +376,7 @@ class ProcessSonar (object):
             "right" : enddate
         }
 
+        utility().displayData(res)
         return json.dumps(res)
 
     def getproject(self):
@@ -458,4 +459,5 @@ class ProcessSonar (object):
 if __name__ == '__main__':
     #print utility().getRootPath()
 
-    ProcessSonar("CompSci308_2018Spring", "voogasalad_IfTrueReturnTrue").getcommit(False)
+    ProcessSonar("CompSci308_2018Spring", "slogo_team12").getcommit(False)
+    ProcessSonar("CompSci308_2018Spring", "slogo_team12").getcommit(True)
