@@ -47,12 +47,10 @@ class ProcessSonar (object):
             self.rulesViolated.append([])
             self.message.append([])
             k = 0
-            if i == 0: #communication
-                k = len(categories().Communication_sub) - 1
-            if i == 1: #modularity
-                k = len(categories().Modularity_sub) - 1
-            if i == 2: #flexibility
-                k = len(categories().Flexibility_sub) - 1
+
+            if i < 3:
+                k = categories().getNumSubTitle(i)
+
             for j in range(k):
                 self.message[i].append([])
 
@@ -138,7 +136,7 @@ class ProcessSonar (object):
 
         data = utility().dataHandler(self.message, percentage, onlyDup)
 
-        data['severitylist'] = ['fail', 'high', 'medium', 'low', 'info']
+        data['severitylist'] = categories().getSeverityList()
 
 
         res = json.dumps(data, indent=4, separators=(',', ': '))

@@ -382,7 +382,7 @@ class utility ():
         data = {}
         data['error'] = {}
         data['error']['Duplications'] = {}
-        data['error']['Duplications']["category description"] = categories().Duplication_sub[1]
+        data['error']['Duplications']["category description"] = categories().getDescriptionByName("Duplications", 0)
         data['error']['Duplications']["detail"] = message[5]
 
         if onlyDup:
@@ -398,7 +398,7 @@ class utility ():
                 subtitle = categories().getSubTitle(mindex, sindex)
                 data['error'][maintitle][subtitle] = {}
                 data['error'][maintitle][subtitle]['detail'] = message[mindex][sindex]
-                data['error'][maintitle][subtitle]['category description'] = categories().getDescription(mindex,sindex)
+                data['error'][maintitle][subtitle]['category description'] = categories().getDescriptionByIndex(mindex,sindex)
 
 
         data['percentage'] = {}
