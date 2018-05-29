@@ -24,7 +24,7 @@ class ProcessSonar (object):
         self.SONAR_GROUP = 'duke-compsci308:'
         if project is None:
             project = ""
-        self.ROOT_PATH = utility().getRootPath()
+        self.ROOT_PATH = LocalHelper().getRootPath()
         self.GITLAB_GROUP = group
         self.PLAIN_PROJECT = project
         self.TEST_PROJECT = self.SONAR_GROUP + project
@@ -63,14 +63,14 @@ class ProcessSonar (object):
         r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
-            return utility().errHandler()
+            return DataHelper().errHandler()
 
         #get number of pages
 
-        total_pages = utility().getNumOfPagesIssues(self.SONAR_URL, self.TEST_PROJECT)
+        total_pages = SonarHelper().getNumOfPagesIssues(self.SONAR_URL, self.TEST_PROJECT)
 
         #get all issues that are open
-        issues = utility().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages, "")
+        issues = SonarHelper().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages, "")
 
         #get all rules associate with quanlity profile
         rules = []
@@ -82,7 +82,7 @@ class ProcessSonar (object):
             rules.extend(categories().duplications)
         #store details
         dup_errmessages = []
-        scores = utility().calTotalScoreAllCategory(self.SONAR_URL)
+        scores = ScoreHelper().calTotalScoreAllCategory(self.SONAR_URL)
         scores_rem = copy.deepcopy(scores)
         scores_checked_Id = set()
         for issue in issues:
@@ -95,12 +95,12 @@ class ProcessSonar (object):
                 errmessage['path'] = [issue['component']]
                 errmessage['rule'] = ruleResult[0]['name']
                 errmessage['message'] = issue['message']
-                errmessage['severity'] = utility().renameSeverity(issue['severity'])
+                errmessage['severity'] = ScoreHelper().renameSeverity(issue['severity'])
 
                 #deduct score
                 maincategoryname = categories().getMainCateNameById(ruleID)
                 if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
-                    scores[maincategoryname] -= utility().getScoreForSeverity(issue['severity'])
+                    scores[maincategoryname] -= ScoreHelper().getScoreForSeverity(issue['severity'])
                     scores_checked_Id.add(ruleID)
 
                 #add code
@@ -109,7 +109,7 @@ class ProcessSonar (object):
                 else:
                     errmessage['code'] = []
                     if 'textRange' in issue:
-                        textRange = utility().makeTextRange(issue)
+                        textRange = SonarHelper().makeTextRange(issue)
                         for entry in textRange:
                             startLine = entry['textRange']['startLine']
                             endLine = entry['textRange']['endLine']
@@ -122,19 +122,19 @@ class ProcessSonar (object):
                             for item in items:
                                 entry['code'].append(item[1])
                             errmessage['code'].append(entry)
-                    utility().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
+                    DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
         if len(dup_errmessages) > 0:
-            utility().duplicatedBlockHandlerStore(self.SONAR_URL,
+            SonarHelper().duplicatedBlockHandlerStore(self.SONAR_URL,
                                                   dup_errmessages,
                                                   self.message,
                                                   self.rulesViolated,
                                                   self.fileChecked)
         # cal percentage
 
-        percentage = utility().calPercentByScore(scores, scores_rem)
+        percentage = ScoreHelper().calPercentByScore(scores, scores_rem)
 
-        data = utility().dataHandler(self.message, percentage, onlyDup)
+        data = DataHelper().dataHandler(self.message, percentage, onlyDup)
 
         data['severitylist'] = categories().getSeverityList()
 
@@ -177,8 +177,8 @@ class ProcessSonar (object):
 
     def longestmethods (self):
 
-        total_pages = utility().getNumOfPagesIssues(self.SONAR_URL, self.TEST_PROJECT)
-        issues = utility().getIssues(self.SONAR_URL, self.TEST_PROJECT, total_pages, "squid:S138") #array
+        total_pages = SonarHelper().getNumOfPagesIssues(self.SONAR_URL, self.TEST_PROJECT)
+        issues = SonarHelper().getIssues(self.SONAR_URL, self.TEST_PROJECT, total_pages, "squid:S138") #array
 
         entries = []
 
@@ -200,7 +200,7 @@ class ProcessSonar (object):
             for item in items:
                 mname = ""
                 if title == 0:
-                    mname = utility().stripmethodname(item[1])
+                    mname = FormateHelper().stripmethodname(item[1])
                 entries[count]['methodname'] = mname
                 entries[count]['code'].append(item[1])
 
@@ -229,9 +229,9 @@ class ProcessSonar (object):
         res = {}
         res['authors'] = {}
         dates = {}
-        commits = utility().getcommits(GITLAB_URL, projectid, self.TOKEN)
+        commits = GitlabHelper().getcommits(GITLAB_URL, projectid, self.TOKEN)
 
-        studentidmaps = utility().readStudentInfo()
+        studentidmaps = LocalHelper().readStudentInfo()
 
         if onlyStat:
             return self.getcommitstatfast(studentidmaps)
@@ -240,7 +240,7 @@ class ProcessSonar (object):
         for commit in commits:
             # retrieve gitlab id
             authoremail = commit['author_email']
-            authorname = utility().convertEmailtoGitlabId(authoremail,studentidmaps)
+            authorname = GitlabHelper().convertEmailtoGitlabId(authoremail,studentidmaps)
 
             #get other info
 
@@ -281,6 +281,9 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
+
+        DataHelper().displayData(res)
+
         return json.dumps(res)
 
 
@@ -298,8 +301,8 @@ class ProcessSonar (object):
         res_dates = {}
         current_author = ""
         converted_date = ""
-        left_bound = utility().getDateFromTuple("2099 Dec 31")
-        right_bound = utility().getDateFromTuple("1999 Jan 1")
+        left_bound = FormatHelper().getDateFromTuple("2099 Dec 31")
+        right_bound = FormatHelper().getDateFromTuple("1999 Jan 1")
         for p in parsed:
             lines = p.split("\n")
             for line in lines:
@@ -308,7 +311,7 @@ class ProcessSonar (object):
                     authorline = line.split()
                     authoremail = authorline[-1]
                     authoremail = authoremail[1:-1]
-                    current_author = utility().convertEmailtoGitlabId(authoremail,studentidmaps)
+                    current_author = GitlabHelper().convertEmailtoGitlabId(authoremail,studentidmaps)
                     if current_author not in res:
                         res[current_author] = {}
                         res[current_author]["dates"] = {}
@@ -321,7 +324,7 @@ class ProcessSonar (object):
                     #check bounds
                     dateline = line.split()
                     current_date = dateline[5] + " " + dateline[2] + " " + dateline[3]
-                    numerical_date = utility().getDateFromTuple(current_date)
+                    numerical_date = FormatHelper().getDateFromTuple(current_date)
                     if numerical_date > right_bound:
                         right_bound = numerical_date
                     elif numerical_date < left_bound:
@@ -348,10 +351,8 @@ class ProcessSonar (object):
                             key = "deletions"
 
                         statdata = stat.split()
-                        utility().displayData(res[current_author]["dates"])
-                        utility().displayData(res[current_author]["dates"][converted_date])
-                        print res[current_author]["dates"][converted_date][key]
-                        print "********"
+
+
 
                         res[current_author]["dates"][converted_date][key] += int(statdata[0])
                         res[current_author]["total"][key] += int(statdata[0])
@@ -365,7 +366,7 @@ class ProcessSonar (object):
             "right" : right_bound.strftime('%Y/%m/%d')
         }
         '''
-        projectdates = utility().readProjectDates(self.PLAIN_PROJECT)
+        projectdates = LocalHelper().readProjectDates(self.PLAIN_PROJECT)
         startdate = projectdates['STARTDATE']
         enddate = projectdates['ENDDATE']
 
@@ -374,7 +375,7 @@ class ProcessSonar (object):
             "right" : enddate
         }
 
-        utility().displayData(res)
+        DataHelper().displayData(res)
         return json.dumps(res)
 
     def getproject(self):
@@ -426,12 +427,12 @@ class ProcessSonar (object):
             if rootshort[0] == '/':
                 rootshort = rootshort[1:]
 
-            if utility().shouldSkipDir(rootshort, ["src"]):
+            if DataHelper().shouldSkipDir(rootshort, ["src"]):
                 continue
 
             res[rootshort] = {}
-            res[rootshort]['directories'] = utility().getFullPath(rootshort, subdirs)
-            res[rootshort]['files'] = utility().getFullPath(rootshort, files)
+            res[rootshort]['directories'] = FormatHelper().getFullPath(rootshort, subdirs)
+            res[rootshort]['files'] = FormatHelper().getFullPath(rootshort, files)
 
         #utility().displayData(res)
         issues = json.loads(self.process(False))
@@ -443,9 +444,9 @@ class ProcessSonar (object):
            if isinstance(mainissuelist, dict):
                for subcategory, subissuelist in mainissuelist.items():
 
-                   utility().makeIssueEntryForDIR(subissuelist['detail'], self.TEST_PROJECT,  res)
+                   DataHelper().makeIssueEntryForDIR(subissuelist['detail'], self.TEST_PROJECT,  res)
            else:
-               utility().makeIssueEntryForDIR(mainissuelist, self.TEST_PROJECT,  res)
+               DataHelper().makeIssueEntryForDIR(mainissuelist, self.TEST_PROJECT,  res)
 
 
 

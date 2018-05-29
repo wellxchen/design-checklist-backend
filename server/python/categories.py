@@ -18,25 +18,25 @@ class categories ():
                              'Get method give minimum info',
                              'Get method validate input',
                              'Superclasses are their own class']},
-             {"Flexibility", ['General type',
+             {"Flexibility": ['General type',
                               'Single Purpose',
                               'Behavior Driven Design',
                               'Polymorphism']},
-             {"Java Notes", []},
-             {"Code Smells", []},
-             {"Duplications", []}]
+             {"Java Notes": []},
+             {"Code Smells": []},
+             {"Duplications": []}]
 
     def getNumMainTitle(self):
-        return len(title)
+        return len(self.title)
 
     def getNumSubTitle(self, index):
-        return len(title[index].values())
+        return len(self.title[index].values())
 
     def getMainTitle(self, index):
-        return title[index].key()
+        return self.title[index].key()
 
     def getSubTitle(self, mindex, sindex):
-        return title[mindex][sindex]
+        return self.title[mindex][sindex]
 
     def getDescriptionByIndex(self, mindex, sindex):
         maintitle = self.getMainTitle(mindex)
@@ -331,5 +331,3 @@ class categories ():
             self.codesmell.union(
             self.modularity.union(self.duplicationsID)))))
 
-    def getNumberOfMainCategories(self):
-        return len(maintitle)
