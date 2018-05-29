@@ -3,7 +3,13 @@ import requests
 import json
 
 from categories import categories
-from utility import utility
+from LocalHelper import LocalHelper
+from ScoreHelper import ScoreHelper
+from GitlabHelper import GitlabHelper
+from SonarHelper import SonarHelper
+from FormatHelper import FormatHelper
+from DataHelper import  DataHelper
+
 import os
 from os.path import dirname
 from dotenv import load_dotenv
