@@ -358,8 +358,6 @@ class ProcessSonar (object):
 
                         statdata = stat.split()
 
-
-
                         res[current_author]["dates"][converted_date][key] += int(statdata[0])
                         res[current_author]["total"][key] += int(statdata[0])
 
@@ -454,15 +452,14 @@ class ProcessSonar (object):
            else:
                DataHelper().makeIssueEntryForDIR(mainissuelist, self.TEST_PROJECT,  res)
 
-
-
-
         return json.dumps(res)
 
 
+    def getHistory ():
+
 
 if __name__ == '__main__':
-    #print utility().getRootPath()
+
 
     ProcessSonar("CompSci308_2018Spring", "slogo_team12").getcommit(False)
     ProcessSonar("CompSci308_2018Spring", "slogo_team12").getcommit(True)

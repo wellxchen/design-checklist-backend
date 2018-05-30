@@ -70,7 +70,12 @@ def getalldirectory ():
 def getproject ():
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project).getproject()
+    history = request.args.get('history')
+    if history is None:
+        return ProcessSonar(group, project).getproject()
+    return ProcessSonar(group, project).getHistory()
+
+
 
 if __name__ == '__main__':
     app.run(threaded=True)

@@ -1,3 +1,7 @@
+'''
+Helper class that handle score related functionalities
+'''
+
 class ScoreHelper():
     # calcualte total score for rules under one category
     def calTotalScorePerCategory(self, SONAR_URL, rules):

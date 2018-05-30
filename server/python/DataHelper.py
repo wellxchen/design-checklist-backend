@@ -1,3 +1,8 @@
+'''
+Helper class that handle data structure related functionalities
+'''
+
+
 import re
 from categories import categories
 

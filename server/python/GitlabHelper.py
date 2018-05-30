@@ -1,4 +1,9 @@
-import re
+
+'''
+Helper class that handle gitlab related functionalities
+'''
+
+
 from categories import categories
 import json
 import requests
@@ -7,8 +12,6 @@ import os
 from os.path import join, dirname, abspath
 from dotenv import load_dotenv
 
-import datetime
-import configparser
 
 ROOT = dirname(__file__)[:-14]
 dotenv_path = ROOT + "/server/documents/local/app-env"

@@ -1,3 +1,9 @@
+
+
+'''
+Helper class that handle local storage
+'''
+
 import re
 from categories import categories
 import json
@@ -13,8 +19,6 @@ import configparser
 ROOT = dirname(__file__)[:-14]
 dotenv_path = ROOT + "/server/documents/local/app-env"
 load_dotenv(dotenv_path)
-
-
 
 class LocalHelper ():
 

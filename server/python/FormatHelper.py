@@ -1,7 +1,9 @@
+'''
+Helper class that handle format related functionalities
+'''
+
 import re
 import datetime
-
-
 
 
 class FormatHelper ():
