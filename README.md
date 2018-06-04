@@ -1,4 +1,4 @@
-# java code static analysis tool
+# Java code static analysis tool
 
 Flask server that retrieves analysis data as json from SonarQube hosting on Duke University's server. Processing data in python and shell.Then returns the filtered json data to be displayed in frontend. Rule ids and categories are temporarily hardcoded on backend to boost performance. Ultimately, SQL database will be used to store the hardcoded things for better code design.
 
