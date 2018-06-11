@@ -6,9 +6,9 @@
 
 **Modularity**: Do your classes have a small, well-defined purpose?
 
-**Flexibility**: Does you program contain duplication of any kind?
+**Flexibility**: Is your program flexibile to change as development goes?
 
-**Code Smells**: Code issues related to general good programming practices
+**Code Smells**: Code issues related to general good programming practices, such as: duplciations
 
 **Java Notes**: Code issues specific to Java
 
