@@ -8,7 +8,7 @@
 
 **Flexibility**: Is your program flexibile to change as development goes?
 
-**Code Smells**: Code issues related to general good programming practices, such as: duplciations
+**Code Smells**: Code issues related to general good programming practices, such as: duplications
 
 **Java Notes**: Code issues specific to Java
 
