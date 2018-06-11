@@ -134,6 +134,7 @@ class categories ():
 
     #id : [main, sub]
     #main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
+    #TODO reduce sub by one
     rules = {'squid:S1942' : [0,1],
              'squid:S00115' : [0,1],
              'squid:S1223' : [0,1],
