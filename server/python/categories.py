@@ -26,30 +26,11 @@ class categories ():
              {"Code Smells": []},
              {"Duplications": []}]
 
-    def getNumMainTitle(self):
-        return len(self.title)
-
-    def getNumSubTitle(self, index):
-        return len(self.title[index].values())
-
-    def getMainTitle(self, index):
-        return self.title[index].key()
-
-    def getSubTitle(self, mindex, sindex):
-        return self.title[mindex][sindex]
-
-    def getDescriptionByIndex(self, mindex, sindex):
-        maintitle = self.getMainTitle(mindex)
-        return descriptions[maintitle][sindex]
-
-    def getDescriptionByName (self, mname, sindex):
-        return descriptions[mname][sindex]
 
 
     severitylist = ['fail', 'high', 'medium', 'low', 'info']
 
-    def getSeverityList (self):
-        return self.severitylist
+
 
     descriptions = {
                 "Communication" :
@@ -134,84 +115,84 @@ class categories ():
 
     #id : [main, sub]
     #main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
-    rules = {'squid:S1942' : [0,1],
-             'squid:S00115' : [0,1],
-             'squid:S1223' : [0,1],
-             'squid:S1190' : [0,1],
-             'squid:S1221' : [0,1],
-             'squid:S00101' : [0,1],
-             'squid:S109' : [0, 2],
-             'squid:S00122': [0, 3],
-             'squid:S00121': [0, 3],
-             'squid:S2681': [0, 3],
-             'squid:S1941' : [0, 4],
-             'squid:S881': [0, 5],
-             'squid:S2114': [0, 5],
-             'squid:S1604': [0, 6],
-             'squid:S2175': [0, 6],
-             'squid:S1126': [0, 6],
-             'squid:S2293': [0, 6],
-             'squid:S2200': [0, 6],
-             'squid:S2589': [0, 6],
-             'squid:S1656': [0, 6],
-             'squid:S2178': [0, 6],
-             'squid:S2959': [0, 6],
-             'squid:S2185': [0, 6],
-             'squid:S3923': [0, 6],
-             'squid:S1481': [0, 6],
-             'squid:S1125': [0, 6],
-             'squid:S2147': [0, 7],
-             'squid:S1157': [0, 7],
-             'squid:UselessParenthesesCheck': [0, 7],
-             'squid:S1488': [0, 7],
-             'squid:S1764': [0, 7],
-             'squid:S00108': [0, 7],
-             'squid:S2153': [0, 7],
-             'squid:S1170': [0, 7],
-             'squid:S1133': [0, 7],
-             'squid:S2097': [0, 7],
-             'squid:S2154': [0, 7],
-             'squid:S1199': [0, 7],
-             'squid:UselessImportCheck': [0, 7],
-             'squid:S2159': [0, 7],
-             'squid:S135': [0, 7],
-             'squid:S2692': [0, 7],
-             'squid:S1710': [0, 7],
-             'squid:S1066': [0, 7],
-             'squid:S1068': [0, 7],
-             'squid:S00112': [0, 7],
-             'squid:S1148': [0, 7],
-             'squid:S1244': [0, 7],
-             'squid:S3358': [0, 7],
-             'squid:S2208': [0, 7],
-             'squid:S1450': [1, 1],
-             'squid:S1258': [1, 1],
-             'squid:HiddenFieldCheck': [1, 1],
-             'squid:S3066': [1, 2],
-             'squid:ClassVariableVisibilityCheck' : [1, 2],
-             'squid:S00104': [1, 3],
-             'squid:S1200': [1, 3],
-             'squid:S1188': [1, 3],
-             'squid:S1448': [1, 3],
-             'squid:S2786': [1, 4],
-             'squid:S2390': [1, 4],
-             'squid:S2386': [1, 4],
-             'squid:S2885': [1, 4],
-             'squid:S2209': [1, 4],
-             'squid:S1444': [1, 4],
-             'squid:S1185' : [1, 7],
-             'squid:S2638' : [1, 7],
-             'squid:S1319' : [2, 1],
-             'squid:S138': [2, 2],
-             'squid:S1067': [2, 2],
-             'squid:MethodCyclomaticComplexity': [2, 2],
-             'squid:S00107': [2, 2],
-             'squid:S3776': [2, 2],
-             'squid:S2176': [2, 2],
-             'squid:S3400' : [2, 3],
-             'squid:S1479' : [2, 4],
-             'squid:S1219' : [2, 4],
-             'squid:S1151' : [2, 4],
+    rules = {'squid:S1942' : [0,0],
+             'squid:S00115' : [0,0],
+             'squid:S1223' : [0,0],
+             'squid:S1190' : [0,0],
+             'squid:S1221' : [0,0],
+             'squid:S00101' : [0,0],
+             'squid:S109' : [0, 1],
+             'squid:S00122': [0, 2],
+             'squid:S00121': [0, 2],
+             'squid:S2681': [0, 2],
+             'squid:S1941' : [0, 3],
+             'squid:S881': [0, 4],
+             'squid:S2114': [0, 4],
+             'squid:S1604': [0, 5],
+             'squid:S2175': [0, 5],
+             'squid:S1126': [0, 5],
+             'squid:S2293': [0, 5],
+             'squid:S2200': [0, 5],
+             'squid:S2589': [0, 5],
+             'squid:S1656': [0, 5],
+             'squid:S2178': [0, 5],
+             'squid:S2959': [0, 5],
+             'squid:S2185': [0, 5],
+             'squid:S3923': [0, 5],
+             'squid:S1481': [0, 5],
+             'squid:S1125': [0, 5],
+             'squid:S2147': [0, 6],
+             'squid:S1157': [0, 6],
+             'squid:UselessParenthesesCheck': [0, 6],
+             'squid:S1488': [0, 6],
+             'squid:S1764': [0, 6],
+             'squid:S00108': [0, 6],
+             'squid:S2153': [0, 6],
+             'squid:S1170': [0, 6],
+             'squid:S1133': [0, 6],
+             'squid:S2097': [0, 6],
+             'squid:S2154': [0, 6],
+             'squid:S1199': [0, 6],
+             'squid:UselessImportCheck': [0, 6],
+             'squid:S2159': [0, 6],
+             'squid:S135': [0, 6],
+             'squid:S2692': [0, 6],
+             'squid:S1710': [0, 6],
+             'squid:S1066': [0, 6],
+             'squid:S1068': [0, 6],
+             'squid:S00112': [0, 6],
+             'squid:S1148': [0, 6],
+             'squid:S1244': [0, 6],
+             'squid:S3358': [0, 6],
+             'squid:S2208': [0, 6],
+             'squid:S1450': [1, 0],
+             'squid:S1258': [1, 0],
+             'squid:HiddenFieldCheck': [1, 0],
+             'squid:S3066': [1, 1],
+             'squid:ClassVariableVisibilityCheck' : [1, 1],
+             'squid:S00104': [1, 2],
+             'squid:S1200': [1, 2],
+             'squid:S1188': [1, 2],
+             'squid:S1448': [1, 2],
+             'squid:S2786': [1, 3],
+             'squid:S2390': [1, 3],
+             'squid:S2386': [1, 3],
+             'squid:S2885': [1, 3],
+             'squid:S2209': [1, 3],
+             'squid:S1444': [1, 3],
+             'squid:S1185' : [1, 4],
+             'squid:S2638' : [1, 4],
+             'squid:S1319' : [2, 0],
+             'squid:S138': [2, 1],
+             'squid:S1067': [2, 1],
+             'squid:MethodCyclomaticComplexity': [2, 1],
+             'squid:S00107': [2, 1],
+             'squid:S3776': [2, 1],
+             'squid:S2176': [2, 1],
+             'squid:S3400' : [2, 2],
+             'squid:S1479' : [2, 3],
+             'squid:S1219' : [2, 3],
+             'squid:S1151' : [2, 3],
              'squid:S1181': [3],
              'squid:S2129': [3],
              'squid:S2141': [3],
@@ -286,48 +267,4 @@ class categories ():
              'squid:S1700': [5],
              'squid:S1192': [5]
     }
-
-    def getRuleDetail (self, ruleID):
-        if ruleID in self.rules:
-            return self.rules[ruleID]
-        return []
-
-    def getMainCateNameById(self, ruleID):
-        if ruleID in self.rules:
-            cates = self.rules[ruleID]
-            if cates[0] == 0:
-                return "communication"
-            if cates[0] == 1:
-                return "modularity"
-            if cates[0] == 2:
-                return "flexibility"
-            if cates[0] == 3:
-                return "javanote"
-            if cates[0] == 4:
-                return "codesmell"
-            if cates[0] == 5:
-                return "duplications"
-        return ""
-
-    def getCategoryNumberByName(self, name):
-        if name == "communication":
-            return 0
-        if name ==  "modularity":
-            return 1
-        if name ==  "flexibility":
-            return 2
-        if name ==  "javanote":
-            return 3
-        if name == "codesmell":
-            return 4
-        if name == "duplications":
-            return 5
-        return -1
-
-    def allrules (self):
-        return self.communication.union(
-            self.flexibility.union(
-            self.javanote.union(
-            self.codesmell.union(
-            self.modularity.union(self.duplicationsID)))))
 

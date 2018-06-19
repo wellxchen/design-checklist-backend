@@ -4,7 +4,6 @@ Helper class that handle gitlab related functionalities
 '''
 
 
-from categories import categories
 import json
 import requests
 

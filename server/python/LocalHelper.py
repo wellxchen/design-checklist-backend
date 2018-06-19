@@ -5,7 +5,6 @@ Helper class that handle local storage
 '''
 
 import re
-from categories import categories
 import json
 import requests
 
@@ -43,11 +42,9 @@ class LocalHelper ():
 
         return abspath(dirname(__file__))[:-14]
 
-    def writeData (self, data):
-
-        with open('data.txt', 'w') as outfile:
+    def writeLog (self, logname, data):
+        with open(logname, 'w') as outfile:
             outfile.write(data)
-
 
 
     #extract gitlabid
@@ -58,7 +55,7 @@ class LocalHelper ():
         emailindex = 3
         gitlabidindex = 4
 
-        csvpath = dotenv_path = dirname(__file__)[:-14] + '/server/documents/local/308students.csv'
+        csvpath = dirname(__file__)[:-14] + '/server/documents/local/308students.csv'
         import csv
         with open(csvpath, 'rb') as csvfile:
             spamreader = csv.reader(csvfile)

@@ -4,7 +4,7 @@ Helper class that handle data structure related functionalities
 
 
 import re
-from categories import categories
+from CategoriesHelper import CategoriesHelper
 
 
 
@@ -17,7 +17,7 @@ class DataHelper ():
         # store the issue in message
 
     def storeIssue(self, ruleID, errmessage, message, rulesViolated):
-            ruleInfo = categories().getRuleDetail(ruleID)
+            ruleInfo = CategoriesHelper().getRuleDetail(ruleID)
             if len(ruleInfo) == 0:
                 return
             mainindex = ruleInfo[0]
@@ -44,28 +44,28 @@ class DataHelper ():
             data = {}
             data['error'] = {}
             data['error']['Duplications'] = {}
-            data['error']['Duplications']["category description"] = categories().getDescriptionByName("Duplications", 0)
+            data['error']['Duplications']["category description"] = CategoriesHelper().getDescriptionByName("Duplications", 0)
             data['error']['Duplications']["detail"] = message[5]
 
             if onlyDup:
                 return data
 
-            for mindex in range(0, categories().getNumMainTitle()):
-                maintitle = categories().getMainTitle(mindex)
+            for mindex in range(0, CategoriesHelper().getNumMainTitle()):
+                maintitle =CategoriesHelper().getMainTitle(mindex)
                 data['error'][maintitle] = {}
                 if mindex >= 3:
                     data['error'][maintitle] = message[mindex]
                     continue
-                for sindex in range(0, categories().getNumSubTitle(mindex)):
-                    subtitle = categories().getSubTitle(mindex, sindex)
+                for sindex in range(0, CategoriesHelper().getNumSubTitle(mindex)):
+                    subtitle = CategoriesHelper().getSubTitle(mindex, sindex)
                     data['error'][maintitle][subtitle] = {}
                     data['error'][maintitle][subtitle]['detail'] = message[mindex][sindex]
-                    data['error'][maintitle][subtitle]['category description'] = categories().getDescriptionByIndex(
+                    data['error'][maintitle][subtitle]['category description'] = CategoriesHelper().getDescriptionByIndex(
                         mindex, sindex)
 
             data['percentage'] = {}
-            for i in range(0, categories().getNumTitle()):
-                data['percentage'][categories().getTitle(i)] = percentage[i]
+            for i in range(0, CategoriesHelper().getNumTitle()):
+                data['percentage'][CategoriesHelper().getTitle(i)] = percentage[i]
 
             return data
 

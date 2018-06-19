@@ -2,13 +2,13 @@
 import requests
 import json
 
-from categories import categories
 from LocalHelper import LocalHelper
 from ScoreHelper import ScoreHelper
 from GitlabHelper import GitlabHelper
 from SonarHelper import SonarHelper
 from FormatHelper import FormatHelper
 from DataHelper import  DataHelper
+from CategoriesHelper import CategoriesHelper
 
 import os
 from os.path import dirname
@@ -44,6 +44,7 @@ class ProcessSonar (object):
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         self.LOG_ISSUES = self.LOG_DIR + "/issues.txt"
         self.LOG_DIRECTORIES = self.LOG_DIR + "/directories.txt"
+        self.LOG_STATISTICS = self.LOG_DIR + "statistics.txt"
 
         self.fileChecked = set()
         self.rulesViolated = []
@@ -55,7 +56,7 @@ class ProcessSonar (object):
             k = 0
 
             if i < 3:
-                k = categories().getNumSubTitle(i)
+                k = CategoriesHelper().getNumSubTitle(i)
 
             for j in range(k):
                 self.message[i].append([])
@@ -85,7 +86,7 @@ class ProcessSonar (object):
             self.SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + self.QUALITY_PROFILE)
             rules.extend(r.json()['rules'])
         else:
-            rules.extend(categories().duplications)
+            rules.extend(CategoriesHelper().duplications)
         #store details
         dup_errmessages = []
         scores = ScoreHelper().calTotalScoreAllCategory(self.SONAR_URL)
@@ -104,7 +105,7 @@ class ProcessSonar (object):
                 errmessage['severity'] = ScoreHelper().renameSeverity(issue['severity'])
 
                 #deduct score
-                maincategoryname = categories().getMainCateNameById(ruleID)
+                maincategoryname = CategoriesHelper().getMainCateNameById(ruleID)
                 if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
                     scores[maincategoryname] -= ScoreHelper().getScoreForSeverity(issue['severity'])
                     scores_checked_Id.add(ruleID)
@@ -142,7 +143,7 @@ class ProcessSonar (object):
 
         data = DataHelper().dataHandler(self.message, percentage, onlyDup)
 
-        data['severitylist'] = categories().getSeverityList()
+        data['severitylist'] = CategoriesHelper().getSeverityList()
 
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
@@ -152,8 +153,9 @@ class ProcessSonar (object):
                                  self.PLAIN_PROJECT,
                                  self.ROOT_PATH])
         if not onlyDup:
-            with open(self.LOG_ISSUES, "w") as out:
-                out.write(res)
+            LocalHelper().writeLog(self.LOG_ISSUES, res)
+
+
 
         return res
 
@@ -178,6 +180,8 @@ class ProcessSonar (object):
 
         res['measures']['lmethods'] = []
         res['measures']['lmethods'].extend(self.longestmethods())
+
+        LocalHelper().writeLog(self.LOG_STATISTICS, res)
 
         return json.dumps(res)
 
@@ -364,12 +368,7 @@ class ProcessSonar (object):
         for authorname, v in res_dates.items():
             res[authorname]["sorteddates"] = []
             res[authorname]["sorteddates"].extend(res_dates[authorname])
-        '''
-        res["bounds"] = {
-            "left" : left_bound.strftime('%Y/%m/%d'),
-            "right" : right_bound.strftime('%Y/%m/%d')
-        }
-        '''
+
         projectdates = LocalHelper().readProjectDates(self.PLAIN_PROJECT)
         startdate = projectdates['STARTDATE']
         enddate = projectdates['ENDDATE']
@@ -455,11 +454,10 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def getHistory ():
+
 
 
 if __name__ == '__main__':
 
-
-    ProcessSonar("CompSci308_2018Spring", "slogo_team12").getcommit(False)
-    ProcessSonar("CompSci308_2018Spring", "slogo_team12").getcommit(True)
+    print "getsrun"
+    ProcessSonar("CompSci308_2018Spring", "slogo_team12").statistics()
