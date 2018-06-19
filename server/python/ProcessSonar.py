@@ -44,7 +44,7 @@ class ProcessSonar (object):
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         self.LOG_ISSUES = self.LOG_DIR + "/issues.txt"
         self.LOG_DIRECTORIES = self.LOG_DIR + "/directories.txt"
-        self.LOG_STATISTICS = self.LOG_DIR + "statistics.txt"
+        self.LOG_STATISTICS = self.LOG_DIR + "/statistics.txt"
 
         self.fileChecked = set()
         self.rulesViolated = []
@@ -148,14 +148,10 @@ class ProcessSonar (object):
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
-        subprocess.check_output([self.SHELL_PATH + '/logs.sh',
-                                 self.GITLAB_GROUP,
-                                 self.PLAIN_PROJECT,
-                                 self.ROOT_PATH])
+        self.executeShellLog()
+
         if not onlyDup:
             LocalHelper().writeLog(self.LOG_ISSUES, res)
-
-
 
         return res
 
@@ -181,7 +177,8 @@ class ProcessSonar (object):
         res['measures']['lmethods'] = []
         res['measures']['lmethods'].extend(self.longestmethods())
 
-        LocalHelper().writeLog(self.LOG_STATISTICS, res)
+        self.executeShellLog()
+        LocalHelper().writeLogJSON(self.LOG_STATISTICS, res)
 
         return json.dumps(res)
 
@@ -210,7 +207,7 @@ class ProcessSonar (object):
             for item in items:
                 mname = ""
                 if title == 0:
-                    mname = FormateHelper().stripmethodname(item[1])
+                    mname = FormatHelper().stripmethodname(item[1])
                 entries[count]['methodname'] = mname
                 entries[count]['code'].append(item[1])
 
@@ -299,11 +296,8 @@ class ProcessSonar (object):
 
     def getcommitstatfast(self, studentidmaps):
 
-        stats = subprocess.check_output([self.SHELL_PATH + '/stats.sh',
-                                         self.TOKEN,
-                                         self.GITLAB_GROUP,
-                                         self.PLAIN_PROJECT,
-                                         self.ROOT_PATH])
+        stats = self.executeShellStats()
+
 
         parsed = re.split(r'\n--\n', stats)
 
@@ -407,16 +401,11 @@ class ProcessSonar (object):
         if res['sonar'] == 'not found':
             return json.dumps({})
 
-        subprocess.check_output([self.SHELL_PATH + '/logs.sh',
-                                 self.GITLAB_GROUP,
-                                 self.PLAIN_PROJECT,
-                                 self.ROOT_PATH])
 
-        git = subprocess.check_output([self.SHELL_PATH + '/codes.sh',
-                                       self.TOKEN,
-                                       self.GITLAB_GROUP,
-                                       self.PLAIN_PROJECT,
-                                       self.ROOT_PATH])
+        self.executeShellLog()
+
+        git = self.executeShellCode()
+
         res = {}
         path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
@@ -454,6 +443,25 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
+    def executeShellLog (self):
+        return subprocess.check_output([self.SHELL_PATH + '/logs.sh',
+                                 self.GITLAB_GROUP,
+                                 self.PLAIN_PROJECT,
+                                 self.ROOT_PATH])
+
+    def executeShellCode (self):
+        return subprocess.check_output([self.SHELL_PATH + '/codes.sh',
+                                       self.TOKEN,
+                                       self.GITLAB_GROUP,
+                                       self.PLAIN_PROJECT,
+                                       self.ROOT_PATH])
+
+    def executeShellStats(self):
+        return subprocess.check_output([self.SHELL_PATH + '/stats.sh',
+                                 self.TOKEN,
+                                 self.GITLAB_GROUP,
+                                 self.PLAIN_PROJECT,
+                                 self.ROOT_PATH])
 
 
 

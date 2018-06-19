@@ -2,6 +2,9 @@
 Helper class that handle sonarqube related functionalities
 '''
 
+
+import requests
+
 class SonarHelper():
 
     def activateRule(self, SONAR_URL, QUALITY_PROFILE, ruleID):

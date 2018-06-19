@@ -1,38 +1,38 @@
-import categories
+from categories import categories
 
 class CategoriesHelper ():
 
     def getNumMainTitle(self):
-        return len(categories.title)
+        return len(categories().title)
 
 
     def getNumSubTitle(self, index):
-        return len(categories.title[index].values())
+        return len(categories().title[index].values())
 
 
     def getMainTitle(self, index):
-        return categories.title[index].key()
+        return categories().title[index].key()
 
 
     def getSubTitle(self, mindex, sindex):
-        return categories.title[mindex][sindex]
+        return categories().title[mindex][sindex]
 
 
     def getDescriptionByIndex(self, mindex, sindex):
-        maintitle = categories.getMainTitle(mindex)
-        return categories.descriptions[maintitle][sindex]
+        maintitle = categories().getMainTitle(mindex)
+        return categories().descriptions[maintitle][sindex]
 
 
     def getDescriptionByName(self, mname, sindex):
-        return categories.descriptions[mname][sindex]
+        return categories().descriptions[mname][sindex]
 
 
     def getSeverityList (self):
-        return categories.severitylist
+        return categories().severitylist
 
     def getRuleDetail(self, ruleID):
-        if ruleID in categories.rules:
-            return categories.rules[ruleID]
+        if ruleID in categories().rules:
+            return categories().rules[ruleID]
         return []
 
     def getMainCateNameById(self, ruleID):
@@ -68,9 +68,9 @@ class CategoriesHelper ():
         return -1
 
     def allrules(self):
-        return categories.communication.union(
-            categories.flexibility.union(
-                categories.javanote.union(
-                    categories.codesmell.union(
-                        categories.modularity.union(categories.duplicationsID)))))
+        return categories().communication.union(
+            categories().flexibility.union(
+                categories().javanote.union(
+                    categories().codesmell.union(
+                        categories().modularity.union(categories().duplicationsID)))))
 

@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 import datetime
 import configparser
+import subprocess
 
 ROOT = dirname(__file__)[:-14]
 dotenv_path = ROOT + "/server/documents/local/app-env"
@@ -46,6 +47,12 @@ class LocalHelper ():
         with open(logname, 'w') as outfile:
             outfile.write(data)
 
+    def writeLogJSON (self, logname, data):
+        with open(logname, 'w') as outfile:
+            json.dump(data,outfile)
+
+
+
 
     #extract gitlabid
     def readStudentInfo (self):
@@ -67,6 +74,7 @@ class LocalHelper ():
         res["email"] = emails
         res["netid"] = netids
         return res
+
 
 
 
