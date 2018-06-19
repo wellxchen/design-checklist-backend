@@ -45,6 +45,11 @@ class LocalHelper ():
 
 
     def readProjectDates (self, project):
+        '''
+        read start dates and end dates of project
+        :param project: the name the project
+        :return: return the start and end dates
+        '''
         config = configparser.ConfigParser()
         config.read(ROOT + "/server/documents/config.ini")
         res = {}
@@ -53,7 +58,16 @@ class LocalHelper ():
 
         return res
 
+
     def storeSingleConfigDate (self, res, config, key, project):
+        '''
+        Store single configuration date in to res buffer
+        :param res:  buffer to hold the result
+        :param config: original configuration
+        :param key: key in the configuration
+        :param project: projects
+        :return: void
+        '''
         res[key] = {}
         for k,v in config[key].items():
             if k in project:
@@ -61,20 +75,36 @@ class LocalHelper ():
                 return
 
     def getRootPath(self):
-
+        '''
+        get the root
+        :return: root  path
+        '''
         return abspath(dirname(__file__))[:-14]
 
     def writeLog (self, logname, data):
+        '''
+        write log file
+        :param logname: name of file store the log
+        :param data: data to be stored
+        '''
         with open(logname, 'w') as outfile:
             outfile.write(data)
 
     def writeLogJSON (self, logname, data):
-
+        '''
+        write JSON log file
+        :param logname: name of JSON file store the log
+        :param data: data to be stored
+        '''
         with open(logname, 'w') as outfile:
             json.dump(data,outfile)
 
     def handleLogJSON (self, WHICHLOG, data):
-
+        '''
+        check if the log extisted, if so do nothing, if not caching
+        :param WHICHLOG: which log to be written
+        :param data: data to be stored
+        '''
         analysisTime = SonarHelper().getMostRecentAnalysisDate(self.SONAR_URL, self.TEST_PROJECT)
         analysisTime = FormatHelper().adjustSonarTime(analysisTime)
         existed = self.executeShellCheckDIR(WHICHLOG, analysisTime)
@@ -84,6 +114,11 @@ class LocalHelper ():
 
     #extract gitlabid
     def readStudentInfo (self):
+
+        '''
+        read student info from csv file and store into the buffer
+        :return: email and netids
+        '''
         emails = {}
         netids = {}
         netidindex = 2
@@ -104,12 +139,20 @@ class LocalHelper ():
         return res
 
     def executeShellLog(self):
+        '''
+        execute shell script that check log folder existence
+        :return: output from terminal
+        '''
         return subprocess.check_output([self.SHELL_PATH + '/logs.sh',
                                         self.GITLAB_GROUP,
                                         self.PLAIN_PROJECT,
                                         self.ROOT_PATH])
 
     def executeShellCode(self):
+        '''
+        execute shell script that cache gitlab codes
+        :return: output from terminal
+        '''
         return subprocess.check_output([self.SHELL_PATH + '/codes.sh',
                                         self.TOKEN,
                                         self.GITLAB_GROUP,
@@ -117,6 +160,11 @@ class LocalHelper ():
                                         self.ROOT_PATH])
 
     def executeShellStats(self):
+
+        '''
+        execute shell scripts that extract stat information
+        :return: stat information
+        '''
         return subprocess.check_output([self.SHELL_PATH + '/stats.sh',
                                         self.TOKEN,
                                         self.GITLAB_GROUP,
@@ -124,7 +172,10 @@ class LocalHelper ():
                                         self.ROOT_PATH])
 
     def executeShellCheckDIR(self, WHICHLOG, ANALYSISID):
-
+        '''
+            execute shell script that check log file existence
+            :return: whether it exists
+        '''
         return subprocess.check_output([self.SHELL_PATH + '/checkdir.sh',
                                         WHICHLOG,
                                         ANALYSISID])

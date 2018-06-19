@@ -1,6 +1,6 @@
 
 '''
-handle categories related functionalities
+handle categories related functionality
 '''
 
 from categories import categories
