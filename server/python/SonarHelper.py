@@ -2,6 +2,7 @@
 Helper class that handle sonarqube related functionalities
 '''
 
+from DataHelper import DataHelper
 
 import requests
 
@@ -128,3 +129,12 @@ class SonarHelper():
             res.sort(key=lambda x: x['textRange']['startLine'], reverse=False)
 
             return res
+
+    #get most recent analysis ID
+
+    def getMostRecentAnalysisDate (self, SONAR_URL, TEST_PROJECT):
+        r = requests.get(SONAR_URL + '/api/project_analyses/search?project=' +
+                         TEST_PROJECT)
+
+        DataHelper().displayData(r.json())
+        return r.json()['analyses'][0]['date']

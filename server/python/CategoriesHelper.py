@@ -1,3 +1,8 @@
+
+'''
+handle categories related functionalities
+'''
+
 from categories import categories
 
 class CategoriesHelper ():
@@ -73,4 +78,7 @@ class CategoriesHelper ():
                 categories().javanote.union(
                     categories().codesmell.union(
                         categories().modularity.union(categories().duplicationsID)))))
+
+    def getDuplications(self):
+        return categories().duplications
 

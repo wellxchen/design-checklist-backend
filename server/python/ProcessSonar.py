@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 
 import copy
 
-import subprocess
+
 import re
 
 
@@ -27,25 +27,7 @@ class ProcessSonar (object):
 
     def __init__(self, group, project):
 
-        self.SONAR_GROUP = 'duke-compsci308:'
-        if project is None:
-            project = ""
-        self.ROOT_PATH = LocalHelper().getRootPath()
-        self.GITLAB_GROUP = group
-        self.PLAIN_PROJECT = project
-        self.TEST_PROJECT = self.SONAR_GROUP + project
-        self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
-        self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
-        self.TOKEN = os.environ.get("GITLAB_TOKEN")
-        self.CACHE_PATH = self.ROOT_PATH + "/cache"
-        self.CODES_PATH = self.CACHE_PATH + "/codes"
-        self.LOGS_PATH = self.CACHE_PATH + "/logs"
-        self.SHELL_PATH = self.ROOT_PATH + "/server/shell"
-        self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
-        self.LOG_ISSUES = self.LOG_DIR + "/issues.txt"
-        self.LOG_DIRECTORIES = self.LOG_DIR + "/directories.txt"
-        self.LOG_STATISTICS = self.LOG_DIR + "/statistics.txt"
-
+        self.localhepler = LocalHelper(group, project)
         self.fileChecked = set()
         self.rulesViolated = []
         self.message = []
@@ -61,35 +43,41 @@ class ProcessSonar (object):
             for j in range(k):
                 self.message[i].append([])
 
+        self.localhepler.executeShellLog()
+        self.localhepler.executeShellCode()
+
 
     def process(self, onlyDup):
 
-
-
         #if project not been analysis return error
-        r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
+        r = requests.get( self.localhepler.SONAR_URL + "/api/components/show?component=" +  self.localhepler.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
             return DataHelper().errHandler()
 
         #get number of pages
 
-        total_pages = SonarHelper().getNumOfPagesIssues(self.SONAR_URL, self.TEST_PROJECT)
+        total_pages = SonarHelper().getNumOfPagesIssues( self.localhepler.SONAR_URL,
+                                                         self.localhepler.TEST_PROJECT)
 
         #get all issues that are open
-        issues = SonarHelper().getIssues (self.SONAR_URL, self.TEST_PROJECT, total_pages, "")
+        issues = SonarHelper().getIssues (self.localhepler.SONAR_URL,
+                                          self.localhepler.TEST_PROJECT,
+                                          total_pages, "")
 
         #get all rules associate with quanlity profile
         rules = []
         if not onlyDup:
             r = requests.get(
-            self.SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + self.QUALITY_PROFILE)
+            self.localhepler.SONAR_URL +
+            '/api/rules/search?ps=500&activation=true&qprofile=' +
+            self.localhepler.QUALITY_PROFILE)
             rules.extend(r.json()['rules'])
         else:
-            rules.extend(CategoriesHelper().duplications)
+            rules.extend(CategoriesHelper().getDuplications())
         #store details
         dup_errmessages = []
-        scores = ScoreHelper().calTotalScoreAllCategory(self.SONAR_URL)
+        scores = ScoreHelper().calTotalScoreAllCategory(self.localhepler.SONAR_URL)
         scores_rem = copy.deepcopy(scores)
         scores_checked_Id = set()
         for issue in issues:
@@ -120,7 +108,7 @@ class ProcessSonar (object):
                         for entry in textRange:
                             startLine = entry['textRange']['startLine']
                             endLine = entry['textRange']['endLine']
-                            r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
+                            r = requests.get(self.localhepler.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
                                      "&to=" + str(endLine) +
                                      "&key=" + issue['component'])
                             items = r.json()["sources"]
@@ -132,7 +120,7 @@ class ProcessSonar (object):
                     DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
         if len(dup_errmessages) > 0:
-            SonarHelper().duplicatedBlockHandlerStore(self.SONAR_URL,
+            SonarHelper().duplicatedBlockHandlerStore(self.localhepler.SONAR_URL,
                                                   dup_errmessages,
                                                   self.message,
                                                   self.rulesViolated,
@@ -148,10 +136,10 @@ class ProcessSonar (object):
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
-        self.executeShellLog()
+
 
         if not onlyDup:
-            LocalHelper().writeLog(self.LOG_ISSUES, res)
+            self.localhepler.writeLog(self.localhepler.LOG_ISSUES, res)
 
         return res
 
@@ -165,8 +153,8 @@ class ProcessSonar (object):
         ncloc = "ncloc"
 
         r = requests.get(
-            self.SONAR_URL + '/api/measures/component?componentKey=' +
-            self.TEST_PROJECT + "&metricKeys="  + functions +
+            self.localhepler.SONAR_URL + '/api/measures/component?componentKey=' +
+            self.localhepler.TEST_PROJECT + "&metricKeys="  + functions +
             classes + directories + comment_lines + comment_lines_density + ncloc)
         measures = r.json()['component']['measures']
         res = {}
@@ -177,15 +165,19 @@ class ProcessSonar (object):
         res['measures']['lmethods'] = []
         res['measures']['lmethods'].extend(self.longestmethods())
 
-        self.executeShellLog()
-        LocalHelper().writeLogJSON(self.LOG_STATISTICS, res)
+
+        self.localhepler.handleLogJSON(self.localhepler.LOG_STATISTICS, res)
 
         return json.dumps(res)
 
     def longestmethods (self):
 
-        total_pages = SonarHelper().getNumOfPagesIssues(self.SONAR_URL, self.TEST_PROJECT)
-        issues = SonarHelper().getIssues(self.SONAR_URL, self.TEST_PROJECT, total_pages, "squid:S138") #array
+        total_pages = SonarHelper().getNumOfPagesIssues(self.localhepler.SONAR_URL,
+                                                        self.localhepler.TEST_PROJECT)
+        issues = SonarHelper().getIssues(self.localhepler.SONAR_URL,
+                                         self.localhepler.TEST_PROJECT,
+                                         total_pages,
+                                         "squid:S138") #array
 
         entries = []
 
@@ -197,9 +189,11 @@ class ProcessSonar (object):
             entries[count]['startline'] = issue['line']
             entries[count]['path'] = issue['component']
 
-            r = requests.get(self.SONAR_URL + "/api/sources/show?from=" + str(issue['textRange']['startLine']) +
-                             "&to=" + str(issue['textRange']['endLine']) +
-                             "&key=" + issue['component'])
+            r = requests.get(self.localhepler.SONAR_URL
+                             + "/api/sources/show?from="
+                             + str(issue['textRange']['startLine'])
+                             + "&to=" + str(issue['textRange']['endLine'])
+                             + "&key=" + issue['component'])
             items = r.json()["sources"]
 
             entries[count]['code'] = []
@@ -219,14 +213,19 @@ class ProcessSonar (object):
     def getcommit (self, onlyStat):
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL +"/groups/" + self.GITLAB_GROUP + "/projects?search=" + self.PLAIN_PROJECT
+        URL = GITLAB_URL \
+              +"/groups/" \
+              + self.localhepler.GITLAB_GROUP \
+              + "/projects?search="\
+              + self.localhepler.PLAIN_PROJECT
 
-        r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
+        r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.localhepler.TOKEN})
         projects = r.json()
 
         projectid = -1
         for p in projects:
-            if p['path'] ==self.PLAIN_PROJECT or p['name'] == self.PLAIN_PROJECT:
+            if p['path'] ==self.localhepler.PLAIN_PROJECT \
+                    or p['name'] == self.localhepler.PLAIN_PROJECT:
                 projectid = p['id']
                 break
 
@@ -236,9 +235,9 @@ class ProcessSonar (object):
         res = {}
         res['authors'] = {}
         dates = {}
-        commits = GitlabHelper().getcommits(GITLAB_URL, projectid, self.TOKEN)
+        commits = GitlabHelper().getcommits(GITLAB_URL, projectid, self.localhepler.TOKEN)
 
-        studentidmaps = LocalHelper().readStudentInfo()
+        studentidmaps = self.localhepler.readStudentInfo()
 
         if onlyStat:
             return self.getcommitstatfast(studentidmaps)
@@ -296,7 +295,7 @@ class ProcessSonar (object):
 
     def getcommitstatfast(self, studentidmaps):
 
-        stats = self.executeShellStats()
+        stats = self.localhepler.executeShellStats()
 
 
         parsed = re.split(r'\n--\n', stats)
@@ -363,7 +362,7 @@ class ProcessSonar (object):
             res[authorname]["sorteddates"] = []
             res[authorname]["sorteddates"].extend(res_dates[authorname])
 
-        projectdates = LocalHelper().readProjectDates(self.PLAIN_PROJECT)
+        projectdates = self.localhepler.readProjectDates(self.localhepler.PLAIN_PROJECT)
         startdate = projectdates['STARTDATE']
         enddate = projectdates['ENDDATE']
 
@@ -378,7 +377,9 @@ class ProcessSonar (object):
     def getproject(self):
 
         res = {}
-        r = requests.get(self.SONAR_URL + "/api/components/show?component=" + self.TEST_PROJECT)
+        r = requests.get(self.localhepler.SONAR_URL
+                         + "/api/components/show?component="
+                         + self.localhepler.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
             res['sonar'] = "not found"
@@ -386,8 +387,12 @@ class ProcessSonar (object):
             res['sonar'] = "found"
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL + "/groups/" + self.GITLAB_GROUP + "/projects?search=" + self.PLAIN_PROJECT
-        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.TOKEN})
+        URL = GITLAB_URL \
+              + "/groups/" \
+              + self.localhepler.GITLAB_GROUP \
+              + "/projects?search="\
+              + self.localhepler.PLAIN_PROJECT
+        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.localhepler.TOKEN})
         if len(r.json()) == 0:
             res['gitlab'] = "not found"
         else:
@@ -401,13 +406,12 @@ class ProcessSonar (object):
         if res['sonar'] == 'not found':
             return json.dumps({})
 
-
-        self.executeShellLog()
-
-        git = self.executeShellCode()
-
         res = {}
-        path = self.CODES_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
+        path = self.localhepler.CODES_PATH \
+               + "/" \
+               + self.localhepler.GITLAB_GROUP \
+               + "/" \
+               + self.localhepler.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
 
             if "/.git/" in root or root[-4:] == ".git":
@@ -436,36 +440,38 @@ class ProcessSonar (object):
            if isinstance(mainissuelist, dict):
                for subcategory, subissuelist in mainissuelist.items():
 
-                   DataHelper().makeIssueEntryForDIR(subissuelist['detail'], self.TEST_PROJECT,  res)
+                   DataHelper().makeIssueEntryForDIR(subissuelist['detail'],
+                                                     self.localhepler.TEST_PROJECT,
+                                                     res)
            else:
-               DataHelper().makeIssueEntryForDIR(mainissuelist, self.TEST_PROJECT,  res)
+               DataHelper().makeIssueEntryForDIR(mainissuelist,
+                                                 self.localhepler.TEST_PROJECT,
+                                                 res)
 
         return json.dumps(res)
 
 
-    def executeShellLog (self):
-        return subprocess.check_output([self.SHELL_PATH + '/logs.sh',
-                                 self.GITLAB_GROUP,
-                                 self.PLAIN_PROJECT,
-                                 self.ROOT_PATH])
+    def getHistory (self):
 
-    def executeShellCode (self):
-        return subprocess.check_output([self.SHELL_PATH + '/codes.sh',
-                                       self.TOKEN,
-                                       self.GITLAB_GROUP,
-                                       self.PLAIN_PROJECT,
-                                       self.ROOT_PATH])
+        resdict = {}
+        for filename in os.listdir(self.localhepler.LOG_STATISTICS):
+            if filename.endswith(".json"):
+                with open(self.localhepler.LOG_STATISTICS + "/" + filename, 'r') as f:
+                    data = json.load(f)
+                    resdict[filename] = data
+        res = []
+        for key in sorted(resdict.iterkeys()):
+            entry = {key:resdict[key]}
+            res.append(entry)
 
-    def executeShellStats(self):
-        return subprocess.check_output([self.SHELL_PATH + '/stats.sh',
-                                 self.TOKEN,
-                                 self.GITLAB_GROUP,
-                                 self.PLAIN_PROJECT,
-                                 self.ROOT_PATH])
+        DataHelper().displayData(res)
+        return json.dumps(res)
+
+
 
 
 
 if __name__ == '__main__':
 
-    print "getsrun"
-    ProcessSonar("CompSci308_2018Spring", "slogo_team12").statistics()
+    ProcessSonar("CompSci308_2018Spring", "test-xu").getHistory()
+

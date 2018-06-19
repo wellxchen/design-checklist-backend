@@ -9,7 +9,7 @@ CACHE="cache"
 SHELLDIR="$ROOT/server/shell"
 
 cd $SHELLDIR
-./makedir.sh $CODE $GROUP $ROOT
+./makecachedir.sh $CODE $GROUP $ROOT
 
 cd $ROOT/$CACHE/$CODE/$GROUP
 
