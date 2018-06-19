@@ -173,8 +173,8 @@ class LocalHelper ():
 
     def executeShellCheckDIR(self, WHICHLOG, ANALYSISID):
         '''
-            execute shell script that check log file existence
-            :return: whether it exists
+        execute shell script that check log file existence
+        :return: whether it exists
         '''
         return subprocess.check_output([self.SHELL_PATH + '/checkdir.sh',
                                         WHICHLOG,

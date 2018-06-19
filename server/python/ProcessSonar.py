@@ -49,6 +49,7 @@ class ProcessSonar (object):
 
     def process(self, onlyDup):
 
+
         #if project not been analysis return error
         r = requests.get( self.localhepler.SONAR_URL + "/api/components/show?component=" +  self.localhepler.TEST_PROJECT)
         found_project = r.json()
