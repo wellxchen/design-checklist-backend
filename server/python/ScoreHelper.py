@@ -1,5 +1,8 @@
 '''
 Helper class that handle score related functionalities
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
 '''
 
 class ScoreHelper():

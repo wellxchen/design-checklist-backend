@@ -1,5 +1,8 @@
 '''
 Helper class that handle data structure related functionalities
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
 '''
 
 

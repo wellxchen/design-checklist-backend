@@ -1,5 +1,8 @@
 '''
 Helper class that handle sonarqube related functionalities
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
 '''
 
 from DataHelper import DataHelper

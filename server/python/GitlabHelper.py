@@ -1,6 +1,9 @@
 
 '''
 Helper class that handle gitlab related functionalities
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
 '''
 
 

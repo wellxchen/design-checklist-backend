@@ -1,6 +1,21 @@
 
+'''
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
+'''
+
+
 import requests
 import json
+
+
+import copy
+import re
+import os
+from os.path import dirname
+from dotenv import load_dotenv
+
+
 
 from LocalHelper import LocalHelper
 from ScoreHelper import ScoreHelper
@@ -9,15 +24,6 @@ from SonarHelper import SonarHelper
 from FormatHelper import FormatHelper
 from DataHelper import  DataHelper
 from CategoriesHelper import CategoriesHelper
-
-import os
-from os.path import dirname
-from dotenv import load_dotenv
-
-import copy
-
-
-import re
 
 
 dotenv_path = dirname(__file__)[:-14] + "/server/documents/local/app-env"
