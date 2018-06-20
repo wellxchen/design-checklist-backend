@@ -1,8 +1,8 @@
 
-'''
+"""
 :Authors:
     - Chengkang Xu <cx33@duke.edu>
-'''
+"""
 
 
 import requests
@@ -29,17 +29,17 @@ load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
 
-    '''
+    """
     handles all incoming requests
-    '''
+    """
 
     def __init__(self, group, project):
 
-        '''
+        """
         init process sonar class and set buffers accordingly
         :param group:
         :param project:
-        '''
+        """
 
         self.localhepler = LocalHelper(group, project) #stores and handles all local related functions
         self.fileChecked = set() #whether files are checked
@@ -66,13 +66,13 @@ class ProcessSonar (object):
 
     def process(self, onlyDup):
 
-        '''
+        """
         get issues from sonarqube, filter out irrelevant issues, reconstruct the remaining issues
         according to the predefined 5 main categories and subcategories.
 
         :param onlyDup: decide if only duplication issues are returned
         :return: issues in the selected project
-        '''
+        """
 
         #if project not been analysis return error
         r = requests.get( self.localhepler.SONAR_URL + "/api/components/show?component=" +  self.localhepler.TEST_PROJECT)
@@ -156,13 +156,13 @@ class ProcessSonar (object):
         percentage = ScoreHelper().calPercentByScore(scores, scores_rem)
         data = DataHelper().dataHandler(self.message, percentage, onlyDup)
 
-        #store severity list
+        # store severity list
 
         data['severitylist'] = CategoriesHelper().getSeverityList()
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
-        #if not only duplication, store the log
+        # if not only duplication, store the log
 
         if not onlyDup:
             self.localhepler.writeLog(self.localhepler.LOG_ISSUES, res)
@@ -171,10 +171,10 @@ class ProcessSonar (object):
 
     def statistics(self):
 
-        '''
+        """
         get the statistics of the project
         :return:  statistics in json
-        '''
+        """
 
         functions = "functions," #keyword for number of functions
         classes = "classes," #keyword for number of classes
@@ -206,22 +206,34 @@ class ProcessSonar (object):
 
     def longestmethods (self):
 
-        total_pages = SonarHelper().getNumOfPagesIssues(self.localhepler.SONAR_URL,
-                                                        self.localhepler.TEST_PROJECT)
+        """
+        get the longest methods (at least more than 15 lines of codes)
+        :return: top 10 longest methods names that exceed 15 lines of codes
+        """
+
+        total_pages = SonarHelper().\
+            getNumOfPagesIssues(self.localhepler.SONAR_URL,
+                                self.localhepler.TEST_PROJECT)  # get total number of pages in response
+
+
         issues = SonarHelper().getIssues(self.localhepler.SONAR_URL,
                                          self.localhepler.TEST_PROJECT,
                                          total_pages,
-                                         "squid:S138") #array
+                                         "squid:S138")  # get issues with method too long
 
-        entries = []
+        entries = []  # store result
 
-        count = 0
+        count = 0  # number of entries
+
+        # start to iterating issues and store relevant fields
 
         for issue in issues:
             entries.append({})
             entries[count]['methodlen'] = int(issue['message'].split()[3])
             entries[count]['startline'] = issue['line']
             entries[count]['path'] = issue['component']
+
+            # get codes from sonar
 
             r = requests.get(self.localhepler.SONAR_URL
                              + "/api/sources/show?from="
@@ -232,6 +244,9 @@ class ProcessSonar (object):
 
             entries[count]['code'] = []
             title = 0
+
+            # strip methond name and store codes
+
             for item in items:
                 mname = ""
                 if title == 0:
@@ -240,11 +255,19 @@ class ProcessSonar (object):
                 entries[count]['code'].append(item[1])
 
             count += 1
+
+         # sort the result by method length
         entries.sort(key=lambda x: x['methodlen'], reverse=False)
         return entries[:10]
 
 
     def getcommit (self, onlyStat):
+
+        """
+        get commit information/statistics from gitlab
+        :param onlyStat: whether only statistics is returned
+        :return: information about commits or statistics about commits
+        """
 
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL \
@@ -282,7 +305,7 @@ class ProcessSonar (object):
             authoremail = commit['author_email']
             authorname = GitlabHelper().convertEmailtoGitlabId(authoremail,studentidmaps)
 
-            #get other info
+            # get other info
 
             commitdate = commit['committed_date']
             commitid = commit['id']
