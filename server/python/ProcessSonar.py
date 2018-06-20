@@ -367,22 +367,25 @@ class ProcessSonar (object):
         :return: statistics information of commits
         """
 
-        # call shell script to get statistics information
+        stats = self.localhepler.executeShellStats()   # call shell script to get statistics information
 
-        stats = self.localhepler.executeShellStats()
+        parsed = re.split(r'\n--\n', stats)  # delete empty lines
 
-        parsed = re.split(r'\n--\n', stats)
+        res = {}  # resualt
+        res_dates = {}  # store dates correspond to each author
+        current_author = ""  # current author
+        converted_date = ""  # dates after conversion
+        left_bound = FormatHelper().getDateFromTuple("2099 Dec 31")  # initial left bound
+        right_bound = FormatHelper().getDateFromTuple("1999 Jan 1")  #initial right bound
 
-        res = {}
-        res_dates = {}
-        current_author = ""
-        converted_date = ""
-        left_bound = FormatHelper().getDateFromTuple("2099 Dec 31")
-        right_bound = FormatHelper().getDateFromTuple("1999 Jan 1")
+        # start to iterating through parsed statistics
         for p in parsed:
             lines = p.split("\n")
+
+            #  iterating each line
             for line in lines:
 
+                # if keyword author is found in the line, store the author information
                 if "Author:" in line:
                     authorline = line.split()
                     authoremail = authorline[-1]
@@ -449,6 +452,11 @@ class ProcessSonar (object):
 
     def getproject(self):
 
+        """
+        check if project exist in sonar and gitlab
+        :return: string contains whether project exists
+        """
+
         res = {}
         r = requests.get(self.localhepler.SONAR_URL
                          + "/api/components/show?component="
@@ -472,8 +480,12 @@ class ProcessSonar (object):
             res['gitlab'] = "found"
         return json.dumps(res)
 
-    def getalldirectory(self): #delete packages that do not have any .java
+    def getalldirectory(self):
 
+        """
+        get all directories in a project
+        :return: json contains the directories and files
+        """
         res = json.loads(self.getproject())
 
         if res['sonar'] == 'not found':
@@ -503,7 +515,7 @@ class ProcessSonar (object):
             res[rootshort]['directories'] = FormatHelper().getFullPath(rootshort, subdirs)
             res[rootshort]['files'] = FormatHelper().getFullPath(rootshort, files)
 
-        #utility().displayData(res)
+
         issues = json.loads(self.process(False))
 
         for category, mainissuelist in issues['error'].items():
@@ -525,6 +537,11 @@ class ProcessSonar (object):
 
 
     def getHistory (self):
+
+        """
+        get history of analysis
+        :return: history
+        """
 
         resdict = {}
         for filename in os.listdir(self.localhepler.LOG_STATISTICS):
