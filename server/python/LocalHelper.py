@@ -1,5 +1,8 @@
 '''
 Helper class that handle local storage
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
 '''
 
 import re

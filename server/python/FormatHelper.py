@@ -1,5 +1,8 @@
 '''
 Helper class that handle format related functionalities
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
 '''
 
 import re

@@ -1,3 +1,7 @@
+'''
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
+'''
 
 class categories ():
 

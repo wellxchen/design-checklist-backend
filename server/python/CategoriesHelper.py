@@ -1,6 +1,10 @@
 
 '''
 handle categories related functionality
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
+
 '''
 
 from categories import categories
