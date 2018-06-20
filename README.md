@@ -12,6 +12,17 @@
 
 **Java Notes**: Code issues specific to Java
 
-This repo is the backend server that retrieves analysis data as json from SonarQube and processes data using python and shell. Rule ids and categories are temporarily hardcoded on backend to boost performance. Ultimately, SQL database will be used to store the hardcoded things for better code design.
+This repo is the backend server that retrieves analysis data as json from SonarQube and processes the data using python and shell. The server currently support 11 endpoints, including: 
+**/api/show** #get all issues 
+**/api/statistics** #get statistics of the project
+**/api/file/xml** #get required xml file to run pipeline on gitlab
+**/api/file/yml** #get required yml file to run pipeline on gitlab
+**/api/duplications** #get issues regarding duplications
+**/api/lmethod** #get longest method in the project
+**/api/commit** #get gitlab commit information about a project
+**/api/commitstat** #get gitlab commit statistics about a project
+**/api/directory** #get issues by directories
+**/api/project** #check whether a project has been analyze
+**/api/author** #get issues by author
 
 To start the server, run ```FLASK_APP=__init__.py flask run```, then enter the ```localhost:5000/``` + ```<project name you have analzed on sonarqube>``` in browser. Frontend:https://github.com/zacharyfmarion/sonarqube-web-frontend
