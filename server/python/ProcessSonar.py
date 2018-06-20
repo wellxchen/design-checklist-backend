@@ -269,6 +269,8 @@ class ProcessSonar (object):
         :return: information about commits or statistics about commits
         """
 
+        # request gitlab for projects information based on group
+
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL \
               +"/groups/" \
@@ -279,6 +281,7 @@ class ProcessSonar (object):
         r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.localhepler.TOKEN})
         projects = r.json()
 
+        # get project id from response
         projectid = -1
         for p in projects:
             if p['path'] ==self.localhepler.PLAIN_PROJECT \
@@ -289,16 +292,23 @@ class ProcessSonar (object):
         if projectid == -1:
             return []
 
+        # using projectid to get commits
+
         res = {}
         res['authors'] = {}
         dates = {}
         commits = GitlabHelper().getcommits(GITLAB_URL, projectid, self.localhepler.TOKEN)
 
+        # read in student ids and names from csv
+
         studentidmaps = self.localhepler.readStudentInfo()
+
+        # if only statistics is requested, get the statistics using the student id map
 
         if onlyStat:
             return self.getcommitstatfast(studentidmaps)
 
+        # iterating through all commits and stores relevant information
 
         for commit in commits:
             # retrieve gitlab id
@@ -321,7 +331,7 @@ class ProcessSonar (object):
             entry['files'] = []
             res['authors'][authorname]['commitlist'].append(entry)
 
-            #handle date
+            # handle date
 
             shortdate = commitdate[:10]
             curnumdates = len(res['authors'][authorname]['commitdates'])
@@ -337,6 +347,7 @@ class ProcessSonar (object):
 
         totalnumofcommits = len(commits)
 
+        # sort commitsdates, lists and store other information
         for author in res['authors']:
             res['authors'][author]['commitdates'].sort(key=lambda x: x.keys(), reverse=False)
             res['authors'][author]['commitlist'].sort(key=lambda x: x['date'], reverse=False)
@@ -345,15 +356,20 @@ class ProcessSonar (object):
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
 
-        DataHelper().displayData(res)
-
         return json.dumps(res)
 
 
     def getcommitstatfast(self, studentidmaps):
 
-        stats = self.localhepler.executeShellStats()
+        """
+        get statistics info of commits
+        :param studentidmaps:  store student ids and names
+        :return: statistics information of commits
+        """
 
+        # call shell script to get statistics information
+
+        stats = self.localhepler.executeShellStats()
 
         parsed = re.split(r'\n--\n', stats)
 
