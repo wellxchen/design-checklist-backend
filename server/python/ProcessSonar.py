@@ -15,8 +15,6 @@ import os
 from os.path import dirname
 from dotenv import load_dotenv
 
-
-
 from LocalHelper import LocalHelper
 from ScoreHelper import ScoreHelper
 from GitlabHelper import GitlabHelper
@@ -31,13 +29,24 @@ load_dotenv(dotenv_path)
 
 class ProcessSonar (object):
 
+    '''
+    handles all incoming requests
+    '''
+
     def __init__(self, group, project):
 
-        self.localhepler = LocalHelper(group, project)
-        self.fileChecked = set()
-        self.rulesViolated = []
-        self.message = []
+        '''
+        init process sonar class and set buffers accordingly
+        :param group:
+        :param project:
+        '''
 
+        self.localhepler = LocalHelper(group, project) #stores and handles all local related functions
+        self.fileChecked = set() #whether files are checked
+        self.rulesViolated = [] #store rules violated
+        self.message = [] #store details of issues
+
+        #initiate buffers
         for i in range(6):
             self.rulesViolated.append([])
             self.message.append([])
@@ -49,12 +58,21 @@ class ProcessSonar (object):
             for j in range(k):
                 self.message[i].append([])
 
+        #check log folders existed, if not, create
+
         self.localhepler.executeShellLog()
         self.localhepler.executeShellCode()
 
 
     def process(self, onlyDup):
 
+        '''
+        get issues from sonarqube, filter out irrelevant issues, reconstruct the remaining issues
+        according to the predefined 5 main categories and subcategories.
+
+        :param onlyDup: decide if only duplication issues are returned
+        :return: issues in the selected project
+        '''
 
         #if project not been analysis return error
         r = requests.get( self.localhepler.SONAR_URL + "/api/components/show?component=" +  self.localhepler.TEST_PROJECT)
@@ -126,6 +144,7 @@ class ProcessSonar (object):
                             errmessage['code'].append(entry)
                     DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
+        #if there is duplication issues, store the issues in separate buffer
         if len(dup_errmessages) > 0:
             SonarHelper().duplicatedBlockHandlerStore(self.localhepler.SONAR_URL,
                                                   dup_errmessages,
@@ -135,15 +154,15 @@ class ProcessSonar (object):
         # cal percentage
 
         percentage = ScoreHelper().calPercentByScore(scores, scores_rem)
-
         data = DataHelper().dataHandler(self.message, percentage, onlyDup)
+
+        #store severity list
 
         data['severitylist'] = CategoriesHelper().getSeverityList()
 
-
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
-
+        #if not only duplication, store the log
 
         if not onlyDup:
             self.localhepler.writeLog(self.localhepler.LOG_ISSUES, res)
@@ -152,12 +171,19 @@ class ProcessSonar (object):
 
     def statistics(self):
 
-        functions = "functions,"
-        classes = "classes,"
-        directories = "directories,"
-        comment_lines = "comment_lines,"
-        comment_lines_density = "comment_lines_density,"
-        ncloc = "ncloc"
+        '''
+        get the statistics of the project
+        :return:  statistics in json
+        '''
+
+        functions = "functions," #keyword for number of functions
+        classes = "classes," #keyword for number of classes
+        directories = "directories," #keyword for number of directories
+        comment_lines = "comment_lines," #keyword for number of comments
+        comment_lines_density = "comment_lines_density," #keyword for density of comments
+        ncloc = "ncloc" #keyword for number of lines in total
+
+        #query sonarqube to get the statistics
 
         r = requests.get(
             self.localhepler.SONAR_URL + '/api/measures/component?componentKey=' +
@@ -169,10 +195,11 @@ class ProcessSonar (object):
         for measure in measures:
             res['measures'][measure['metric']] = measure['value']
 
+        #store longest methods
         res['measures']['lmethods'] = []
         res['measures']['lmethods'].extend(self.longestmethods())
 
-
+        #write logs to local
         self.localhepler.handleLogJSON(self.localhepler.LOG_STATISTICS, res)
 
         return json.dumps(res)
