@@ -41,12 +41,12 @@ class ProcessSonar (object):
         :param project:
         """
 
-        self.localhepler = LocalHelper(group, project) #stores and handles all local related functions
-        self.fileChecked = set() #whether files are checked
-        self.rulesViolated = [] #store rules violated
-        self.message = [] #store details of issues
+        self.localhepler = LocalHelper(group, project)  # stores and handles all local related functions
+        self.fileChecked = set()  # whether files are checked
+        self.rulesViolated = []  # store rules violated
+        self.message = []  # store details of issues
 
-        #initiate buffers
+        # initiate buffers
         for i in range(6):
             self.rulesViolated.append([])
             self.message.append([])
@@ -58,7 +58,7 @@ class ProcessSonar (object):
             for j in range(k):
                 self.message[i].append([])
 
-        #check log folders existed, if not, create
+        # check log folders existed, if not, create
 
         self.localhepler.executeShellLog()
         self.localhepler.executeShellCode()
@@ -74,23 +74,23 @@ class ProcessSonar (object):
         :return: issues in the selected project
         """
 
-        #if project not been analysis return error
+        # if project not been analysis return error
         r = requests.get( self.localhepler.SONAR_URL + "/api/components/show?component=" +  self.localhepler.TEST_PROJECT)
         found_project = r.json()
         if 'errors' in found_project:
             return DataHelper().errHandler()
 
-        #get number of pages
+        # get number of pages
 
         total_pages = SonarHelper().getNumOfPagesIssues( self.localhepler.SONAR_URL,
                                                          self.localhepler.TEST_PROJECT)
 
-        #get all issues that are open
+        # get all issues that are open
         issues = SonarHelper().getIssues (self.localhepler.SONAR_URL,
                                           self.localhepler.TEST_PROJECT,
                                           total_pages, "")
 
-        #get all rules associate with quanlity profile
+        #g et all rules associate with quanlity profile
         rules = []
         if not onlyDup:
             r = requests.get(
@@ -100,7 +100,7 @@ class ProcessSonar (object):
             rules.extend(r.json()['rules'])
         else:
             rules.extend(CategoriesHelper().getDuplications())
-        #store details
+        # store details
         dup_errmessages = []
         scores = ScoreHelper().calTotalScoreAllCategory(self.localhepler.SONAR_URL)
         scores_rem = copy.deepcopy(scores)
@@ -117,13 +117,13 @@ class ProcessSonar (object):
                 errmessage['message'] = issue['message']
                 errmessage['severity'] = ScoreHelper().renameSeverity(issue['severity'])
 
-                #deduct score
+                # deduct score
                 maincategoryname = CategoriesHelper().getMainCateNameById(ruleID)
                 if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
                     scores[maincategoryname] -= ScoreHelper().getScoreForSeverity(issue['severity'])
                     scores_checked_Id.add(ruleID)
 
-                #add code
+                # add code
                 if ruleID == "common-java:DuplicatedBlocks":
                     dup_errmessages.append(errmessage)
                 else:
@@ -144,7 +144,7 @@ class ProcessSonar (object):
                             errmessage['code'].append(entry)
                     DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
-        #if there is duplication issues, store the issues in separate buffer
+        # if there is duplication issues, store the issues in separate buffer
         if len(dup_errmessages) > 0:
             SonarHelper().duplicatedBlockHandlerStore(self.localhepler.SONAR_URL,
                                                   dup_errmessages,
@@ -292,7 +292,7 @@ class ProcessSonar (object):
         if projectid == -1:
             return []
 
-        # using projectid to get commits
+        # using project id to get commits
 
         res = {}
         res['authors'] = {}
@@ -371,7 +371,7 @@ class ProcessSonar (object):
 
         parsed = re.split(r'\n--\n', stats)  # delete empty lines
 
-        res = {}  # resualt
+        res = {}  # result
         res_dates = {}  # store dates correspond to each author
         current_author = ""  # current author
         converted_date = ""  # dates after conversion
@@ -480,11 +480,11 @@ class ProcessSonar (object):
             res['gitlab'] = "found"
         return json.dumps(res)
 
-    def getalldirectory(self):
+    def getbydirectory(self):
 
         """
-        get all directories in a project
-        :return: json contains the directories and files
+        return all issues corresponding to authors
+        :return: json contains the directories and files and issues in them
         """
         res = json.loads(self.getproject())
 
@@ -543,19 +543,29 @@ class ProcessSonar (object):
         :return: history
         """
 
+        # iterating through log directory
         resdict = {}
         for filename in os.listdir(self.localhepler.LOG_STATISTICS):
+            # if file end with json, open the file and add it to the buffer
             if filename.endswith(".json"):
                 with open(self.localhepler.LOG_STATISTICS + "/" + filename, 'r') as f:
                     data = json.load(f)
                     resdict[filename] = data
-        res = []
+        res = []  # store the result
+
+        # sort the result by analysis date
         for key in sorted(resdict.iterkeys()):
             entry = {key:resdict[key]}
             res.append(entry)
 
-        DataHelper().displayData(res)
         return json.dumps(res)
+
+
+    def getbyauthor (self):
+        """
+        get issues by authors
+        :return: json contains authors and issues in their codes
+        """
 
 
 

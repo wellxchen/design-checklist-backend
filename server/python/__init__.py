@@ -101,14 +101,14 @@ def getcommitstat ():
     return ProcessSonar(group, project).getcommit(True)
 
 @app.route("/api/directory")
-def getalldirectory ():
+def getbydirectory ():
     '''
-    return all directories in the project
-    :return: directories
+    return all issues corresponding to directories
+    :return: directories and issues in them
     '''
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project).getalldirectory()
+    return ProcessSonar(group, project).getbydirectory()
 
 @app.route("/api/project")
 def getproject ():
@@ -125,6 +125,15 @@ def getproject ():
     return ProcessSonar(group, project).getHistory()
 
 
+@app.route("/api/author")
+def getbyauthor():
+    """
+    return all issues corresponding to authors
+    :return: authors and issues they have
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return ProcessSonar(group, project).getbyauthor()
 
 if __name__ == '__main__':
     app.run(threaded=True)
