@@ -15,6 +15,13 @@ class SonarHelper():
         pass
 
     def activateRule(self, SONAR_URL, QUALITY_PROFILE, ruleID):
+        """
+        activate a single rule in a quality profile on sonarqube
+        :param SONAR_URL: sonarqube url
+        :param QUALITY_PROFILE:  quality profile to be changed
+        :param ruleID: rule to be activated
+        :return: void
+        """
         SONAR_LOGIN = os.environ.get("SONAR_LOGIN")
         SONAR_PASSWORD = os.environ.get("SONAR_PASSWORD")
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=',
