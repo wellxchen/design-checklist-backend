@@ -102,6 +102,7 @@ class ProcessSonar (object):
 
             if len(ruleResult) > 0:
                 errmessage = DataHelper().makeErrMessage(issue,ruleResult)
+                errmessage['author'] = issue['author']
                 
                 # deduct score
                 maincategoryname = CategoriesHelper().getMainCateNameById(ruleID)
@@ -141,7 +142,7 @@ class ProcessSonar (object):
         # if not only duplication, store the log
 
         if not onlyDup:
-            self.localhepler.writeLog(self.localhepler.LOG_ISSUES, res)
+            self.localhepler.handleLogJSON(self.localhepler.LOG_ISSUES, res)
 
         return res
 
@@ -407,7 +408,7 @@ class ProcessSonar (object):
             "right" : enddate
         }
 
-        DataHelper().displayData(res)
+
         return json.dumps(res)
 
     def getproject(self):

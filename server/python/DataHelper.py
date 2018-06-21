@@ -79,7 +79,7 @@ class DataHelper ():
 
             data['percentage'] = {}
             for i in range(0, self.categorieshelper.getNumMainTitle()):
-                data['percentage'][self.categorieshelper.getTitle(i)] = percentage[i]
+                data['percentage'][self.categorieshelper.getMainTitle(i)] = percentage[i]
 
             return data
 
