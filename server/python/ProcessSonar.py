@@ -75,7 +75,7 @@ class ProcessSonar (object):
         """
 
         # get all issues that are open
-        issues = SonarHelper().getIssuesInCategories(self.localhepler.SONAR_URL,
+        issues = SonarHelper().getIssuesAll(self.localhepler.SONAR_URL,
                                                      self.localhepler.TEST_PROJECT)
 
         if 'err' in issues:
@@ -84,7 +84,6 @@ class ProcessSonar (object):
         # get all rules associate with quanlity profile
         rules = []
         if not onlyDup:
-
             rules.extend(SonarHelper().getRules(self.localhepler.SONAR_URL,
                                                 self.localhepler.QUALITY_PROFILE))
         else:
@@ -101,12 +100,8 @@ class ProcessSonar (object):
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)
 
             if len(ruleResult) > 0:
-                errmessage = {}
-                errmessage['path'] = [issue['component']]
-                errmessage['rule'] = ruleResult[0]['name']
-                errmessage['message'] = issue['message']
-                errmessage['severity'] = ScoreHelper().renameSeverity(issue['severity'])
-
+                errmessage = DataHelper().makeErrMessage(issue,ruleResult)
+                
                 # deduct score
                 maincategoryname = CategoriesHelper().getMainCateNameById(ruleID)
                 if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
@@ -118,20 +113,7 @@ class ProcessSonar (object):
                     dup_errmessages.append(errmessage)
                 else:
                     errmessage['code'] = []
-                    if 'textRange' in issue:
-                        textRange = SonarHelper().makeTextRange(issue)
-                        for entry in textRange:
-                            startLine = entry['textRange']['startLine']
-                            endLine = entry['textRange']['endLine']
-                            r = requests.get(self.localhepler.SONAR_URL + "/api/sources/show?from=" + str(startLine) +
-                                     "&to=" + str(endLine) +
-                                     "&key=" + issue['component'])
-                            items = r.json()["sources"]
-
-                            entry['code'] = []
-                            for item in items:
-                                entry['code'].append(item[1])
-                            errmessage['code'].append(entry)
+                    DataHelper().storeCodes(SONAR_URL, issue, errmessage)
                     DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
         # if there is duplication issues, store the issues in separate buffer
@@ -166,20 +148,7 @@ class ProcessSonar (object):
         :return:  statistics in json
         """
 
-        functions = "functions," #keyword for number of functions
-        classes = "classes," #keyword for number of classes
-        directories = "directories," #keyword for number of directories
-        comment_lines = "comment_lines," #keyword for number of comments
-        comment_lines_density = "comment_lines_density," #keyword for density of comments
-        ncloc = "ncloc" #keyword for number of lines in total
-
-        #query sonarqube to get the statistics
-
-        r = requests.get(
-            self.localhepler.SONAR_URL + '/api/measures/component?componentKey=' +
-            self.localhepler.TEST_PROJECT + "&metricKeys="  + functions +
-            classes + directories + comment_lines + comment_lines_density + ncloc)
-        measures = r.json()['component']['measures']
+        measures = SonarHelper().getMeasures(SONAR_URL, TEST_PROJECT)
         res = {}
         res ['measures'] = {}
         for measure in measures:
@@ -225,12 +194,9 @@ class ProcessSonar (object):
 
             # get codes from sonar
 
-            r = requests.get(self.localhepler.SONAR_URL
-                             + "/api/sources/show?from="
-                             + str(issue['textRange']['startLine'])
-                             + "&to=" + str(issue['textRange']['endLine'])
-                             + "&key=" + issue['component'])
-            items = r.json()["sources"]
+            sl = issue['textRange']['startLine']
+            el =  issue['textRange']['endLine']
+            items = SonarHelper().getSource(SONAR_URL, sl, el, issue)
 
             entries[count]['code'] = []
             title = 0
@@ -498,7 +464,7 @@ class ProcessSonar (object):
             if rootshort[0] == '/':
                 rootshort = rootshort[1:]
 
-            if DataHelper().shouldSkipDir(rootshort, ["src"]):
+            if self.localhepler.shouldSkipDir(rootshort, ["src"]):
                 continue
 
             res[rootshort] = {}
@@ -550,21 +516,34 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
-    def getbyauthor (self):
+    def getbyauthor (self, onlyDup):
+        
         """
         get issues by authors
+        :param onlyDup: if only returns issues regarding duplication
         :return: json contains authors and issues in their codes
         """
-        # get number of pages
-
-        total_pages = SonarHelper().getNumOfPagesIssues(self.localhepler.SONAR_URL,
-                                                        self.localhepler.TEST_PROJECT)
 
         # get all issues that are open
-        r = SonarHelper().getIssues(self.localhepler.SONAR_URL,
-                                    self.localhepler.TEST_PROJECT,
-                                    total_pages, "")
-        DataHelper().displayData(r)
+        issues = SonarHelper().getIssuesAll(self.localhepler.SONAR_URL,
+                                                     self.localhepler.TEST_PROJECT)
+        if 'err' in issues:
+            return issues
+
+        rules = SonarHelper().getRules(self.localhepler.SONAR_URL,
+                                       self.localhepler.QUALITY_PROFILE)
+
+        res = {}
+        for issue in issues:
+            ruleResult = DataHelper().filterRuleFromSonar(issue, rules)
+            if len(ruleResult) > 0:
+                author = issue['author']
+                if author not in res:
+                    res[author] = {}
+
+
+
+
 
 
 

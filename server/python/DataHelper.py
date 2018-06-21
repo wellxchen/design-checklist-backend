@@ -8,6 +8,7 @@ Helper class that handle data structure related functionalities
 
 import re
 from CategoriesHelper import CategoriesHelper
+from SonarHelper import  SonarHelper
 
 
 
@@ -17,7 +18,7 @@ class DataHelper ():
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(data)
 
-        # store the issue in message
+    # store the issue in message
 
     def storeIssue(self, ruleID, errmessage, message, rulesViolated):
             ruleInfo = CategoriesHelper().getRuleDetail(ruleID)
@@ -32,6 +33,22 @@ class DataHelper ():
                 message[mainindex].append(errmessage)
             if not ruleID in rulesViolated[mainindex]:
                 rulesViolated[mainindex].append(ruleID)
+
+    # store codes
+    def storeCodes(self, SONAR_URL, issue, errmessage):
+        if 'textRange' in issue:
+            textRange = self.makeTextRange(issue)
+            for entry in textRange:
+                startLine = entry['textRange']['startLine']
+                endLine = entry['textRange']['endLine']
+
+                items = SonarHelper().getSource(SONAR_URL, startLine, endLine, issue)
+
+                entry['code'] = []
+                for item in items:
+                    entry['code'].append(item[1])
+                errmessage['code'].append(entry)
+
 
 
 
@@ -72,11 +89,7 @@ class DataHelper ():
 
             return data
 
-    def shouldSkipDir(self, dir, returndirs):
-            for returndir in returndirs:
-                if dir == returndir or dir[:4] == "src/":
-                    return False
-            return True
+
 
     def makeIssueEntryForDIR (self, issuelist, TEST_PROJECT, res):
         for issue in issuelist:
@@ -87,3 +100,31 @@ class DataHelper ():
                 if parentdirectory not in res or filepathshort not in res[parentdirectory]["files"]:
                     continue
                 res[parentdirectory]["files"][filepathshort].append(issue)
+
+    def filterRuleFromSonar (self, issue, rules):
+        ruleID = issue['rule']
+        ruleResult = filter(lambda r: r['key'] == ruleID, rules)
+        return ruleResult
+
+    # get the text range in either textRange or flow
+
+    def makeTextRange(self, issue):
+
+        res = []
+        if len(issue['flows']) == 0:
+            res.append({'textRange': issue['textRange'], 'msg': ""})
+        else:
+            for line in issue['flows']:
+                res.append(line['locations'][0])
+        res.sort(key=lambda x: x['textRange']['startLine'], reverse=False)
+
+        return res
+
+    # extract useful information from issue and make the err message
+    def makeErrMessage (self, issue, ruleResult):
+        errmessage = {}
+        errmessage['path'] = [issue['component']]
+        errmessage['rule'] = ruleResult[0]['name']
+        errmessage['message'] = issue['message']
+        errmessage['severity'] = ScoreHelper().renameSeverity(issue['severity'])
+        return errmessage

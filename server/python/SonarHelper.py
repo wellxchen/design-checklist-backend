@@ -69,7 +69,7 @@ class SonarHelper():
 
     # get issues only associates with the rules that are in the categories
 
-    def getIssuesInCategories (self, SONAR_URL, TEST_PROJECT):
+    def getIssuesAll (self, SONAR_URL, TEST_PROJECT):
         # if project not been analysis return error
         r = requests.get(SONAR_URL + "/api/components/show?component=" + TEST_PROJECT)
         found_project = r.json()
@@ -131,10 +131,8 @@ class SonarHelper():
                         if entry['loc'] in filesChecked:
                             discard = True
                             break
-                        r1 = requests.get(SONAR_URL + "/api/sources/show?from=" + str(entry['startLine']) +
-                                          "&to=" + str(entry['endLine']) +
-                                          "&key=" + entry['loc'])
-                        items = r1.json()["sources"]
+                       
+                        items = self.getSource(SONAR_URL, entry['startLine'], entry['endLine'], entry['loc'])
                         entry['code'] = []
                         for item in items:
                             entry['code'].append(item[1])
@@ -148,18 +146,7 @@ class SonarHelper():
                     self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
 
 
-    # get the text range in either textRange or flow
 
-    def makeTextRange(self, issue):
-            res = []
-            if len(issue['flows']) == 0:
-                res.append({'textRange': issue['textRange'], 'msg': ""})
-            else:
-                for line in issue['flows']:
-                    res.append(line['locations'][0])
-            res.sort(key=lambda x: x['textRange']['startLine'], reverse=False)
-
-            return res
 
     #get most recent analysis ID
 
@@ -169,3 +156,32 @@ class SonarHelper():
 
         DataHelper().displayData(r.json())
         return r.json()['analyses'][0]['date']
+
+
+    # get source code from start to end
+
+    def getSource (self, SONAR_URL, startLine, endLine, issue):
+        r = requests.get(SONAR_URL + "/api/sources/show?from=" + str(startLine) +
+                         "&to=" + str(endLine) +
+                         "&key=" + issue['component'])
+        return r.json()["sources"]
+
+
+    # get measures
+
+    def getMeasures (self, SONAR_URL, TEST_PROJECT):
+        functions = "functions,"  # keyword for number of functions
+        classes = "classes,"  # keyword for number of classes
+        directories = "directories,"  # keyword for number of directories
+        comment_lines = "comment_lines,"  # keyword for number of comments
+        comment_lines_density = "comment_lines_density,"  # keyword for density of comments
+        ncloc = "ncloc"  # keyword for number of lines in total
+
+        # query sonarqube to get the statistics
+
+        r = requests.get(
+            SONAR_URL + '/api/measures/component?componentKey=' +
+            TEST_PROJECT + "&metricKeys=" + functions +
+            classes + directories + comment_lines + comment_lines_density + ncloc)
+
+        return r.json()['component']['measures']

@@ -9,32 +9,27 @@ handle categories related functionality
 
 from categories import categories
 
+
 class CategoriesHelper ():
 
     def getNumMainTitle(self):
         return len(categories().title)
 
-
     def getNumSubTitle(self, index):
         return len(categories().title[index].values())
-
 
     def getMainTitle(self, index):
         return categories().title[index].key()
 
-
     def getSubTitle(self, mindex, sindex):
         return categories().title[mindex][sindex]
-
 
     def getDescriptionByIndex(self, mindex, sindex):
         maintitle = categories().getMainTitle(mindex)
         return categories().descriptions[maintitle][sindex]
 
-
     def getDescriptionByName(self, mname, sindex):
         return categories().descriptions[mname][sindex]
-
 
     def getSeverityList (self):
         return categories().severitylist

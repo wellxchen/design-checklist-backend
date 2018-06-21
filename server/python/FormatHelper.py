@@ -120,5 +120,7 @@ class FormatHelper ():
 
         return res
 
+
+
 if __name__ == '__main__':
     print FormatHelper().adjustSonarTime('2018-06-19T18:39:32+0000')
