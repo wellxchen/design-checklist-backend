@@ -7,12 +7,19 @@ Helper class that handle data structure related functionalities
 
 
 import re
-from CategoriesHelper import CategoriesHelper
-from SonarHelper import  SonarHelper
-
+import CategoriesHelper
+import ScoreHelper
+import SonarHelper
 
 
 class DataHelper ():
+
+    def __init__(self):
+        self.categorieshelper = CategoriesHelper.CategoriesHelper()
+        self.scorehelper = ScoreHelper.ScoreHelper()
+        self.sonarhelper = SonarHelper.SonarHelper()
+
+
     def displayData(self, data):
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
@@ -21,33 +28,20 @@ class DataHelper ():
     # store the issue in message
 
     def storeIssue(self, ruleID, errmessage, message, rulesViolated):
-            ruleInfo = CategoriesHelper().getRuleDetail(ruleID)
+            ruleInfo = self.categorieshelper.getRuleDetail(ruleID)
             if len(ruleInfo) == 0:
                 return
             mainindex = ruleInfo[0]
 
             if len(ruleInfo) == 2:
                 subindex = ruleInfo[1]
-                message[mainindex][subindex - 1].append(errmessage)
+
+
+                message[mainindex][subindex].append(errmessage)
             else:
                 message[mainindex].append(errmessage)
             if not ruleID in rulesViolated[mainindex]:
                 rulesViolated[mainindex].append(ruleID)
-
-    # store codes
-    def storeCodes(self, SONAR_URL, issue, errmessage):
-        if 'textRange' in issue:
-            textRange = self.makeTextRange(issue)
-            for entry in textRange:
-                startLine = entry['textRange']['startLine']
-                endLine = entry['textRange']['endLine']
-
-                items = SonarHelper().getSource(SONAR_URL, startLine, endLine, issue)
-
-                entry['code'] = []
-                for item in items:
-                    entry['code'].append(item[1])
-                errmessage['code'].append(entry)
 
 
 
@@ -64,28 +58,28 @@ class DataHelper ():
             data = {}
             data['error'] = {}
             data['error']['Duplications'] = {}
-            data['error']['Duplications']["category description"] = CategoriesHelper().getDescriptionByName("Duplications", 0)
+            data['error']['Duplications']["category description"] = self.categorieshelper.getDescriptionByName("Duplications", 0)
             data['error']['Duplications']["detail"] = message[5]
 
             if onlyDup:
                 return data
 
-            for mindex in range(0, CategoriesHelper().getNumMainTitle()):
-                maintitle =CategoriesHelper().getMainTitle(mindex)
+            for mindex in range(0, self.categorieshelper.getNumMainTitle()):
+                maintitle = self.categorieshelper.getMainTitle(mindex)
                 data['error'][maintitle] = {}
                 if mindex >= 3:
                     data['error'][maintitle] = message[mindex]
                     continue
-                for sindex in range(0, CategoriesHelper().getNumSubTitle(mindex)):
-                    subtitle = CategoriesHelper().getSubTitle(mindex, sindex)
+                for sindex in range(0, self.categorieshelper.getNumSubTitle(mindex)):
+                    subtitle = self.categorieshelper.getSubTitle(mindex, sindex)
                     data['error'][maintitle][subtitle] = {}
                     data['error'][maintitle][subtitle]['detail'] = message[mindex][sindex]
-                    data['error'][maintitle][subtitle]['category description'] = CategoriesHelper().getDescriptionByIndex(
-                        mindex, sindex)
+                    data['error'][maintitle][subtitle]['category description'] = \
+                        self.categorieshelper.getDescriptionByIndex(mindex, sindex)
 
             data['percentage'] = {}
-            for i in range(0, CategoriesHelper().getNumTitle()):
-                data['percentage'][CategoriesHelper().getTitle(i)] = percentage[i]
+            for i in range(0, self.categorieshelper.getNumTitle()):
+                data['percentage'][self.categorieshelper.getTitle(i)] = percentage[i]
 
             return data
 
@@ -126,5 +120,21 @@ class DataHelper ():
         errmessage['path'] = [issue['component']]
         errmessage['rule'] = ruleResult[0]['name']
         errmessage['message'] = issue['message']
-        errmessage['severity'] = ScoreHelper().renameSeverity(issue['severity'])
+        errmessage['severity'] = self.scorehelper.renameSeverity(issue['severity'])
         return errmessage
+
+    # get and store codes
+
+    def storeCodes(self, SONAR_URL, issue, errmessage):
+        if 'textRange' in issue:
+            textRange = self.makeTextRange(issue)
+            for entry in textRange:
+                startLine = entry['textRange']['startLine']
+                endLine = entry['textRange']['endLine']
+
+                items = self.sonarhelper.getSource(SONAR_URL, startLine, endLine, issue)
+
+                entry['code'] = []
+                for item in items:
+                    entry['code'].append(item[1])
+                errmessage['code'].append(entry)

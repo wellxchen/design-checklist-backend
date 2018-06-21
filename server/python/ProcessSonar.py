@@ -55,6 +55,7 @@ class ProcessSonar (object):
             if i < 3:
                 k = CategoriesHelper().getNumSubTitle(i)
 
+
             for j in range(k):
                 self.message[i].append([])
 
@@ -64,7 +65,7 @@ class ProcessSonar (object):
         self.localhepler.executeShellCode()
 
 
-    def process(self, onlyDup):
+    def process(self, onlyDup, byAuthor):
 
         """
         get issues from sonarqube, filter out irrelevant issues, reconstruct the remaining issues
@@ -113,7 +114,7 @@ class ProcessSonar (object):
                     dup_errmessages.append(errmessage)
                 else:
                     errmessage['code'] = []
-                    DataHelper().storeCodes(SONAR_URL, issue, errmessage)
+                    DataHelper().storeCodes(self.localhepler.SONAR_URL, issue, errmessage)
                     DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
 
         # if there is duplication issues, store the issues in separate buffer
@@ -127,6 +128,9 @@ class ProcessSonar (object):
 
         percentage = ScoreHelper().calPercentByScore(scores, scores_rem)
         data = DataHelper().dataHandler(self.message, percentage, onlyDup)
+
+        if byAuthor:
+            DataHelper().displayData(data)
 
         # store severity list
 
@@ -515,30 +519,6 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
-    def getbyauthor (self, onlyDup):
-        
-        """
-        get issues by authors
-        :param onlyDup: if only returns issues regarding duplication
-        :return: json contains authors and issues in their codes
-        """
-
-        # get all issues that are open
-        issues = SonarHelper().getIssuesAll(self.localhepler.SONAR_URL,
-                                                     self.localhepler.TEST_PROJECT)
-        if 'err' in issues:
-            return issues
-
-        rules = SonarHelper().getRules(self.localhepler.SONAR_URL,
-                                       self.localhepler.QUALITY_PROFILE)
-
-        res = {}
-        for issue in issues:
-            ruleResult = DataHelper().filterRuleFromSonar(issue, rules)
-            if len(ruleResult) > 0:
-                author = issue['author']
-                if author not in res:
-                    res[author] = {}
 
 
 
@@ -549,5 +529,5 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-    ProcessSonar("CompSci308_2018Spring", "test-xu").getbyauthor()
+    ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
 

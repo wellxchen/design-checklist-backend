@@ -16,16 +16,19 @@ class CategoriesHelper ():
         return len(categories().title)
 
     def getNumSubTitle(self, index):
-        return len(categories().title[index].values())
+
+        return len(categories().title[index].values()[0])
 
     def getMainTitle(self, index):
-        return categories().title[index].key()
+        return categories().title[index].keys()[0]
 
     def getSubTitle(self, mindex, sindex):
-        return categories().title[mindex][sindex]
+
+        maintitle = self.getMainTitle(mindex)
+        return categories().title[mindex][maintitle][sindex]
 
     def getDescriptionByIndex(self, mindex, sindex):
-        maintitle = categories().getMainTitle(mindex)
+        maintitle = self.getMainTitle(mindex)
         return categories().descriptions[maintitle][sindex]
 
     def getDescriptionByName(self, mname, sindex):
@@ -81,3 +84,6 @@ class CategoriesHelper ():
     def getDuplications(self):
         return categories().duplications
 
+
+if __name__ == '__main__':
+    print CategoriesHelper().getMainTitle(0)

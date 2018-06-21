@@ -28,7 +28,7 @@ def process():
     '''
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project).process(False)
+    return ProcessSonar(group, project).process(False, False)
 
 @app.route("/api/statistics")
 def statistics():
@@ -65,7 +65,7 @@ def duplications():
     '''
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project).process(True)
+    return ProcessSonar(group, project).process(True, False)
 
 @app.route("/api/lmethod")
 def lmethod():
@@ -133,7 +133,7 @@ def getbyauthor():
     """
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project).getbyauthor()
+    return ProcessSonar(group, project).process(False,True)
 
 if __name__ == '__main__':
     app.run(threaded=True)

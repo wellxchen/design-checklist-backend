@@ -11,6 +11,9 @@ import requests
 
 class SonarHelper():
 
+    def __init__(self):
+        pass
+
     def activateRule(self, SONAR_URL, QUALITY_PROFILE, ruleID):
         SONAR_LOGIN = os.environ.get("SONAR_LOGIN")
         SONAR_PASSWORD = os.environ.get("SONAR_PASSWORD")
@@ -141,7 +144,7 @@ class SonarHelper():
 
                 filesChecked.add(dup_errmessage['path'][0])
                 if len(dup_errmessage['duplications']) > 0:
-                    self.storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
+                    DataHelper().storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
 
 
 
@@ -159,9 +162,11 @@ class SonarHelper():
     # get source code from start to end
 
     def getSource (self, SONAR_URL, startLine, endLine, issue):
+        if 'component' in issue:
+            issue = issue['component']
         r = requests.get(SONAR_URL + "/api/sources/show?from=" + str(startLine) +
                          "&to=" + str(endLine) +
-                         "&key=" + issue['component'])
+                         "&key=" + issue)
         return r.json()["sources"]
 
 
@@ -192,3 +197,5 @@ class SonarHelper():
                        + "/api/components/show?component="
                        + TEST_PROJECT)
         return r.json()
+
+

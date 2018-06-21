@@ -5,7 +5,18 @@ Helper class that handle score related functionalities
     - Chengkang Xu <cx33@duke.edu>
 '''
 
+import requests
+
+from categories import categories
+import CategoriesHelper
+
+
 class ScoreHelper():
+
+
+    def __init__(self):
+        self.categorieshelper = CategoriesHelper.CategoriesHelper()
+
     # calcualte total score for rules under one category
     def calTotalScorePerCategory(self, SONAR_URL, rules):
         score = 0.00
@@ -54,20 +65,19 @@ class ScoreHelper():
         if ruleseverity == "INFO":
             return "info"
         return ""
-        #
 
+    #
     def calPercentByScore(self, scores, scores_rem):
         l = []
-        for i in range(0, categories().getNumberOfMainCategories()):
+        for i in range(0, self.categorieshelper.getNumMainTitle()):
             l.append(0)
 
         for catename, score in scores.iteritems():
-            index = categories().getCategoryNumberByName(catename)
+            index = self.categorieshelper.getCategoryNumberByName(catename)
             l[index] = (score / scores_rem[catename]) * 100.00
         return l
 
-        # calcualte percentage for the category (SIMPLY BY NUMBER OF RULES VIOLATED)
-
+    # calcualte percentage for the category (SIMPLY BY NUMBER OF RULES VIOLATED)
     def calPercentByNum(self, category, rules_under_category):
         if len(category) > 0:
             return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
