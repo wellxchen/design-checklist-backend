@@ -89,6 +89,7 @@ class ProcessSonar (object):
                                                 self.localhepler.QUALITY_PROFILE))
         else:
             rules.extend(CategoriesHelper().getDuplications())
+            
         # store details
         dup_errmessages = []
         scores = ScoreHelper().calTotalScoreAllCategory(self.localhepler.SONAR_URL)
