@@ -57,21 +57,11 @@ class CategoriesHelper ():
     def getMainCateNameById(self, ruleID):
         if ruleID in categories.rules:
             cates = categories.rules[ruleID]
-            if cates[0] == 0:
-                return "communication"
-            if cates[0] == 1:
-                return "modularity"
-            if cates[0] == 2:
-                return "flexibility"
-            if cates[0] == 3:
-                return "javanote"
-            if cates[0] == 4:
-                return "codesmell"
-            if cates[0] == 5:
-                return "duplications"
+            return self.getAllMainTitle()[cates[0]]
         return ""
 
     def getCategoryNumberByName(self, name):
+
         if name == "communication":
             return 0
         if name == "modularity":
@@ -98,4 +88,4 @@ class CategoriesHelper ():
 
 
 if __name__ == '__main__':
-    print CategoriesHelper().getMainTitle(0)
+    print CategoriesHelper().getAllMainTitle()

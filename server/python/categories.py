@@ -117,6 +117,8 @@ class categories ():
         {'key': 'squid:S1700', 'name': 'A field should not duplicate the name of its containing class'},
         {'key': 'squid:S1192', 'name': 'String literals should not be duplicated'}]
 
+
+
     #id : [main, sub]
     #main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
 
