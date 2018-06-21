@@ -78,7 +78,7 @@ class DataHelper ():
                         self.categorieshelper.getDescriptionByIndex(mindex, sindex)
 
             data['percentage'] = {}
-            for i in range(0, self.categorieshelper.getNumTitle()):
+            for i in range(0, self.categorieshelper.getNumMainTitle()):
                 data['percentage'][self.categorieshelper.getTitle(i)] = percentage[i]
 
             return data
