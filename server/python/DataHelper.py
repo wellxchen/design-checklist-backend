@@ -38,8 +38,8 @@ class DataHelper ():
     def errHandler(self):
             data = {}
             data['err'] = "project not found"
-            data[
-                'description'] = "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
+            data['description'] = \
+                "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
             return json.dumps(data)
 
     def dataHandler(self, message, percentage, onlyDup):

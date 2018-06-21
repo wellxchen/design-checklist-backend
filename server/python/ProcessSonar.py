@@ -74,30 +74,19 @@ class ProcessSonar (object):
         :return: issues in the selected project
         """
 
-        # if project not been analysis return error
-        r = requests.get( self.localhepler.SONAR_URL + "/api/components/show?component=" +  self.localhepler.TEST_PROJECT)
-        found_project = r.json()
-        if 'errors' in found_project:
-            return DataHelper().errHandler()
-
-        # get number of pages
-
-        total_pages = SonarHelper().getNumOfPagesIssues( self.localhepler.SONAR_URL,
-                                                         self.localhepler.TEST_PROJECT)
-
         # get all issues that are open
-        issues = SonarHelper().getIssues (self.localhepler.SONAR_URL,
-                                          self.localhepler.TEST_PROJECT,
-                                          total_pages, "")
+        issues = SonarHelper().getIssuesInCategories(self.localhepler.SONAR_URL,
+                                                     self.localhepler.TEST_PROJECT)
 
-        #g et all rules associate with quanlity profile
+        if 'err' in issues:
+            return issues
+
+        # get all rules associate with quanlity profile
         rules = []
         if not onlyDup:
-            r = requests.get(
-            self.localhepler.SONAR_URL +
-            '/api/rules/search?ps=500&activation=true&qprofile=' +
-            self.localhepler.QUALITY_PROFILE)
-            rules.extend(r.json()['rules'])
+
+            rules.extend(SonarHelper().getRules(self.localhepler.SONAR_URL,
+                                                self.localhepler.QUALITY_PROFILE))
         else:
             rules.extend(CategoriesHelper().getDuplications())
         # store details
@@ -560,18 +549,26 @@ class ProcessSonar (object):
 
         return json.dumps(res)
 
-
     def getbyauthor (self):
         """
         get issues by authors
         :return: json contains authors and issues in their codes
         """
+        # get number of pages
 
+        total_pages = SonarHelper().getNumOfPagesIssues(self.localhepler.SONAR_URL,
+                                                        self.localhepler.TEST_PROJECT)
+
+        # get all issues that are open
+        r = SonarHelper().getIssues(self.localhepler.SONAR_URL,
+                                    self.localhepler.TEST_PROJECT,
+                                    total_pages, "")
+        DataHelper().displayData(r)
 
 
 
 
 if __name__ == '__main__':
 
-    ProcessSonar("CompSci308_2018Spring", "test-xu").getHistory()
+    ProcessSonar("CompSci308_2018Spring", "test-xu").getbyauthor()
 
