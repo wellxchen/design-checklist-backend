@@ -71,13 +71,11 @@ class SonarHelper():
 
     def getIssuesAll (self, SONAR_URL, TEST_PROJECT):
         # if project not been analysis return error
-        r = requests.get(SONAR_URL + "/api/components/show?component=" + TEST_PROJECT)
-        found_project = r.json()
+        found_project = self.getComponents(SONAR_URL, TEST_PROJECT)
         if 'errors' in found_project:
             return DataHelper().errHandler()
 
         # get number of pages
-
         total_pages = self.getNumOfPagesIssues(SONAR_URL, TEST_PROJECT)
 
         # get all issues that are open
@@ -131,7 +129,7 @@ class SonarHelper():
                         if entry['loc'] in filesChecked:
                             discard = True
                             break
-                       
+
                         items = self.getSource(SONAR_URL, entry['startLine'], entry['endLine'], entry['loc'])
                         entry['code'] = []
                         for item in items:
@@ -185,3 +183,12 @@ class SonarHelper():
             classes + directories + comment_lines + comment_lines_density + ncloc)
 
         return r.json()['component']['measures']
+
+
+    # get components
+
+    def getComponents (self, SONAR_URL, TEST_PROJECT):
+        r = requests.get(SONAR_URL
+                       + "/api/components/show?component="
+                       + TEST_PROJECT)
+        return r.json()

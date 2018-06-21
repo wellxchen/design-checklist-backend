@@ -414,10 +414,9 @@ class ProcessSonar (object):
         """
 
         res = {}
-        r = requests.get(self.localhepler.SONAR_URL
-                         + "/api/components/show?component="
-                         + self.localhepler.TEST_PROJECT)
-        found_project = r.json()
+
+        found_project = SonarHelper().getComponents(self.localhepler.SONAR_URL,
+                                                    self.localhepler.TEST_PROJECT)
         if 'errors' in found_project:
             res['sonar'] = "not found"
         else:
