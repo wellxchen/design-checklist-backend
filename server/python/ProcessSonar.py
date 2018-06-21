@@ -136,6 +136,8 @@ class ProcessSonar (object):
 
         data['severitylist'] = CategoriesHelper().getSeverityList()
 
+        DataHelper().displayData(data)
+
         # if not only duplication, store the log   
         if not onlyDup:
              self.localhepler.handleLogJSON(self.localhepler.LOG_ISSUES, data)

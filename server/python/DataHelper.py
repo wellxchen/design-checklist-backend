@@ -145,11 +145,11 @@ class DataHelper ():
         for issue in issues:
             author = issue['author']
             if author not in res:
-                res['author']=self.makeEmptyIssueEntry()
+                res[author]=self.makeEmptyIssueEntry()
             if subcategory == "":
-                res['author'][maincategory].append(issue)
+                res[author][maincategory].append(issue)
             else:
-                res['author'][maincategory][subcategory].append(issue)
+                res[author][maincategory][subcategory].append(issue)
 
 
 
