@@ -121,6 +121,7 @@ class DataHelper ():
         errmessage['rule'] = ruleResult[0]['name']
         errmessage['message'] = issue['message']
         errmessage['severity'] = self.scorehelper.renameSeverity(issue['severity'])
+        errmessage['author'] = issue['author']
         return errmessage
 
     # get and store codes
@@ -138,3 +139,30 @@ class DataHelper ():
                 for item in items:
                     entry['code'].append(item[1])
                 errmessage['code'].append(entry)
+
+
+    def handleAuthorStore (self, issues, maincategory, subcategory, res):
+        for issue in issues:
+            author = issue['author']
+            if author not in res:
+                res['author']=self.makeEmptyIssueEntry()
+            if subcategory == "":
+                res['author'][maincategory].append(issue)
+            else:
+                res['author'][maincategory][subcategory].append(issue)
+
+
+
+
+    def makeEmptyIssueEntry (self):
+        entry = {}
+        maintitles = self.categorieshelper.getAllMainTitle()
+        for i in range(len(maintitles)):
+            if i >= 3:
+                entry[maintitles[i]] = []
+                continue
+            entry[maintitles[i]] = {}
+            subtitles = self.categorieshelper.getAllSubTitleOfMain(i)
+            for subtitle in subtitles:
+                entry[maintitles[i]][subtitle] = []
+        return entry

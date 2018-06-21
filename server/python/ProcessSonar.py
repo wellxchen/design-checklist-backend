@@ -102,7 +102,6 @@ class ProcessSonar (object):
 
             if len(ruleResult) > 0:
                 errmessage = DataHelper().makeErrMessage(issue,ruleResult)
-                errmessage['author'] = issue['author']
                 
                 # deduct score
                 maincategoryname = CategoriesHelper().getMainCateNameById(ruleID)
@@ -131,19 +130,42 @@ class ProcessSonar (object):
         data = DataHelper().dataHandler(self.message, percentage, onlyDup)
 
         if byAuthor:
-            DataHelper().displayData(data)
+           data = self.getbyauthor(data)
 
         # store severity list
 
         data['severitylist'] = CategoriesHelper().getSeverityList()
 
+
+        if not onlyDup:
+             self.localhepler.handleLogJSON(self.localhepler.LOG_ISSUES, data)
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
         # if not only duplication, store the log
 
-        if not onlyDup:
-            self.localhepler.handleLogJSON(self.localhepler.LOG_ISSUES, res)
 
+
+
+        return res
+
+    def getbyauthor (self, data):
+        """
+        re-arrange result by author
+        :return: re-arranged issues by author
+        """
+        errors = data['error']
+        res = {}
+        for maincategory, possibleissues in errors.iteritems():
+            # if code smell or java note
+            if type(possibleissues) is list:
+                  DataHelper().handleAuthorStore(possibleissues, maincategory, "",  res)
+                  
+            # if other main categories
+            else:
+           
+                for subcategory, issues in possibleissues.iteritems():
+                   
+                    DataHelper().handleAuthorStore(issues['detail'], maincategory, subcategory, res)
         return res
 
     def statistics(self):
@@ -476,7 +498,7 @@ class ProcessSonar (object):
             res[rootshort]['files'] = FormatHelper().getFullPath(rootshort, files)
 
 
-        issues = json.loads(self.process(False))
+        issues = json.loads(self.process(False, False))
 
         for category, mainissuelist in issues['error'].items():
 
@@ -496,7 +518,7 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def getHistory (self):
+    def gethistory (self):
 
         """
         get history of analysis

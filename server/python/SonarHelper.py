@@ -155,7 +155,6 @@ class SonarHelper():
         r = requests.get(SONAR_URL + '/api/project_analyses/search?project=' +
                          TEST_PROJECT)
 
-        DataHelper().displayData(r.json())
         return r.json()['analyses'][0]['date']
 
 

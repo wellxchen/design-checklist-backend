@@ -122,7 +122,7 @@ def getproject ():
     history = request.args.get('history')
     if history is None:
         return ProcessSonar(group, project).getproject()
-    return ProcessSonar(group, project).getHistory()
+    return ProcessSonar(group, project).gethistory()
 
 
 @app.route("/api/author")

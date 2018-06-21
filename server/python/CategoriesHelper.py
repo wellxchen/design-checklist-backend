@@ -12,6 +12,18 @@ from categories import categories
 
 class CategoriesHelper ():
 
+    def getAllMainTitle(self):
+        res = []
+        for i in range(self.getNumMainTitle()):
+            res.append(self.getMainTitle(i))
+        return res
+
+    def getAllSubTitleOfMain(self, mindex):
+        res = []
+        for i in range(self.getNumSubTitle(mindex)):
+            res.append(self.getSubTitle(mindex, i))
+        return res
+
     def getNumMainTitle(self):
         return len(categories().title)
 
