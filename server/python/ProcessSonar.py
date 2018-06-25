@@ -478,11 +478,9 @@ class ProcessSonar (object):
                for subcategory, subissuelist in mainissuelist.items():
 
                    self.helper.makeIssueEntryForDIR(subissuelist['detail'],
-                                                     self.helper.TEST_PROJECT,
                                                      res)
            else:
                self.helper.makeIssueEntryForDIR(mainissuelist,
-                                                 self.helper.TEST_PROJECT,
                                                  res)
 
 

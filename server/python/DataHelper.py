@@ -22,7 +22,7 @@ class DataHelper (ScoreHelper):
         self.message = []  # store details of issues
 
         # initiate buffers
-        for i in range(6):
+        for i in range(self.getNumMainTitle()):
             self.rulesViolated.append([])
             self.message.append([])
             k = 0

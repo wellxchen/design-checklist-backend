@@ -93,5 +93,6 @@ class CategoriesHelper (categories):
                 res.append(ruleid)
         return res
 
+
 if __name__ == '__main__':
     print CategoriesHelper().getAllMainTitle()
