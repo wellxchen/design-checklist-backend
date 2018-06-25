@@ -35,13 +35,23 @@ class DataHelper (ScoreHelper):
 
 
     def displayData(self, data):
+        """
+        display any json like data in an easy to read format
+        :param data: any json like data
+        :return: void
+        """
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(data)
 
-    # store the issue in message
 
     def storeIssue(self, ruleID, errmessage):
+            """
+            store the issue in message buffer
+            :param ruleID: rule id
+            :param errmessage: error message contains the information to be store
+            :return: void
+            """
 
             ruleInfo = self.getRuleDetail(ruleID)
             if len(ruleInfo) == 0:
@@ -62,6 +72,10 @@ class DataHelper (ScoreHelper):
 
 
     def errHandler(self):
+            """
+            make a json contains error
+            :return: json contains error
+            """
             data = {}
             data['err'] = "project not found"
             data['description'] = \
@@ -69,7 +83,12 @@ class DataHelper (ScoreHelper):
             return json.dumps(data)
 
     def dataHandler(self, percentage, onlyDup):
-
+            """
+            make data entries that contains corresponding issues i
+            :param percentage: percentages for each category
+            :param onlyDup: only need to handle duplciation
+            :return: data buffer that contains percentage and issues
+            """
             data = {}
             data['error'] = {}
             data['error']['Duplications'] = {}
@@ -101,6 +120,12 @@ class DataHelper (ScoreHelper):
 
 
     def makeIssueEntryForDIR (self, issuelist,  res):
+        """
+        extract path and the corresponding issue with it
+        :param issuelist: list of issues
+        :param res: buffer contains the directory oriented issue list, originall empty
+        :return: void
+        """
         for issue in issuelist:
             for filepath in issue['path']:
                 filepathshort = re.sub(self.TEST_PROJECT + ":", "", filepath)
@@ -111,13 +136,23 @@ class DataHelper (ScoreHelper):
                 res[parentdirectory]["files"][filepathshort].append(issue)
 
     def filterRuleFromSonar (self, issue, rules):
+        """
+        filter rules from sonarqube, keep only the rules that are stored locally
+        :param issue:
+        :param rules:
+        :return:
+        """
         ruleID = issue['rule']
         ruleResult = filter(lambda r: r['key'] == ruleID, rules)
         return ruleResult
 
-    # get the text range in either textRange or flow
 
     def makeTextRange(self, issue):
+        """
+        get the text range in either textRange or flow in the response from sonaqube
+        :param issue: a specfic issue
+        :return: the text range
+        """
 
         res = []
         if len(issue['flows']) == 0:
@@ -129,8 +164,13 @@ class DataHelper (ScoreHelper):
 
         return res
 
-    # extract useful information from issue and make the err message
     def makeErrMessage (self, issue, ruleResult):
+        """
+        extract useful information from issue and make the err message
+        :param issue: a specific issue
+        :param ruleResult: rule information for the issue
+        :return: an entry contains the necessary information
+        """
         errmessage = {}
         errmessage['path'] = [issue['component']]
         errmessage['rule'] = ruleResult[0]['name']
@@ -143,6 +183,14 @@ class DataHelper (ScoreHelper):
 
 
     def handleAuthorStore (self, issues, maincategory, subcategory, res):
+        """
+        store issues by author
+        :param issues: issues under main and sub categories
+        :param maincategory: main category currently checking
+        :param subcategory: sub category currently checking
+        :param res: buffer that contains the author oriented issues
+        :return: void
+        """
         for issue in issues:
             author = issue['author']
             if author not in res:
@@ -156,6 +204,10 @@ class DataHelper (ScoreHelper):
 
 
     def makeEmptyIssueEntry (self):
+        """
+        make an entry that has all the main categories and sub categories name to store issues
+        :return: entry that has all the main categories and sub categories name
+        """
         entry = {}
         maintitles = self.getAllMainTitle()
         for i in range(len(maintitles)):
@@ -171,10 +223,22 @@ class DataHelper (ScoreHelper):
 
 
     def getFileChecked (self):
+        """
+        get files that have been checked
+        :return: checked files
+        """
         return self.fileChecked
 
     def getRulesViolated(self):
+        """
+        get rules current project violated
+        :return: rules violated
+        """
         return self.rulesViolated
 
     def getMessage(self):
+        """
+        get the message contains errors and percentages
+        :return: message contains errors and percentages
+        """
         return self.message

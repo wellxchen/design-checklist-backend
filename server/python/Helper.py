@@ -1,3 +1,11 @@
+'''
+Wrapper Helper class that simplify helper function calls
+
+:Authors:
+    - Chengkang Xu <cx33@duke.edu>
+'''
+
+
 from GitlabHelper import GitlabHelper
 from SonarHelper import SonarHelper
 
