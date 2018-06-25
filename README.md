@@ -36,7 +36,7 @@ This repo is the backend server that retrieves analysis data as json from SonarQ
 
 "/api/directory" #get issues by directories
 
-"/api/project" #check whether a project has been analyze
+"/api/project" #check whether a project has been analyze or return the history of the project analysis
 
 "/api/author" #get issues by author
 ```
