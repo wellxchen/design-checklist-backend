@@ -79,8 +79,11 @@ class CategoriesHelper (categories):
             return 5
         return -1
 
-    def allrules(self):
+    def getNumOfAllRules(self):
         return len(self.rules.keys())
+
+    def getAllRules(self):
+        return self.rules.keys()
 
     def getDuplicationsLocal(self):
         return self.duplications

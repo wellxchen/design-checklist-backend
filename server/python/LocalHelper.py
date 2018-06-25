@@ -41,9 +41,12 @@ class LocalHelper (FormatHelper):
         self.CODES_PATH = self.CACHE_PATH + "/codes"
         self.LOGS_PATH = self.CACHE_PATH + "/logs"
         self.SHELL_PATH = self.ROOT_PATH + "/server/shell"
+        self.LOG_QPROFILE_DIR = self.LOGS_PATH + "/qprofile"
+        self.LOG_QPROFILE_KEY_DIR = self.LOG_QPROFILE_DIR + "/" + self.QUALITY_PROFILE
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
-        self.LOG_ISSUES = self.LOG_DIR + "/issues"
-        self.LOG_STATISTICS = self.LOG_DIR + "/statistics"
+        self.LOG_ISSUES_DIR = self.LOG_DIR + "/issues"
+        self.LOG_STATISTICS_DIR = self.LOG_DIR + "/statistics"
+
 
 
     def readProjectDates (self, project):
@@ -101,7 +104,7 @@ class LocalHelper (FormatHelper):
         with open(logname, 'w') as outfile:
             json.dump(data,outfile)
 
-    def handleLogJSON (self, analysisTime, WHICHLOG, data):
+    def dateLogJSON (self, analysisTime, WHICHLOG, data):
         """
         check if the log extisted by checking the last analysis time, if so do nothing, if not caching
         :param analysisTime: last analysis time
@@ -140,6 +143,14 @@ class LocalHelper (FormatHelper):
         res["email"] = emails
         res["netid"] = netids
         return res
+
+    def checkAllLogs(self):
+        """
+        check all logs existence
+        :return:
+        """
+        self.executeShellLog()
+        self.executeShellCode()
 
     def executeShellLog(self):
         """
@@ -218,3 +229,4 @@ class LocalHelper (FormatHelper):
         :return: TEST_PROJECT
         """
         return self.TEST_PROJECT
+

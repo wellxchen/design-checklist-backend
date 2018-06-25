@@ -39,8 +39,9 @@ class ProcessSonar (object):
 
         # check log folders existed, if not, create
 
-        self.helper.executeShellLog()
-        self.helper.executeShellCode()
+        self.helper.checkAllLogs()
+        self.helper.checkQProfileLogReq()
+
 
 
     def process(self, onlyDup, byAuthor):
@@ -111,11 +112,9 @@ class ProcessSonar (object):
 
         data['severitylist'] = self.helper.getSeverityList()
 
-        self.helper.displayData(data)
-
         # if not only duplication, store the log   
         if not onlyDup:
-             self.helper.checkAnalysisLog(self.helper.LOG_ISSUES, data)
+             self.helper.checkAnalysisLog(self.helper.LOG_ISSUES_DIR, data)
             
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
@@ -159,7 +158,7 @@ class ProcessSonar (object):
         res['measures']['lmethods'].extend(self.longestmethods())
 
         #write logs to local
-        self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS, res)
+        self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_DIR, res)
 
         return json.dumps(res)
 
@@ -171,11 +170,10 @@ class ProcessSonar (object):
         """
 
         total_pages = self.helper.\
-            getNumOfPagesIssues(self.helper)  # get total number of pages in response
+            getNumOfPagesIssuesReq()  # get total number of pages in response
 
 
-        issues = self.helper.getIssues(self.helper,
-                                         total_pages,
+        issues = self.helper.getIssuesReq(total_pages,
                                          "squid:S138")  # get issues with method too long
 
         entries = []  # store result
@@ -194,7 +192,7 @@ class ProcessSonar (object):
 
             sl = issue['textRange']['startLine']
             el =  issue['textRange']['endLine']
-            items = self.helper.getSource(localhelper, sl, el, issue)
+            items = self.helper.getSourceReq(sl, el, issue)
 
             entries[count]['code'] = []
             title = 0
@@ -413,7 +411,7 @@ class ProcessSonar (object):
 
         res = {}
 
-        found_project = self.helper.getComponents(self.helper)
+        found_project = self.helper.getComponentsReq()
         if 'errors' in found_project:
             res['sonar'] = "not found"
         else:
@@ -477,11 +475,9 @@ class ProcessSonar (object):
            if isinstance(mainissuelist, dict):
                for subcategory, subissuelist in mainissuelist.items():
 
-                   self.helper.makeIssueEntryForDIR(subissuelist['detail'],
-                                                     res)
+                   self.helper.makeIssueEntryForDIR(subissuelist['detail'], res)
            else:
-               self.helper.makeIssueEntryForDIR(mainissuelist,
-                                                 res)
+               self.helper.makeIssueEntryForDIR(mainissuelist, res)
 
 
         return json.dumps(res)

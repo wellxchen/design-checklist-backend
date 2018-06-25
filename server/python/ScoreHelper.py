@@ -34,12 +34,10 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
     # calcualte total score for rules under all categories
     def calTotalScoreAllCategory(self):
         l = {}
-        l["Communication"] = self.calTotalScorePerCategory(self.SONAR_URL, "Communication")
-        l["Modularity"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Modularity')
-        l["Flexibility"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Flexibility')
-        l["Code Smells"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Code Smells')
-        l["Java Notes"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Java Notes')
-        l["Duplications"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Duplications')
+
+        for category in self.title:
+            maincate = category.keys()[0]
+            l[maincate] = self.calTotalScorePerCategory(self.SONAR_URL, maincate)
         return l
 
     # get score for the category

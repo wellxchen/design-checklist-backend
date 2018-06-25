@@ -238,11 +238,11 @@ class SonarHelper(DataHelper):
 
     def checkAnalysisLog(self,  WHICHLOG, data):
         analysisTime = self.getMostRecentAnalysisDateReq()
-        self.handleLogJSON(analysisTime, WHICHLOG, data)
+        self.dateLogJSON(analysisTime, WHICHLOG, data)
 
 
     def getSingleRuleReq(self, rule):
-        r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + self.rule)
+        r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
         ruleInfo = r.json()['rules'][0]
         return ruleInfo
 
@@ -274,6 +274,35 @@ class SonarHelper(DataHelper):
 
     # check if quality profile has been updated, if so, return the set of new rule ids
 
-    def checkQualityProfileReq(self):
-        r = requests.get(SONAR_URL + "api/qualityprofiles/changelog?profileKey=" + QUALITY_PROFILE)
-        self.displayData(r.json())
+    def checkQProfileLogReq(self):
+        r = requests.get(self.SONAR_URL
+                         + "/api/qualityprofiles/changelog?profileKey="
+                         + self.QUALITY_PROFILE)
+        r = r.json()['events']
+        mostrecentupdatetime = self.adjustSonarTime(r[0]['date'])
+        existed = self.executeShellCheckDIR(self.LOG_QPROFILE_KEY_DIR, mostrecentupdatetime)
+
+        if "no" in existed:
+            data = self.getRulesReq()
+            res = []
+            map(lambda e : res.append({"key" : e['key'],
+                                       "name": e['name']}),
+                data)
+            difference = filter(lambda e: e['key'] not in self.rules.keys(), res)
+
+            self.displayData(difference)
+
+            self.writeLogJSON(self.LOG_QPROFILE_KEY_DIR
+                              + "/"
+                              + mostrecentupdatetime
+                              + ".json",
+                              res)
+
+
+
+
+
+
+if __name__ == '__main__':
+
+    SonarHelper("CompSci308_2018Spring", "test-xu").checkQProfileLogReq()
