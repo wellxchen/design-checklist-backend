@@ -14,29 +14,29 @@
 
 This repo is the backend server that retrieves analysis data as json from SonarQube and processes the data using python and shell. The server currently support 11 endpoints, including: 
 
-```
+```python
 
-**/api/show** #get all issues 
+"/api/show" #get all issues 
 
-**/api/statistics** #get statistics of the project
+"/api/statistics" #get statistics of the project
 
-**/api/file/xml** #get required xml file to run pipeline on gitlab
+"/api/file/xml" #get required xml file to run pipeline on gitlab
 
-**/api/file/yml** #get required yml file to run pipeline on gitlab
+"/api/file/yml" #get required yml file to run pipeline on gitlab
 
-**/api/duplications** #get issues regarding duplications
+"/api/duplications" #get issues regarding duplications
 
-**/api/lmethod** #get longest method in the project
+"/api/lmethod" #get longest method in the project
 
-**/api/commit** #get gitlab commit information about a project
+"/api/commit" #get gitlab commit information about a project
 
-**/api/commitstat** #get gitlab commit statistics about a project
+"/api/commitstat" #get gitlab commit statistics about a project
 
-**/api/directory** #get issues by directories
+"/api/directory" #get issues by directories
 
-**/api/project** #check whether a project has been analyze
+"/api/project" #check whether a project has been analyze
 
-**/api/author** #get issues by author
+"/api/author" #get issues by author
 ```
 
 
