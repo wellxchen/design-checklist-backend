@@ -345,7 +345,9 @@ class SonarHelper(DataHelper):
                          + self.QUALITY_PROFILE)
         r = r.json()['events']
         mostrecentupdatetime = self.adjustSonarTime(r[0]['date'])
-        existed = self.executeShellCheckDIR(self.LOG_QPROFILE_KEY_DIR, mostrecentupdatetime)
+        
+        existed = self.executeShellCheckDIR(self.LOG_QPROFILE_KEY_DIR,
+                                            mostrecentupdatetime +  ".json")
 
         if "no" in existed:
             data = self.getRulesReq()
