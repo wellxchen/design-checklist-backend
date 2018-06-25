@@ -16,25 +16,43 @@ class CategoriesHelper (categories):
         super(CategoriesHelper, self).__init__()
     
     def getAllMainTitle(self):
+        """
+        get all main catgories name
+        :return: all main categories name
+        """
         res = []
         for i in range(self.getNumMainTitle()):
             res.append(self.getMainTitle(i))
         return res
 
     def getAllSubTitleOfMain(self, mindex):
+        """
+        get all sub categories under a main category
+        :param mindex: main category index
+        :return: get all sub categories under a main category
+        """
         res = []
         for i in range(self.getNumSubTitle(mindex)):
             res.append(self.getSubTitle(mindex, i))
         return res
 
     def getNumMainTitle(self):
+        """
+        get number of main categories
+        :return: number of main categories
+        """
         return len(self.title)
 
     def getNumSubTitle(self, index):
-
+        """
+        get number of sub categories under a main category
+        :param index: main category index
+        :return: number of sub categories under a main category
+        """
         return len(self.title[index].values()[0])
 
     def getMainTitle(self, index):
+        
         return self.title[index].keys()[0]
 
     def getSubTitle(self, mindex, sindex):
