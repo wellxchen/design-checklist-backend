@@ -14,6 +14,8 @@
 
 This repo is the backend server that retrieves analysis data as json from SonarQube and processes the data using python and shell. The server currently support 11 endpoints, including: 
 
+```
+
 **/api/show** #get all issues 
 
 **/api/statistics** #get statistics of the project
@@ -35,5 +37,7 @@ This repo is the backend server that retrieves analysis data as json from SonarQ
 **/api/project** #check whether a project has been analyze
 
 **/api/author** #get issues by author
+```
+
 
 To start the server, run ```FLASK_APP=__init__.py flask run```, then enter the ```localhost:5000/``` + ```<project name you have analzed on sonarqube>``` in browser. Frontend:https://github.com/zacharyfmarion/sonarqube-web-frontend
