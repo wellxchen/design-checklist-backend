@@ -25,12 +25,16 @@ class SonarHelper(DataHelper):
         SONAR_PASSWORD = os.environ.get("SONAR_PASSWORD")
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=',
                           data={'profile_key': self.QUALITY_PROFILE, 'rule_key': ruleID},
-                          auth=(self.SONAR_LOGIN, self.SONAR_PASSWORD))
+                          auth=(SONAR_LOGIN, SONAR_PASSWORD))
 
-
-    # adjust number of pages based on number of entries
 
     def adjustNumOfPages(self,total_number_entries, page_size):
+        """
+        adjust number of pages based on number of entries
+        :param total_number_entries: total number of entries
+        :param page_size: number of entries on each page
+        :return: adjusted number of pages
+        """
         total_pages = 2
         if total_number_entries > page_size:
             total_pages += total_number_entries / page_size
@@ -38,9 +42,12 @@ class SonarHelper(DataHelper):
                 total_pages += 1
         return total_pages
 
-    # get number of pages for issues
 
     def getNumOfPagesIssuesReq(self):
+        """
+        get number of pages for issues
+        :return:  number of pages for issues
+        """
 
         QUERY = '/api/issues/search?ps=500&componentKeys='
         r = requests.get(self.SONAR_URL
@@ -51,9 +58,13 @@ class SonarHelper(DataHelper):
         total_pages = self.adjustNumOfPages(total_number_entries, page_size)
         return total_pages
 
-    # get number of pages for tree
+
 
     def getNumOfPagesTreeReq(self):
+        """
+        get number of pages for tree
+        :return: number of pages for tree
+        """
 
         QUERY = '/api/components/tree?ps=500&component='
         r = requests.get(self.SONAR_URL
@@ -66,9 +77,15 @@ class SonarHelper(DataHelper):
         total_pages = self.adjustNumOfPages(total_number_entries, page_size)
         return total_pages
 
-    # get all issues or for specific rule
 
     def getIssuesReq(self, total_pages, rule):
+
+        """
+        get all issues or for specific rule or all rules
+        :param total_pages: total number of pages
+        :param rule: spefic rule, if empty, all rules will be checked
+        :return: all issues associate with the rule
+        """
 
         issues = []
         ruleToCheck = ""
@@ -87,10 +104,12 @@ class SonarHelper(DataHelper):
             issues.extend(openissue)
         return issues
 
-    # get issues only associates with the rules that are in the categories
-
     def getIssuesAll (self):
 
+        """
+        get all issues
+        :return: all issues
+        """
 
         # if project not been analysis return error
         found_project = self.getComponentsReq()
@@ -105,18 +124,26 @@ class SonarHelper(DataHelper):
 
         return issues
 
-    # get rules associate with a specific quality profile
 
     def getRulesReq (self):
+        """
+        get rules associate with a specific quality profile
+        :return: rules asscoiate with the q profile
+        """
 
         r = requests.get(self.SONAR_URL
                          + '/api/rules/search?ps=500&activation=true&qprofile='
                          + self.QUALITY_PROFILE)
         return r.json()['rules']
 
-    # get all files or for specific project
 
     def getFilesReq(self, total_pages):
+
+        """
+        get all files or for specific project
+        :param total_pages: total number of pages
+        :return: list of files for that project
+        """
 
         files = []
         for i in range(1, total_pages):
@@ -130,53 +157,60 @@ class SonarHelper(DataHelper):
             files.extend(nondirfiles)
         return files
 
-    # handle duplicated block
 
     def duplicatedBlockHandlerStore(self, dup_errmessages):
 
-            dup_block_id = "common-java:DuplicatedBlocks"
-            # out = ""
-            for dup_errmessage in dup_errmessages:
+        """
+        store the details of each duplication error in to the message buffer
+        :param dup_errmessages: duplication err message that contains the duplicatin info
+        :return: void
+        """
 
-                items = self.getDuplicationsReq(dup_errmessage)
-                duplications = items['duplications']
-                files = items['files']
-                dup_errmessage['duplications'] = []
+        dup_block_id = "common-java:DuplicatedBlocks"
 
-                for duplication in duplications:
+        for dup_errmessage in dup_errmessages:
 
-                    blocks = duplication['blocks']
-                    single_dup = []
-                    discard = False
-                    for block in blocks:
-                        entry = {}
-                        entry['startLine'] = block['from']
-                        entry['endLine'] = entry['startLine'] - 1 + block['size']
-                        entry['loc'] = files[block['_ref']]['key']
+            items = self.getDuplicationsReq(dup_errmessage)
+            duplications = items['duplications']
+            files = items['files']
+            dup_errmessage['duplications'] = []
 
-                        if entry['loc'] in self.fileChecked:
-                            discard = True
-                            break
+            for duplication in duplications:
 
-                        items = self.getSourceReq(entry['startLine'], entry['endLine'], entry['loc'])
-                        entry['code'] = []
-                        for item in items:
-                            entry['code'].append(item[1])
-                        single_dup.append(entry)
+                blocks = duplication['blocks']
+                single_dup = []
+                discard = False
+                for block in blocks:
+                    entry = {}
+                    entry['startLine'] = block['from']
+                    entry['endLine'] = entry['startLine'] - 1 + block['size']
+                    entry['loc'] = files[block['_ref']]['key']
 
-                    if not discard:
-                        dup_errmessage['duplications'].append(single_dup)
+                    if entry['loc'] in self.fileChecked:
+                        discard = True
+                        break
 
-                self.fileChecked.add(dup_errmessage['path'][0])
-                if len(dup_errmessage['duplications']) > 0:
-                    self.storeIssue(dup_block_id, dup_errmessage)
+                    items = self.getSourceReq(entry['startLine'], entry['endLine'], entry['loc'])
+                    entry['code'] = []
+                    for item in items:
+                        entry['code'].append(item[1])
+                    single_dup.append(entry)
+
+                if not discard:
+                    dup_errmessage['duplications'].append(single_dup)
+
+            self.fileChecked.add(dup_errmessage['path'][0])
+            if len(dup_errmessage['duplications']) > 0:
+                self.storeIssue(dup_block_id, dup_errmessage)
 
 
-
-
-    #get most recent analysis ID
 
     def getMostRecentAnalysisDateReq (self):
+
+        """
+        get most recent analysis date
+        :return: most recent analysis date
+        """
 
         r = requests.get(self.SONAR_URL
                          + '/api/project_analyses/search?project='
@@ -185,9 +219,15 @@ class SonarHelper(DataHelper):
         return r.json()['analyses'][0]['date']
 
 
-    # get source code from start to end
-
     def getSourceReq (self, startLine, endLine, issue):
+
+        """
+        get source code from start to end
+        :param startLine: start line of the code
+        :param endLine:  end line of the code
+        :param issue: the specific issue
+        :return: the source code
+        """
 
         if 'component' in issue:
             issue = issue['component']
@@ -226,9 +266,13 @@ class SonarHelper(DataHelper):
         return r.json()['component']['measures']
 
 
-    # get components
 
     def getComponentsReq (self):
+
+        """
+        get components of the project
+        :return:  components of the project
+        """
 
         r = requests.get(self.SONAR_URL
                        + "/api/components/show?component="
@@ -237,11 +281,22 @@ class SonarHelper(DataHelper):
 
 
     def checkAnalysisLog(self,  WHICHLOG, data):
+        """
+        check if analysis log already existed
+        :param WHICHLOG: which log to be checked
+        :param data: data to be stored
+        :return: void
+        """
         analysisTime = self.getMostRecentAnalysisDateReq()
         self.dateLogJSON(analysisTime, WHICHLOG, data)
 
 
     def getSingleRuleReq(self, rule):
+        """
+        get information for a single rule
+        :param rule: rule id
+        :return: rule information
+        """
         r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
         ruleInfo = r.json()['rules'][0]
         return ruleInfo
@@ -256,9 +311,14 @@ class SonarHelper(DataHelper):
         r = requests.get(self.SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
         return r.json()
 
-    # get and store codes
 
     def storeCodes(self, issue, errmessage):
+        """
+        get and store source codes of the issue
+        :param issue: specific issue
+        :param errmessage: buffer contains the code
+        :return:
+        """
         if 'textRange' in issue:
             textRange = self.makeTextRange(issue)
             for entry in textRange:
@@ -272,9 +332,14 @@ class SonarHelper(DataHelper):
                     entry['code'].append(item[1])
                 errmessage['code'].append(entry)
 
-    # check if quality profile has been updated, if so, return the set of new rule ids
 
     def checkQProfileLogReq(self):
+
+        """
+        check if quality profile has been updated, if so, update the cache and display the difference
+        :return: void
+        """
+
         r = requests.get(self.SONAR_URL
                          + "/api/qualityprofiles/changelog?profileKey="
                          + self.QUALITY_PROFILE)
