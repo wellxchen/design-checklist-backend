@@ -19,10 +19,14 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
 
 
     # calcualte total score for rules under one category
-    def calTotalScorePerCategory(self, SONAR_URL, categoryname):
+    def calTotalScorePerCategory(self, categoryname):
+
+        """
+        calculate the total score for the main category
+        :param categoryname: category name
+        :return: total scores of the category
+        """
         rules = self.getRulesByCategoryName(categoryname)
-
-
         score = 0.00
         for rule in rules:
             r = requests.get(SONAR_URL + '/api/rules/search?rule_key=' + rule)
@@ -31,18 +35,26 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
             score += self.getScoreForSeverity(ruleseverity)
         return score
 
-    # calcualte total score for rules under all categories
+
     def calTotalScoreAllCategory(self):
+        """
+        calcualte total score for rules under all categories
+        :return: scores for all categories
+        """
         l = {}
 
         for category in self.title:
             maincate = category.keys()[0]
-            l[maincate] = self.calTotalScorePerCategory(self.SONAR_URL, maincate)
+            l[maincate] = self.calTotalScorePerCategory(maincate)
         return l
 
-    # get score for the category
     def getScoreForSeverity(self, ruleseverity):
 
+        """
+        convert sonar severity to weights
+        :param ruleseverity: sonar severity
+        :return: weights
+        """
         if ruleseverity == "BLOCKER":
             return 100.00
         if ruleseverity == "CRITICAL":
@@ -56,6 +68,11 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         return 0.0
 
     def renameSeverity(self, ruleseverity):
+        """
+        convert sonar severity to self defined severity
+        :param ruleseverity: sonar severity
+        :return: self defined severity
+        """
         if ruleseverity == "BLOCKER":
             return "fail"
         if ruleseverity == "CRITICAL":
@@ -68,8 +85,14 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
             return "info"
         return ""
 
-    #
+
     def calPercentByScore(self, scores, scores_rem):
+        """
+        calculate percentage of correctness based on weighted scores
+        :param scores: score buffer that stores scores
+        :param scores_rem: total score under that main category
+        :return: buffer that contains scores
+        """
         l = []
         for i in range(0, self.getNumMainTitle()):
             l.append(0)
@@ -78,9 +101,3 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
             index = self.getCategoryNumberByName(catename)
             l[index] = (score / scores_rem[catename]) * 100.00
         return l
-
-    # calcualte percentage for the category (SIMPLY BY NUMBER OF RULES VIOLATED)
-    def calPercentByNum(self, category, rules_under_category):
-        if len(category) > 0:
-            return ((0.0 + len(category) - len(rules_under_category)) / len(category)) * 100.00
-        return 100.0

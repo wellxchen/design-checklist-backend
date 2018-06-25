@@ -52,15 +52,34 @@ class CategoriesHelper (categories):
         return len(self.title[index].values()[0])
 
     def getMainTitle(self, index):
-        
+        """
+        get specific main category name
+        :param index:index of the category
+        :return:category name
+        """
+
         return self.title[index].keys()[0]
 
     def getSubTitle(self, mindex, sindex):
+
+        """
+        get specific sub category name
+        :param mindex: main category index
+        :param sindex: sub category index
+        :return: sub category name
+        """
 
         maincates = self.getMainTitle(mindex)
         return self.title[mindex][maincates][sindex]
 
     def getDescriptionByIndex(self, mindex, sindex):
+
+        """
+        get sub category detailed description
+        :param mindex: main category index
+        :param sindex: sub category index
+        :return: the description
+        """
         maincates = self.getMainTitle(mindex)
         return self.descriptions[maincates][sindex]
 
