@@ -7,18 +7,22 @@ Helper class that handle score related functionalities
 
 import requests
 
-from categories import categories
-import CategoriesHelper
+
+from CategoriesHelper import CategoriesHelper
+from LocalHelper import LocalHelper
 
 
-class ScoreHelper():
+class ScoreHelper( LocalHelper, CategoriesHelper):
 
+    def __init__(self, group, project):
+        super(ScoreHelper, self).__init__(group, project)
 
-    def __init__(self):
-        self.categorieshelper = CategoriesHelper.CategoriesHelper()
 
     # calcualte total score for rules under one category
-    def calTotalScorePerCategory(self, SONAR_URL, rules):
+    def calTotalScorePerCategory(self, SONAR_URL, categoryname):
+        rules = self.getRulesByCategoryName(categoryname)
+
+
         score = 0.00
         for rule in rules:
             r = requests.get(SONAR_URL + '/api/rules/search?rule_key=' + rule)
@@ -28,14 +32,14 @@ class ScoreHelper():
         return score
 
     # calcualte total score for rules under all categories
-    def calTotalScoreAllCategory(self, SONAR_URL):
+    def calTotalScoreAllCategory(self):
         l = {}
-        l["communication"] = self.calTotalScorePerCategory(SONAR_URL, categories().communication)
-        l["modularity"] = self.calTotalScorePerCategory(SONAR_URL, categories().modularity)
-        l["flexibility"] = self.calTotalScorePerCategory(SONAR_URL, categories().flexibility)
-        l["codesmell"] = self.calTotalScorePerCategory(SONAR_URL, categories().codesmell)
-        l["javanote"] = self.calTotalScorePerCategory(SONAR_URL, categories().javanote)
-        l["duplications"] = self.calTotalScorePerCategory(SONAR_URL, categories().duplicationsID)
+        l["Communication"] = self.calTotalScorePerCategory(self.SONAR_URL, "Communication")
+        l["Modularity"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Modularity')
+        l["Flexibility"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Flexibility')
+        l["Code Smells"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Code Smells')
+        l["Java Notes"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Java Notes')
+        l["Duplications"] = self.calTotalScorePerCategory(self.SONAR_URL, 'Duplications')
         return l
 
     # get score for the category
@@ -69,11 +73,11 @@ class ScoreHelper():
     #
     def calPercentByScore(self, scores, scores_rem):
         l = []
-        for i in range(0, self.categorieshelper.getNumMainTitle()):
+        for i in range(0, self.getNumMainTitle()):
             l.append(0)
 
         for catename, score in scores.iteritems():
-            index = self.categorieshelper.getCategoryNumberByName(catename)
+            index = self.getCategoryNumberByName(catename)
             l[index] = (score / scores_rem[catename]) * 100.00
         return l
 

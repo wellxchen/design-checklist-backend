@@ -7,17 +7,31 @@ Helper class that handle data structure related functionalities
 
 
 import re
-import CategoriesHelper
-import ScoreHelper
-import SonarHelper
+from ScoreHelper import ScoreHelper
 
 
-class DataHelper ():
 
-    def __init__(self):
-        self.categorieshelper = CategoriesHelper.CategoriesHelper()
-        self.scorehelper = ScoreHelper.ScoreHelper()
-        self.sonarhelper = SonarHelper.SonarHelper()
+class DataHelper (ScoreHelper):
+
+    def __init__(self, group, project):
+
+        super(DataHelper, self).__init__(group, project)
+
+        self.fileChecked = set()  # whether files are checked
+        self.rulesViolated = []  # store rules violated
+        self.message = []  # store details of issues
+
+        # initiate buffers
+        for i in range(6):
+            self.rulesViolated.append([])
+            self.message.append([])
+            k = 0
+
+            if i < 3:
+                k = self.getNumSubTitle(i)
+
+            for j in range(k):
+                self.message[i].append([])
 
 
     def displayData(self, data):
@@ -27,8 +41,9 @@ class DataHelper ():
 
     # store the issue in message
 
-    def storeIssue(self, ruleID, errmessage, message, rulesViolated):
-            ruleInfo = self.categorieshelper.getRuleDetail(ruleID)
+    def storeIssue(self, ruleID, errmessage):
+
+            ruleInfo = self.getRuleDetail(ruleID)
             if len(ruleInfo) == 0:
                 return
             mainindex = ruleInfo[0]
@@ -37,11 +52,11 @@ class DataHelper ():
                 subindex = ruleInfo[1]
 
 
-                message[mainindex][subindex].append(errmessage)
+                self.message[mainindex][subindex].append(errmessage)
             else:
-                message[mainindex].append(errmessage)
-            if not ruleID in rulesViolated[mainindex]:
-                rulesViolated[mainindex].append(ruleID)
+                self.message[mainindex].append(errmessage)
+            if not ruleID in self.rulesViolated[mainindex]:
+                self.rulesViolated[mainindex].append(ruleID)
 
 
 
@@ -53,42 +68,42 @@ class DataHelper ():
                 "please change the file name and extension for xml.txt to pom.xml and yml.txt to .gitlab-ci.yml"
             return json.dumps(data)
 
-    def dataHandler(self, message, percentage, onlyDup):
+    def dataHandler(self, percentage, onlyDup):
 
             data = {}
             data['error'] = {}
             data['error']['Duplications'] = {}
-            data['error']['Duplications']["category description"] = self.categorieshelper.getDescriptionByName("Duplications", 0)
-            data['error']['Duplications']["detail"] = message[5]
+            data['error']['Duplications']["category description"] = self.getDescriptionByName("Duplications", 0)
+            data['error']['Duplications']["detail"] = self.message[5]
 
             if onlyDup:
                 return data
 
-            for mindex in range(0, self.categorieshelper.getNumMainTitle()):
-                maintitle = self.categorieshelper.getMainTitle(mindex)
+            for mindex in range(0, self.getNumMainTitle()):
+                maintitle = self.getMainTitle(mindex)
                 data['error'][maintitle] = {}
                 if mindex >= 3:
-                    data['error'][maintitle] = message[mindex]
+                    data['error'][maintitle] = self.message[mindex]
                     continue
-                for sindex in range(0, self.categorieshelper.getNumSubTitle(mindex)):
-                    subtitle = self.categorieshelper.getSubTitle(mindex, sindex)
+                for sindex in range(0, self.getNumSubTitle(mindex)):
+                    subtitle = self.getSubTitle(mindex, sindex)
                     data['error'][maintitle][subtitle] = {}
-                    data['error'][maintitle][subtitle]['detail'] = message[mindex][sindex]
+                    data['error'][maintitle][subtitle]['detail'] = self.message[mindex][sindex]
                     data['error'][maintitle][subtitle]['category description'] = \
-                        self.categorieshelper.getDescriptionByIndex(mindex, sindex)
+                        self.getDescriptionByIndex(mindex, sindex)
 
             data['percentage'] = {}
-            for i in range(0, self.categorieshelper.getNumMainTitle()):
-                data['percentage'][self.categorieshelper.getMainTitle(i)] = percentage[i]
+            for i in range(0, self.getNumMainTitle()):
+                data['percentage'][self.getMainTitle(i)] = percentage[i]
 
             return data
 
 
 
-    def makeIssueEntryForDIR (self, issuelist, TEST_PROJECT, res):
+    def makeIssueEntryForDIR (self, issuelist,  res):
         for issue in issuelist:
             for filepath in issue['path']:
-                filepathshort = re.sub(TEST_PROJECT + ":", "", filepath)
+                filepathshort = re.sub(self.TEST_PROJECT + ":", "", filepath)
                 lastslash = filepathshort.rfind("/")
                 parentdirectory = filepathshort[:lastslash]
                 if parentdirectory not in res or filepathshort not in res[parentdirectory]["files"]:
@@ -120,25 +135,11 @@ class DataHelper ():
         errmessage['path'] = [issue['component']]
         errmessage['rule'] = ruleResult[0]['name']
         errmessage['message'] = issue['message']
-        errmessage['severity'] = self.scorehelper.renameSeverity(issue['severity'])
+        errmessage['severity'] = self.renameSeverity(issue['severity'])
         errmessage['author'] = issue['author']
         return errmessage
 
-    # get and store codes
 
-    def storeCodes(self, SONAR_URL, issue, errmessage):
-        if 'textRange' in issue:
-            textRange = self.makeTextRange(issue)
-            for entry in textRange:
-                startLine = entry['textRange']['startLine']
-                endLine = entry['textRange']['endLine']
-
-                items = self.sonarhelper.getSource(SONAR_URL, startLine, endLine, issue)
-
-                entry['code'] = []
-                for item in items:
-                    entry['code'].append(item[1])
-                errmessage['code'].append(entry)
 
 
     def handleAuthorStore (self, issues, maincategory, subcategory, res):
@@ -156,13 +157,24 @@ class DataHelper ():
 
     def makeEmptyIssueEntry (self):
         entry = {}
-        maintitles = self.categorieshelper.getAllMainTitle()
+        maintitles = self.getAllMainTitle()
         for i in range(len(maintitles)):
             if i >= 3:
                 entry[maintitles[i]] = []
                 continue
             entry[maintitles[i]] = {}
-            subtitles = self.categorieshelper.getAllSubTitleOfMain(i)
+            subtitles = self.getAllSubTitleOfMain(i)
             for subtitle in subtitles:
                 entry[maintitles[i]][subtitle] = []
         return entry
+
+
+
+    def getFileChecked (self):
+        return self.fileChecked
+
+    def getRulesViolated(self):
+        return self.rulesViolated
+
+    def getMessage(self):
+        return self.message

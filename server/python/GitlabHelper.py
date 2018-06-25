@@ -19,7 +19,11 @@ ROOT = dirname(__file__)[:-14]
 dotenv_path = ROOT + "/server/documents/local/app-env"
 load_dotenv(dotenv_path)
 
-class GitlabHelper ():
+class GitlabHelper (object):
+
+    def __init__(self):
+        pass
+
     # get all commits
     def getcommits(self, GITLAB_URL, projectid, TOKEN):
         commits = []

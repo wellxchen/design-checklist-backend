@@ -15,13 +15,7 @@ import os
 from os.path import dirname
 from dotenv import load_dotenv
 
-from LocalHelper import LocalHelper
-from ScoreHelper import ScoreHelper
-from GitlabHelper import GitlabHelper
-from SonarHelper import SonarHelper
-from FormatHelper import FormatHelper
-from DataHelper import  DataHelper
-from CategoriesHelper import CategoriesHelper
+from Helper import Helper
 
 
 dotenv_path = dirname(__file__)[:-14] + "/server/documents/local/app-env"
@@ -37,32 +31,16 @@ class ProcessSonar (object):
 
         """
         init process sonar class and set buffers accordingly
-        :param group:
-        :param project:
+        :param group: group the project belongs to
+        :param project: project name
         """
 
-        self.localhepler = LocalHelper(group, project)  # stores and handles all local related functions
-        self.fileChecked = set()  # whether files are checked
-        self.rulesViolated = []  # store rules violated
-        self.message = []  # store details of issues
-
-        # initiate buffers
-        for i in range(6):
-            self.rulesViolated.append([])
-            self.message.append([])
-            k = 0
-
-            if i < 3:
-                k = CategoriesHelper().getNumSubTitle(i)
-
-
-            for j in range(k):
-                self.message[i].append([])
+        self.helper = Helper(group, project)
 
         # check log folders existed, if not, create
 
-        self.localhepler.executeShellLog()
-        self.localhepler.executeShellCode()
+        self.helper.executeShellLog()
+        self.helper.executeShellCode()
 
 
     def process(self, onlyDup, byAuthor):
@@ -76,8 +54,7 @@ class ProcessSonar (object):
         """
 
         # get all issues that are open
-        issues = SonarHelper().getIssuesAll(self.localhepler.SONAR_URL,
-                                                     self.localhepler.TEST_PROJECT)
+        issues = self.helper.getIssuesAll()
 
         if 'err' in issues:
             return issues
@@ -85,14 +62,15 @@ class ProcessSonar (object):
         # get all rules associate with quanlity profile
         rules = []
         if not onlyDup:
-            rules.extend(SonarHelper().getRules(self.localhepler.SONAR_URL,
-                                                self.localhepler.QUALITY_PROFILE))
+            rules.extend(self.helper.getRulesReq())
         else:
-            rules.extend(CategoriesHelper().getDuplications())
+            rules.extend(self.helper.getDuplicationsLocal())
+
+
             
         # store details
         dup_errmessages = []
-        scores = ScoreHelper().calTotalScoreAllCategory(self.localhepler.SONAR_URL)
+        scores = self.helper.calTotalScoreAllCategory()
         scores_rem = copy.deepcopy(scores)
         scores_checked_Id = set()
         for issue in issues:
@@ -101,12 +79,12 @@ class ProcessSonar (object):
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)
 
             if len(ruleResult) > 0:
-                errmessage = DataHelper().makeErrMessage(issue,ruleResult)
+                errmessage = self.helper.makeErrMessage(issue,ruleResult)
                 
                 # deduct score
-                maincategoryname = CategoriesHelper().getMainCateNameById(ruleID)
+                maincategoryname = self.helper.getMainCateNameById(ruleID)
                 if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
-                    scores[maincategoryname] -= ScoreHelper().getScoreForSeverity(issue['severity'])
+                    scores[maincategoryname] -= self.helper.getScoreForSeverity(issue['severity'])
                     scores_checked_Id.add(ruleID)
 
                 # add code
@@ -114,33 +92,30 @@ class ProcessSonar (object):
                     dup_errmessages.append(errmessage)
                 else:
                     errmessage['code'] = []
-                    DataHelper().storeCodes(self.localhepler.SONAR_URL, issue, errmessage)
-                    DataHelper().storeIssue (ruleID, errmessage, self.message, self.rulesViolated)
+                    self.helper.storeCodes(issue, errmessage)
+                    self.helper.storeIssue (ruleID, errmessage)
 
         # if there is duplication issues, store the issues in separate buffer
         if len(dup_errmessages) > 0:
-            SonarHelper().duplicatedBlockHandlerStore(self.localhepler.SONAR_URL,
-                                                  dup_errmessages,
-                                                  self.message,
-                                                  self.rulesViolated,
-                                                  self.fileChecked)
+            self.helper.duplicatedBlockHandlerStore(dup_errmessages)
+
         # cal percentage
 
-        percentage = ScoreHelper().calPercentByScore(scores, scores_rem)
-        data = DataHelper().dataHandler(self.message, percentage, onlyDup)
+        percentage = self.helper.calPercentByScore(scores, scores_rem)
+        data = self.helper.dataHandler(percentage, onlyDup)
 
         if byAuthor:
            data = self.getbyauthor(data)
 
         # store severity list
 
-        data['severitylist'] = CategoriesHelper().getSeverityList()
+        data['severitylist'] = self.helper.getSeverityList()
 
-        DataHelper().displayData(data)
+        self.helper.displayData(data)
 
         # if not only duplication, store the log   
         if not onlyDup:
-             self.localhepler.handleLogJSON(self.localhepler.LOG_ISSUES, data)
+             self.helper.checkAnalysisLog(self.helper.LOG_ISSUES, data)
             
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
@@ -156,14 +131,14 @@ class ProcessSonar (object):
         for maincategory, possibleissues in errors.iteritems():
             # if code smell or java note
             if type(possibleissues) is list:
-                  DataHelper().handleAuthorStore(possibleissues, maincategory, "",  res)
+                  self.helper.handleAuthorStore(possibleissues, maincategory, "",  res)
                   
             # if other main categories
             else:
            
                 for subcategory, issues in possibleissues.iteritems():
                    
-                    DataHelper().handleAuthorStore(issues['detail'], maincategory, subcategory, res)
+                    self.helper.handleAuthorStore(issues['detail'], maincategory, subcategory, res)
         return res
 
     def statistics(self):
@@ -173,7 +148,7 @@ class ProcessSonar (object):
         :return:  statistics in json
         """
 
-        measures = SonarHelper().getMeasures(SONAR_URL, TEST_PROJECT)
+        measures = self.helper.getMeasures(localhelper)
         res = {}
         res ['measures'] = {}
         for measure in measures:
@@ -184,7 +159,7 @@ class ProcessSonar (object):
         res['measures']['lmethods'].extend(self.longestmethods())
 
         #write logs to local
-        self.localhepler.handleLogJSON(self.localhepler.LOG_STATISTICS, res)
+        self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS, res)
 
         return json.dumps(res)
 
@@ -195,13 +170,11 @@ class ProcessSonar (object):
         :return: top 10 longest methods names that exceed 15 lines of codes
         """
 
-        total_pages = SonarHelper().\
-            getNumOfPagesIssues(self.localhepler.SONAR_URL,
-                                self.localhepler.TEST_PROJECT)  # get total number of pages in response
+        total_pages = self.helper.\
+            getNumOfPagesIssues(self.helper)  # get total number of pages in response
 
 
-        issues = SonarHelper().getIssues(self.localhepler.SONAR_URL,
-                                         self.localhepler.TEST_PROJECT,
+        issues = self.helper.getIssues(self.helper,
                                          total_pages,
                                          "squid:S138")  # get issues with method too long
 
@@ -221,7 +194,7 @@ class ProcessSonar (object):
 
             sl = issue['textRange']['startLine']
             el =  issue['textRange']['endLine']
-            items = SonarHelper().getSource(SONAR_URL, sl, el, issue)
+            items = self.helper.getSource(localhelper, sl, el, issue)
 
             entries[count]['code'] = []
             title = 0
@@ -231,7 +204,7 @@ class ProcessSonar (object):
             for item in items:
                 mname = ""
                 if title == 0:
-                    mname = FormatHelper().stripmethodname(item[1])
+                    mname = self.helper.stripmethodname(item[1])
                 entries[count]['methodname'] = mname
                 entries[count]['code'].append(item[1])
 
@@ -255,18 +228,18 @@ class ProcessSonar (object):
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL \
               +"/groups/" \
-              + self.localhepler.GITLAB_GROUP \
+              + self.helper.GITLAB_GROUP \
               + "/projects?search="\
-              + self.localhepler.PLAIN_PROJECT
+              + self.helper.PLAIN_PROJECT
 
-        r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.localhepler.TOKEN})
+        r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.helper.TOKEN})
         projects = r.json()
 
         # get project id from response
         projectid = -1
         for p in projects:
-            if p['path'] ==self.localhepler.PLAIN_PROJECT \
-                    or p['name'] == self.localhepler.PLAIN_PROJECT:
+            if p['path'] ==self.helper.PLAIN_PROJECT \
+                    or p['name'] == self.helper.PLAIN_PROJECT:
                 projectid = p['id']
                 break
 
@@ -278,11 +251,11 @@ class ProcessSonar (object):
         res = {}
         res['authors'] = {}
         dates = {}
-        commits = GitlabHelper().getcommits(GITLAB_URL, projectid, self.localhepler.TOKEN)
+        commits = self.helper.getcommits(GITLAB_URL, projectid, self.helper.TOKEN)
 
         # read in student ids and names from csv
 
-        studentidmaps = self.localhepler.readStudentInfo()
+        studentidmaps = self.helper.readStudentInfo()
 
         # if only statistics is requested, get the statistics using the student id map
 
@@ -294,7 +267,7 @@ class ProcessSonar (object):
         for commit in commits:
             # retrieve gitlab id
             authoremail = commit['author_email']
-            authorname = GitlabHelper().convertEmailtoGitlabId(authoremail,studentidmaps)
+            authorname = self.helper.convertEmailtoGitlabId(authoremail,studentidmaps)
 
             # get other info
 
@@ -348,7 +321,7 @@ class ProcessSonar (object):
         :return: statistics information of commits
         """
 
-        stats = self.localhepler.executeShellStats()   # call shell script to get statistics information
+        stats = self.helper.executeShellStats()   # call shell script to get statistics information
 
         parsed = re.split(r'\n--\n', stats)  # delete empty lines
 
@@ -356,8 +329,8 @@ class ProcessSonar (object):
         res_dates = {}  # store dates correspond to each author
         current_author = ""  # current author
         converted_date = ""  # dates after conversion
-        left_bound = FormatHelper().getDateFromTuple("2099 Dec 31")  # initial left bound
-        right_bound = FormatHelper().getDateFromTuple("1999 Jan 1")  #initial right bound
+        left_bound = self.helper.getDateFromTuple("2099 Dec 31")  # initial left bound
+        right_bound = self.helper.getDateFromTuple("1999 Jan 1")  #initial right bound
 
         # start to iterating through parsed statistics
         for p in parsed:
@@ -371,7 +344,7 @@ class ProcessSonar (object):
                     authorline = line.split()
                     authoremail = authorline[-1]
                     authoremail = authoremail[1:-1]
-                    current_author = GitlabHelper().convertEmailtoGitlabId(authoremail,studentidmaps)
+                    current_author = self.helper.convertEmailtoGitlabId(authoremail,studentidmaps)
                     if current_author not in res:
                         res[current_author] = {}
                         res[current_author]["dates"] = {}
@@ -384,7 +357,7 @@ class ProcessSonar (object):
                     #check bounds
                     dateline = line.split()
                     current_date = dateline[5] + " " + dateline[2] + " " + dateline[3]
-                    numerical_date = FormatHelper().getDateFromTuple(current_date)
+                    numerical_date = self.helper.getDateFromTuple(current_date)
                     if numerical_date > right_bound:
                         right_bound = numerical_date
                     elif numerical_date < left_bound:
@@ -419,7 +392,7 @@ class ProcessSonar (object):
             res[authorname]["sorteddates"] = []
             res[authorname]["sorteddates"].extend(res_dates[authorname])
 
-        projectdates = self.localhepler.readProjectDates(self.localhepler.PLAIN_PROJECT)
+        projectdates = self.helper.readProjectDates(self.helper.PLAIN_PROJECT)
         startdate = projectdates['STARTDATE']
         enddate = projectdates['ENDDATE']
 
@@ -440,8 +413,7 @@ class ProcessSonar (object):
 
         res = {}
 
-        found_project = SonarHelper().getComponents(self.localhepler.SONAR_URL,
-                                                    self.localhepler.TEST_PROJECT)
+        found_project = self.helper.getComponents(self.helper)
         if 'errors' in found_project:
             res['sonar'] = "not found"
         else:
@@ -450,10 +422,10 @@ class ProcessSonar (object):
         GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
         URL = GITLAB_URL \
               + "/groups/" \
-              + self.localhepler.GITLAB_GROUP \
+              + self.helper.GITLAB_GROUP \
               + "/projects?search="\
-              + self.localhepler.PLAIN_PROJECT
-        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.localhepler.TOKEN})
+              + self.helper.PLAIN_PROJECT
+        r = requests.get(URL, headers={'PRIVATE-TOKEN': self.helper.TOKEN})
         if len(r.json()) == 0:
             res['gitlab'] = "not found"
         else:
@@ -472,11 +444,11 @@ class ProcessSonar (object):
             return json.dumps({})
 
         res = {}
-        path = self.localhepler.CODES_PATH \
+        path = self.helper.CODES_PATH \
                + "/" \
-               + self.localhepler.GITLAB_GROUP \
+               + self.helper.GITLAB_GROUP \
                + "/" \
-               + self.localhepler.PLAIN_PROJECT
+               + self.helper.PLAIN_PROJECT
         for root, subdirs, files in os.walk(path):
 
             if "/.git/" in root or root[-4:] == ".git":
@@ -488,12 +460,12 @@ class ProcessSonar (object):
             if rootshort[0] == '/':
                 rootshort = rootshort[1:]
 
-            if self.localhepler.shouldSkipDir(rootshort, ["src"]):
+            if self.helper.shouldSkipDir(rootshort, ["src"]):
                 continue
 
             res[rootshort] = {}
-            res[rootshort]['directories'] = FormatHelper().getFullPath(rootshort, subdirs)
-            res[rootshort]['files'] = FormatHelper().getFullPath(rootshort, files)
+            res[rootshort]['directories'] = self.helper.getFullPath(rootshort, subdirs)
+            res[rootshort]['files'] = self.helper.getFullPath(rootshort, files)
 
 
         issues = json.loads(self.process(False, False))
@@ -505,13 +477,14 @@ class ProcessSonar (object):
            if isinstance(mainissuelist, dict):
                for subcategory, subissuelist in mainissuelist.items():
 
-                   DataHelper().makeIssueEntryForDIR(subissuelist['detail'],
-                                                     self.localhepler.TEST_PROJECT,
+                   self.helper.makeIssueEntryForDIR(subissuelist['detail'],
+                                                     self.helper.TEST_PROJECT,
                                                      res)
            else:
-               DataHelper().makeIssueEntryForDIR(mainissuelist,
-                                                 self.localhepler.TEST_PROJECT,
+               self.helper.makeIssueEntryForDIR(mainissuelist,
+                                                 self.helper.TEST_PROJECT,
                                                  res)
+
 
         return json.dumps(res)
 
@@ -525,10 +498,10 @@ class ProcessSonar (object):
 
         # iterating through log directory
         resdict = {}
-        for filename in os.listdir(self.localhepler.LOG_STATISTICS):
+        for filename in os.listdir(self.helper.LOG_STATISTICS):
             # if file end with json, open the file and add it to the buffer
             if filename.endswith(".json"):
-                with open(self.localhepler.LOG_STATISTICS + "/" + filename, 'r') as f:
+                with open(self.helper.LOG_STATISTICS + "/" + filename, 'r') as f:
                     data = json.load(f)
                     resdict[filename] = data
         res = []  # store the result
@@ -544,4 +517,3 @@ class ProcessSonar (object):
 if __name__ == '__main__':
 
     ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
-

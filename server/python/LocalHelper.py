@@ -21,13 +21,12 @@ ROOT = dirname(__file__)[:-14]
 dotenv_path = ROOT + "/server/documents/local/app-env"
 load_dotenv(dotenv_path)
 
-from SonarHelper import  SonarHelper
-from DataHelper import DataHelper
-from FormatHelper import  FormatHelper
+from FormatHelper import FormatHelper
 
-class LocalHelper ():
+class LocalHelper (FormatHelper):
 
     def __init__(self, group, project):
+        super(LocalHelper, self).__init__()
         self.SONAR_GROUP = 'duke-compsci308:'
         if project is None:
             project = ""
@@ -102,14 +101,15 @@ class LocalHelper ():
         with open(logname, 'w') as outfile:
             json.dump(data,outfile)
 
-    def handleLogJSON (self, WHICHLOG, data):
+    def handleLogJSON (self, analysisTime, WHICHLOG, data):
         """
-        check if the log extisted, if so do nothing, if not caching
+        check if the log extisted by checking the last analysis time, if so do nothing, if not caching
+        :param analysisTime: last analysis time
         :param WHICHLOG: which log to be written
         :param data: data to be stored
         """
-        analysisTime = SonarHelper().getMostRecentAnalysisDate(self.SONAR_URL, self.TEST_PROJECT)
-        analysisTime = FormatHelper().adjustSonarTime(analysisTime)
+
+        analysisTime = self.adjustSonarTime(analysisTime)
         existed = self.executeShellCheckDIR(WHICHLOG, analysisTime)
         if "no" in existed:
             self.writeLogJSON(WHICHLOG + "/" + analysisTime + ".json", data)
@@ -194,3 +194,27 @@ class LocalHelper ():
             if dir == returndir or dir[:4] == "src/":
                 return False
         return True
+
+
+    def getSONAR_URL (self):
+        """
+        return SONAR URL
+        :return: SONAR_URL
+        """
+        return self.SONAR_URL
+
+
+    def getQUALITY_PROFILE(self):
+        """
+        return quality profile currently using
+        :return: QUALITY_PROFILE
+        """
+        return self.QUALITY_PROFILE
+
+    def getTEST_PROJECT(self):
+
+        """
+        return project currently checking
+        :return: TEST_PROJECT
+        """
+        return self.TEST_PROJECT

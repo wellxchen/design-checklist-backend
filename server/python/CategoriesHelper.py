@@ -7,11 +7,14 @@ handle categories related functionality
 
 '''
 
-from categories import categories
+from  categories import categories
+
+class CategoriesHelper (categories):
 
 
-class CategoriesHelper ():
-
+    def __init__(self):
+        super(CategoriesHelper, self).__init__()
+    
     def getAllMainTitle(self):
         res = []
         for i in range(self.getNumMainTitle()):
@@ -25,67 +28,70 @@ class CategoriesHelper ():
         return res
 
     def getNumMainTitle(self):
-        return len(categories().title)
+        return len(self.title)
 
     def getNumSubTitle(self, index):
 
-        return len(categories().title[index].values()[0])
+        return len(self.title[index].values()[0])
 
     def getMainTitle(self, index):
-        return categories().title[index].keys()[0]
+        return self.title[index].keys()[0]
 
     def getSubTitle(self, mindex, sindex):
 
-        maintitle = self.getMainTitle(mindex)
-        return categories().title[mindex][maintitle][sindex]
+        maincates = self.getMainTitle(mindex)
+        return self.title[mindex][maincates][sindex]
 
     def getDescriptionByIndex(self, mindex, sindex):
-        maintitle = self.getMainTitle(mindex)
-        return categories().descriptions[maintitle][sindex]
+        maincates = self.getMainTitle(mindex)
+        return self.descriptions[maincates][sindex]
 
     def getDescriptionByName(self, mname, sindex):
-        return categories().descriptions[mname][sindex]
+        return self.descriptions[mname][sindex]
 
     def getSeverityList (self):
-        return categories().severitylist
+        return self.severitylist
 
     def getRuleDetail(self, ruleID):
-        if ruleID in categories().rules:
-            return categories().rules[ruleID]
+        if ruleID in self.rules:
+            return self.rules[ruleID]
         return []
 
     def getMainCateNameById(self, ruleID):
-        if ruleID in categories.rules:
-            cates = categories.rules[ruleID]
+        if ruleID in self.rules:
+            cates = self.rules[ruleID]
             return self.getAllMainTitle()[cates[0]]
         return ""
 
     def getCategoryNumberByName(self, name):
 
-        if name == "communication":
+        if name == "Communication":
             return 0
-        if name == "modularity":
+        if name == "Modularity":
             return 1
-        if name == "flexibility":
+        if name == "Flexibility":
             return 2
-        if name == "javanote":
+        if name == "Java Notes":
             return 3
-        if name == "codesmell":
+        if name == "Code Smells":
             return 4
-        if name == "duplications":
+        if name == "Duplications":
             return 5
         return -1
 
     def allrules(self):
-        return categories().communication.union(
-            categories().flexibility.union(
-                categories().javanote.union(
-                    categories().codesmell.union(
-                        categories().modularity.union(categories().duplicationsID)))))
+        return len(self.rules.keys())
 
-    def getDuplications(self):
-        return categories().duplications
+    def getDuplicationsLocal(self):
+        return self.duplications
 
+    def getRulesByCategoryName(self, name):
+        categorynumber = self.getCategoryNumberByName(name)
+        res = []
+        for ruleid, cates in self.rules.iteritems():
+            if cates[0] == categorynumber:
+                res.append(ruleid)
+        return res
 
 if __name__ == '__main__':
     print CategoriesHelper().getAllMainTitle()

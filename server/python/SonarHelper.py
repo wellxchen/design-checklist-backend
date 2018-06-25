@@ -6,27 +6,26 @@ Helper class that handle sonarqube related functionalities
 '''
 
 from DataHelper import DataHelper
-
 import requests
 
-class SonarHelper():
+class SonarHelper(DataHelper):
 
-    def __init__(self):
-        pass
+    def __init__(self, group, project):
+        super(SonarHelper, self).__init__(group,project)
 
-    def activateRule(self, SONAR_URL, QUALITY_PROFILE, ruleID):
+    def activateRuleReq(self,  ruleID):
         """
         activate a single rule in a quality profile on sonarqube
-        :param SONAR_URL: sonarqube url
         :param QUALITY_PROFILE:  quality profile to be changed
         :param ruleID: rule to be activated
         :return: void
         """
+
         SONAR_LOGIN = os.environ.get("SONAR_LOGIN")
         SONAR_PASSWORD = os.environ.get("SONAR_PASSWORD")
         r = requests.post(SONAR_URL + '/api/qualityprofiles/activate_rule?=',
-                          data={'profile_key': QUALITY_PROFILE, 'rule_key': ruleID},
-                          auth=(SONAR_LOGIN, SONAR_PASSWORD))
+                          data={'profile_key': self.QUALITY_PROFILE, 'rule_key': ruleID},
+                          auth=(self.SONAR_LOGIN, self.SONAR_PASSWORD))
 
 
     # adjust number of pages based on number of entries
@@ -41,9 +40,12 @@ class SonarHelper():
 
     # get number of pages for issues
 
-    def getNumOfPagesIssues(self, SONAR_URL, TEST_PROJECT):
+    def getNumOfPagesIssuesReq(self):
+
         QUERY = '/api/issues/search?ps=500&componentKeys='
-        r = requests.get(SONAR_URL + QUERY + TEST_PROJECT)
+        r = requests.get(self.SONAR_URL
+                         + QUERY
+                         + self.TEST_PROJECT)
         total_number_entries = r.json()['total']
         page_size = r.json()['ps']
         total_pages = self.adjustNumOfPages(total_number_entries, page_size)
@@ -51,9 +53,12 @@ class SonarHelper():
 
     # get number of pages for tree
 
-    def getNumOfPagesTree(self, SONAR_URL, TEST_PROJECT):
+    def getNumOfPagesTreeReq(self):
+
         QUERY = '/api/components/tree?ps=500&component='
-        r = requests.get(SONAR_URL + QUERY + TEST_PROJECT)
+        r = requests.get(self.SONAR_URL
+                         + QUERY
+                         + self.TEST_PROJECT)
         if 'errors' in r.json():
             return -1
         total_number_entries = r.json()['paging']['total']
@@ -63,15 +68,20 @@ class SonarHelper():
 
     # get all issues or for specific rule
 
-    def getIssues(self, SONAR_URL, TEST_PROJECT, total_pages, rule):
+    def getIssuesReq(self, total_pages, rule):
+
         issues = []
         ruleToCheck = ""
         if len(rule) > 0:
             ruleToCheck += "&rules="
             ruleToCheck += rule
         for i in range(1, total_pages):
-            r = requests.get(
-                SONAR_URL + '/api/issues/search?ps=500&p=' + str(i) + '&componentKeys=' + TEST_PROJECT + ruleToCheck)
+            r = requests.get(self.SONAR_URL
+                             + '/api/issues/search?ps=500&p='
+                             + str(i)
+                             + '&componentKeys='
+                             + self.TEST_PROJECT
+                             + ruleToCheck)
             allissues = r.json()['issues']  # all issues it has
             openissue = filter(lambda r: r['status'] != 'CLOSED', allissues)
             issues.extend(openissue)
@@ -79,34 +89,42 @@ class SonarHelper():
 
     # get issues only associates with the rules that are in the categories
 
-    def getIssuesAll (self, SONAR_URL, TEST_PROJECT):
+    def getIssuesAll (self):
+
+
         # if project not been analysis return error
-        found_project = self.getComponents(SONAR_URL, TEST_PROJECT)
+        found_project = self.getComponentsReq()
         if 'errors' in found_project:
-            return DataHelper().errHandler()
+            return self.errHandler()
 
         # get number of pages
-        total_pages = self.getNumOfPagesIssues(SONAR_URL, TEST_PROJECT)
+        total_pages = self.getNumOfPagesIssuesReq()
 
         # get all issues that are open
-        issues = self.getIssues(SONAR_URL, TEST_PROJECT, total_pages, "")
+        issues = self.getIssuesReq(total_pages, "")
 
         return issues
 
     # get rules associate with a specific quality profile
 
-    def getRules (self, SONAR_URL, QUALITY_PROFILE):
+    def getRulesReq (self):
 
-        r = requests.get(SONAR_URL + '/api/rules/search?ps=500&activation=true&qprofile=' + QUALITY_PROFILE)
+        r = requests.get(self.SONAR_URL
+                         + '/api/rules/search?ps=500&activation=true&qprofile='
+                         + self.QUALITY_PROFILE)
         return r.json()['rules']
 
     # get all files or for specific project
 
-    def getFiles(self, SONAR_URL, TEST_PROJECT, total_pages):
+    def getFilesReq(self, total_pages):
+
         files = []
         for i in range(1, total_pages):
-            r = requests.get(
-                SONAR_URL + '/api/components/tree??ps=500&p=' + str(i) + '&component=' + TEST_PROJECT)
+            r = requests.get(self.SONAR_URL
+                             + '/api/components/tree??ps=500&p='
+                             + str(i)
+                             + '&component='
+                             + self.TEST_PROJECT)
             allfiles = r.json()['components']
             nondirfiles = filter(lambda r: r['qualifier'] != 'DIR', allfiles)
             files.extend(nondirfiles)
@@ -114,13 +132,13 @@ class SonarHelper():
 
     # handle duplicated block
 
-    def duplicatedBlockHandlerStore(self, SONAR_URL, dup_errmessages, message, rulesViolated, filesChecked):
+    def duplicatedBlockHandlerStore(self, dup_errmessages):
+
             dup_block_id = "common-java:DuplicatedBlocks"
             # out = ""
             for dup_errmessage in dup_errmessages:
 
-                r = requests.get(SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
-                items = r.json()
+                items = self.getDuplicationsReq(dup_errmessage)
                 duplications = items['duplications']
                 files = items['files']
                 dup_errmessage['duplications'] = []
@@ -136,11 +154,11 @@ class SonarHelper():
                         entry['endLine'] = entry['startLine'] - 1 + block['size']
                         entry['loc'] = files[block['_ref']]['key']
 
-                        if entry['loc'] in filesChecked:
+                        if entry['loc'] in self.fileChecked:
                             discard = True
                             break
 
-                        items = self.getSource(SONAR_URL, entry['startLine'], entry['endLine'], entry['loc'])
+                        items = self.getSourceReq(entry['startLine'], entry['endLine'], entry['loc'])
                         entry['code'] = []
                         for item in items:
                             entry['code'].append(item[1])
@@ -149,36 +167,48 @@ class SonarHelper():
                     if not discard:
                         dup_errmessage['duplications'].append(single_dup)
 
-                filesChecked.add(dup_errmessage['path'][0])
+                self.fileChecked.add(dup_errmessage['path'][0])
                 if len(dup_errmessage['duplications']) > 0:
-                    DataHelper().storeIssue(dup_block_id, dup_errmessage, message, rulesViolated)
+                    self.storeIssue(dup_block_id, dup_errmessage)
 
 
 
 
     #get most recent analysis ID
 
-    def getMostRecentAnalysisDate (self, SONAR_URL, TEST_PROJECT):
-        r = requests.get(SONAR_URL + '/api/project_analyses/search?project=' +
-                         TEST_PROJECT)
+    def getMostRecentAnalysisDateReq (self):
+
+        r = requests.get(self.SONAR_URL
+                         + '/api/project_analyses/search?project='
+                         + self.TEST_PROJECT)
 
         return r.json()['analyses'][0]['date']
 
 
     # get source code from start to end
 
-    def getSource (self, SONAR_URL, startLine, endLine, issue):
+    def getSourceReq (self, startLine, endLine, issue):
+
         if 'component' in issue:
             issue = issue['component']
-        r = requests.get(SONAR_URL + "/api/sources/show?from=" + str(startLine) +
-                         "&to=" + str(endLine) +
-                         "&key=" + issue)
+        r = requests.get(self.SONAR_URL
+                         + "/api/sources/show?from="
+                         + str(startLine)
+                         + "&to="
+                         + str(endLine)
+                         + "&key="
+                         + issue)
         return r.json()["sources"]
 
 
-    # get measures
 
-    def getMeasures (self, SONAR_URL, TEST_PROJECT):
+    def getMeasuresReq (self):
+
+        """
+        get measurements of the project
+        :return: measurements in json
+        """
+
         functions = "functions,"  # keyword for number of functions
         classes = "classes,"  # keyword for number of classes
         directories = "directories,"  # keyword for number of directories
@@ -189,8 +219,8 @@ class SonarHelper():
         # query sonarqube to get the statistics
 
         r = requests.get(
-            SONAR_URL + '/api/measures/component?componentKey=' +
-            TEST_PROJECT + "&metricKeys=" + functions +
+            self.SONAR_URL + '/api/measures/component?componentKey=' +
+            self.TEST_PROJECT + "&metricKeys=" + functions +
             classes + directories + comment_lines + comment_lines_density + ncloc)
 
         return r.json()['component']['measures']
@@ -198,10 +228,52 @@ class SonarHelper():
 
     # get components
 
-    def getComponents (self, SONAR_URL, TEST_PROJECT):
-        r = requests.get(SONAR_URL
+    def getComponentsReq (self):
+
+        r = requests.get(self.SONAR_URL
                        + "/api/components/show?component="
-                       + TEST_PROJECT)
+                       + self.TEST_PROJECT)
         return r.json()
 
 
+    def checkAnalysisLog(self,  WHICHLOG, data):
+        analysisTime = self.getMostRecentAnalysisDateReq()
+        self.handleLogJSON(analysisTime, WHICHLOG, data)
+
+
+    def getSingleRuleReq(self, rule):
+        r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + self.rule)
+        ruleInfo = r.json()['rules'][0]
+        return ruleInfo
+
+
+    def getDuplicationsReq(self, dup_errmessage):
+        """
+        get the duplications blocks from sonarqube
+        :param dup_errmessage:
+        :return: duplications
+        """
+        r = requests.get(self.SONAR_URL + "/api/duplications/show?key=" + dup_errmessage['path'][0])
+        return r.json()
+
+    # get and store codes
+
+    def storeCodes(self, issue, errmessage):
+        if 'textRange' in issue:
+            textRange = self.makeTextRange(issue)
+            for entry in textRange:
+                startLine = entry['textRange']['startLine']
+                endLine = entry['textRange']['endLine']
+
+                items = self.getSourceReq(startLine, endLine, issue)
+
+                entry['code'] = []
+                for item in items:
+                    entry['code'].append(item[1])
+                errmessage['code'].append(entry)
+
+    # check if quality profile has been updated, if so, return the set of new rule ids
+
+    def checkQualityProfileReq(self):
+        r = requests.get(SONAR_URL + "api/qualityprofiles/changelog?profileKey=" + QUALITY_PROFILE)
+        self.displayData(r.json())

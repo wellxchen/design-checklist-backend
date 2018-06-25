@@ -9,9 +9,13 @@ import re
 import datetime
 
 
-class FormatHelper ():
+class FormatHelper (object):
 
     HourDifference = -4 #sonarqube time is * hours faster than actual time
+
+
+    def __init__(self):
+        pass
 
     def adjustSonarTime (self, SonarTime):
         SonarTime = SonarTime[:-5]

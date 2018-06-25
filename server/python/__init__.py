@@ -20,6 +20,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
+
 @app.route("/api/show")
 def process():
     '''
@@ -134,6 +135,8 @@ def getbyauthor():
     project = request.args.get('project')
     group = request.args.get('group')
     return ProcessSonar(group, project).process(False,True)
+
+
 
 if __name__ == '__main__':
     app.run(threaded=True)
