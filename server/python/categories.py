@@ -5,7 +5,7 @@
 
 class categories (object):
 
-
+    # title of main categories and sub categories
 
     title = [{"Communication" : ["Meaningful names",
                                    "No magic values",
@@ -31,10 +31,12 @@ class categories (object):
              {"Duplications": []}]
 
 
+    # list of self defined severities
 
     severitylist = ['fail', 'high', 'medium', 'low', 'info']
 
 
+    # descriptions of subcategories
 
     descriptions = {
                 "Communication" :
@@ -71,6 +73,7 @@ class categories (object):
                 }
 
 
+    # rules under duplications
 
     duplications = [
         {'key': 'common-java:DuplicatedBlocks', 'name': 'Source files should not have any duplicated blocks'},

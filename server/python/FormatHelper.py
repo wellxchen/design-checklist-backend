@@ -11,13 +11,19 @@ import datetime
 
 class FormatHelper (object):
 
-    HourDifference = -4 #sonarqube time is * hours faster than actual time
+    HourDifference = -4  # sonarqube time is * hours faster than actual time
 
 
     def __init__(self):
         pass
 
     def adjustSonarTime (self, SonarTime):
+
+        """
+        adjust the time stampe from sonar to more readable format
+        :param SonarTime: time stamp from sonar
+        :return: readable time stamp
+        """
         SonarTime = SonarTime[:-5]
         Year = int(SonarTime[:4])
         Month = int(SonarTime[5:7])
@@ -50,6 +56,7 @@ class FormatHelper (object):
                 Month -= 12
                 Year += 1
 
+        # store the result
 
         l = [self.addPrefixToDate(Year),
              self.addPrefixToDate(Month),
@@ -62,20 +69,32 @@ class FormatHelper (object):
 
 
     def addPrefixToDate(self, any):
+        """
+        add 0 to any number less than 10 in date
+        :param any: any time
+        :return: 0 added time
+        """
         strAny = str(any)
         if any < 10:
             strAny = '0' + strAny
         return strAny
 
     def checkRunYear (self, year):
+        """
+        check if it is run year
+        :param year: any year
+        :return:  whether it is run year
+        """
         if (year % 4 == 0 and not year % 100 == 0) or (year % 400 == 0):
             return True
         return False
 
-
-
-    # strip method name
     def stripmethodname(self, line):
+        """
+        strip method name from sonarqube
+        :param line: a line of code contains the method name
+        :return: return only the name
+        """
         index = line.find('(')
 
         if line[index - 1] == ' ':
@@ -90,8 +109,13 @@ class FormatHelper (object):
             i -= 1
         return line[i + 5:index - 6]
 
-    # strip html code
+
     def striphtml(self, data):
+        """
+        strip html code
+        :param data: code from sonarqube
+        :return: cleaner version of the code
+        """
         p = re.compile(r'<.*?>')
         p = p.sub('', data)
         p = p.replace('&lt;', '<')
@@ -101,11 +125,23 @@ class FormatHelper (object):
         return p
 
     def getDateFromTuple(self, tuple):
+        """
+        convert the date to specific format
+        :param tuple: date
+        :return: self defined date
+        """
         return datetime.datetime.strptime(tuple, "%Y %b %d")
 
     def getFullPath(self, prefix, suffixes):
+        """
+        given prefix and suffix of the directories, combine them to full path
+        :param prefix: root directory
+        :param suffixes: file
+        :return: full path
+        """
         res = {}
         for suffix in suffixes:
+            # ignore .git file
             if suffix[-4:] == ".git":
                 continue
             if prefix == ".":
@@ -115,6 +151,13 @@ class FormatHelper (object):
         return res
 
     def makeMap(self, rules, main, sub):
+        """
+        add main categories, sub categories to rules for export
+        :param rules: rules under the main and the sub
+        :param main: main category
+        :param sub: sub category
+        :return: rule mapping ready for export
+        """
         res = ""
         for rule in rules:
             if sub > 0:

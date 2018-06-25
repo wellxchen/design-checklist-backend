@@ -75,7 +75,7 @@ class CategoriesHelper (categories):
     def getDescriptionByIndex(self, mindex, sindex):
 
         """
-        get sub category detailed description
+        get sub category detailed description by main category index
         :param mindex: main category index
         :param sindex: sub category index
         :return: the description
@@ -84,24 +84,48 @@ class CategoriesHelper (categories):
         return self.descriptions[maincates][sindex]
 
     def getDescriptionByName(self, mname, sindex):
+        """
+        get sub category detailed description by main category name
+        :param mname: name of the main category
+        :param sindex: index of the sub category
+        :return: the description
+        """
         return self.descriptions[mname][sindex]
 
     def getSeverityList (self):
+        """
+        get the severity list
+        :return: severity list
+        """
         return self.severitylist
 
     def getRuleDetail(self, ruleID):
+        """
+        get the detail of the ruleID
+        :param ruleID: id of the rule
+        :return: main and sub categories of the rule
+        """
         if ruleID in self.rules:
             return self.rules[ruleID]
         return []
 
     def getMainCateNameById(self, ruleID):
+        """
+        get main category name by id
+        :param ruleID: rule id
+        :return: main category name
+        """
         if ruleID in self.rules:
             cates = self.rules[ruleID]
             return self.getAllMainTitle()[cates[0]]
         return ""
 
     def getCategoryNumberByName(self, name):
-
+        """
+        get main category's index in the buffer by its name
+        :param name: name of the main category
+        :return: index
+        """
         if name == "Communication":
             return 0
         if name == "Modularity":
@@ -117,15 +141,32 @@ class CategoriesHelper (categories):
         return -1
 
     def getNumOfAllRules(self):
+        """
+        get number of all rules
+        :return: number of all rules
+        """
         return len(self.rules.keys())
 
     def getAllRules(self):
+        """
+        get all rules
+        :return: get all rules
+        """
         return self.rules.keys()
 
     def getDuplicationsLocal(self):
+        """
+        get all rules under duplications
+        :return: all rules under duplications
+        """
         return self.duplications
 
     def getRulesByCategoryName(self, name):
+        """
+        get rules by main category name
+        :param name: main category name
+        :return: rules under that category
+        """
         categorynumber = self.getCategoryNumberByName(name)
         res = []
         for ruleid, cates in self.rules.iteritems():
