@@ -1,4 +1,4 @@
-# Java code static analysis tool
+## Java code static analysis tool
 
 *Design Checklist* is a tool created for Duke's Compsci308 class in order to help students refactor their code. It analyzes Java projects and reports different code issues tailored to the material covered in the class. Specifically, these issues are broken into 5 main categories:
 
