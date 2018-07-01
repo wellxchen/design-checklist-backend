@@ -67,7 +67,6 @@ class ProcessSonar (object):
         else:
             rules.extend(self.helper.getDuplicationsLocal())
 
-
             
         # store details
         dup_errmessages = []
@@ -108,14 +107,19 @@ class ProcessSonar (object):
         if byAuthor:
            data = self.getbyauthor(data)
 
+
         # store severity list
 
         data['severitylist'] = self.helper.getSeverityList()
 
         # if not only duplication, store the log   
         if not onlyDup:
-             self.helper.checkAnalysisLog(self.helper.LOG_ISSUES_DIR, data)
-            
+             self.helper.checkAnalysisLog(self.helper.LOG_ISSUES_DIR,
+                                          data)
+             self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_AUTHOR_DIR,
+                                          self.helper.getNumIssuesAllAuthor(data))
+
+
         res = json.dumps(data, indent=4, separators=(',', ': '))
 
         return res
@@ -147,7 +151,7 @@ class ProcessSonar (object):
         :return:  statistics in json
         """
 
-        measures = self.helper.getMeasures(localhelper)
+        measures = self.helper.getMeasuresReq()
         res = {}
         res ['measures'] = {}
         for measure in measures:
@@ -158,7 +162,8 @@ class ProcessSonar (object):
         res['measures']['lmethods'].extend(self.longestmethods())
 
         #write logs to local
-        self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_DIR, res)
+        self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_GENERAL_DIR,
+                                     res)
 
         return json.dumps(res)
 
@@ -487,27 +492,17 @@ class ProcessSonar (object):
 
         """
         get history of analysis
-        :return: history
+        :return: history of statistics for each author and the whole project
         """
 
-        # iterating through log directory
-        resdict = {}
-        for filename in os.listdir(self.helper.LOG_STATISTICS):
-            # if file end with json, open the file and add it to the buffer
-            if filename.endswith(".json"):
-                with open(self.helper.LOG_STATISTICS + "/" + filename, 'r') as f:
-                    data = json.load(f)
-                    resdict[filename] = data
-        res = []  # store the result
-
-        # sort the result by analysis date
-        for key in sorted(resdict.iterkeys()):
-            entry = {key:resdict[key]}
-            res.append(entry)
-
+        res = {}
+        res['general'] =self.helper.readLogJSONAll(self.helper.LOG_STATISTICS_GENERAL_DIR)
+        res['author'] = self.helper.readLogJSONAll(self.helper.LOG_STATISTICS_AUTHOR_DIR)
+        self.helper.displayData(res)
         return json.dumps(res)
 
 
 if __name__ == '__main__':
-
     ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
+    ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
+    ProcessSonar("CompSci308_2018Spring", "test-xu").gethistory()

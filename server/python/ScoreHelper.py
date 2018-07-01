@@ -29,7 +29,7 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         rules = self.getRulesByCategoryName(categoryname)
         score = 0.00
         for rule in rules:
-            r = requests.get(SONAR_URL + '/api/rules/search?rule_key=' + rule)
+            r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
             ruleInfo = r.json()['rules'][0]
             ruleseverity = ruleInfo["severity"]
             score += self.getScoreForSeverity(ruleseverity)

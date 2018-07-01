@@ -11,6 +11,9 @@ STATISTICS="statistics"
 ISSUES="issues"
 QPROFILE="qprofile"
 QPROFILEKEY="AV-ylMj9F03llpuaxc9n"
+LOGROOT="$ROOT/$CACHE/$LOG"
+GENERAL="general"
+BYAUTHOER="author"
 
 
 
@@ -19,21 +22,21 @@ cd $SHELLDIR
 ./makecachedir.sh $LOG $GROUP $ROOT
 
 
-cd $ROOT/$CACHE/$LOG
+cd $LOGROOT
 
 if [ ! -d $QPROFILE ]
 then
 	mkdir $QPROFILE
 fi
 
-cd $ROOT/$CACHE/$LOG/$QPROFILE
+cd $LOGROOT/$QPROFILE
 if [ ! -d $QPROFILEKEY ]
 then
 	mkdir $QPROFILEKEY
 fi
 
 
-cd $ROOT/$CACHE/$LOG/$GROUP
+cd $LOGROOT/$GROUP
 
 if [ ! -d $PROJECT ]
 then
@@ -41,7 +44,7 @@ then
 fi
 
 
-cd $ROOT/$CACHE/$LOG/$GROUP/$PROJECT
+cd $LOGROOT/$GROUP/$PROJECT
 
 if [ ! -d $STATISTICS ]
 then 
@@ -52,4 +55,16 @@ fi
 if [ ! -d $ISSUES ]
 then 
 	mkdir $ISSUES
+fi
+
+cd $LOGROOT/$GROUP/$PROJECT/$STATISTICS
+
+if [ ! -d $BYAUTHOER ]
+then 
+	mkdir $BYAUTHOER
+fi
+
+if [ ! -d $GENERAL ]
+then 
+	mkdir $GENERAL
 fi

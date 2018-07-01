@@ -221,6 +221,32 @@ class DataHelper (ScoreHelper):
         return entry
 
 
+    def getNumIssuesAllAuthor (self, data):
+        """
+        add the number of issues for each category to the correpsonding author
+        :param data: original by author data
+        :return: by author number of issues
+        """
+
+        res = {}
+        for key, val in data.iteritems():
+            if type(val) is list:
+                res[key] = len(val)
+            else:
+                res[key] = self.countNumIssuesEachCate(val)
+        return res
+
+    def countNumIssuesEachCate(self, data):
+        """
+        count number of issues each category
+        :param data: input JSON contains all issues
+        :return: JSON contains number of issues each category
+        """
+        res = {}
+        for key, val in data.iteritems():
+            res[key] = len(val)
+        return res
+
 
     def getFileChecked (self):
         """

@@ -46,7 +46,8 @@ class LocalHelper (FormatHelper):
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         self.LOG_ISSUES_DIR = self.LOG_DIR + "/issues"
         self.LOG_STATISTICS_DIR = self.LOG_DIR + "/statistics"
-
+        self.LOG_STATISTICS_GENERAL_DIR = self.LOG_STATISTICS_DIR + "/general"
+        self.LOG_STATISTICS_AUTHOR_DIR = self.LOG_STATISTICS_DIR + "/author"
 
 
     def readProjectDates (self, project):
@@ -86,6 +87,39 @@ class LocalHelper (FormatHelper):
         """
         return abspath(dirname(__file__))[:-14]
 
+
+    def readLogJSON(self, logname, filename, resdict):
+        """
+        read in data from a single JSON log file
+        :param logname: name of log directory to read in
+        :param filename: specific log file to read in
+        :param resdict: buffer to store the data
+        :return: void
+        """
+        with open(logname + "/" + filename, 'r') as f:
+            data = json.load(f)
+            resdict[filename[:-5]] = data
+
+    def readLogJSONAll(self, logname):
+        """
+        read in all log under a specfic directory
+        :param logname: name of log to read in
+        :return: JSON contains all log files content
+        """
+        # iterating through log directory
+        resdict = {}
+        for filename in os.listdir(logname):
+            # if file end with json, open the file and add it to the buffer
+            if filename.endswith(".json"):
+                self.readLogJSON(logname, filename, resdict)
+        res = []  # store the result
+
+        # sort the result by analysis date
+        for key in sorted(resdict.iterkeys()):
+            entry = {key: resdict[key]}
+            res.append(entry)
+        return res
+
     def writeLog (self, logname, data):
         """
         write log file
@@ -103,6 +137,8 @@ class LocalHelper (FormatHelper):
         """
         with open(logname, 'w') as outfile:
             json.dump(data,outfile)
+
+
 
     def dateLogJSON (self, analysisTime, WHICHLOG, data):
         """
