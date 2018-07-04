@@ -5,15 +5,14 @@ Helper class that handle local storage
     - Chengkang Xu <cx33@duke.edu>
 """
 
-import re
 import json
-import requests
+
 
 import os
-from os.path import join, dirname, abspath
+from os.path import dirname, abspath
 from dotenv import load_dotenv
 
-import datetime
+
 import configparser
 import subprocess
 
@@ -266,3 +265,7 @@ class LocalHelper (FormatHelper):
         """
         return self.TEST_PROJECT
 
+
+
+if __name__  == "__main__":
+    subprocess.call(['java', '-jar', '/Users/wellxchen/Desktop/xray/org.malnatij.SVPlugin_1.0.4.1.jar'])
