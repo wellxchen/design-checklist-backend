@@ -1,0 +1,10 @@
+{
+  "description" :  [
+        {"key": "common-java:DuplicatedBlocks", "name": "Source files should not have any duplicated blocks"},
+        {"key": "squid:S3047", "name": "Multiple loops over the same set should be combined"},
+        {"key": "squid:S1939", "name": "Extensions and implementations should not be redundant"},
+        {"key": "squid:S1871",
+         "name": "Two branches in a conditional structure should not have exactly the same implementation"},
+        {"key": "squid:S1700", "name": "A field should not duplicate the name of its containing class"},
+        {"key": "squid:S1192", "name": "String literals should not be duplicated"}]
+}
