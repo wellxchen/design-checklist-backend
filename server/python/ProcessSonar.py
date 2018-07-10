@@ -498,7 +498,7 @@ class ProcessSonar (object):
         res = {}
         res['general'] =self.helper.readLogJSONAll(self.helper.LOG_STATISTICS_GENERAL_DIR)
         res['author'] = self.helper.readLogJSONAll(self.helper.LOG_STATISTICS_AUTHOR_DIR)
-        self.helper.displayData(res)
+
         return json.dumps(res)
 
 

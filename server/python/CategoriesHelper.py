@@ -7,9 +7,9 @@ handle categories related functionality
 
 '''
 
-from  categories import categories
+from  Categories import Categories
 
-class CategoriesHelper (categories):
+class CategoriesHelper (Categories):
 
 
     def __init__(self):

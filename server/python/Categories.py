@@ -14,7 +14,7 @@ JSON_DESCRIPTION_DIR = JSON_DIR + "/description.json"
 JSON_DUPLICATION_DIR = JSON_DIR + "/description_duplication.json"
 
 
-class categories (object):
+class Categories (object):
 
     # title of main categories and sub categories
 
