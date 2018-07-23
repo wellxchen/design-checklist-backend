@@ -269,3 +269,5 @@ class LocalHelper (FormatHelper):
 
 if __name__  == "__main__":
     subprocess.call(['java', '-jar', '/Users/wellxchen/Desktop/xray/org.malnatij.SVPlugin_1.0.4.1.jar'])
+
+#    java -jar code-maat-1.1-SNAPSHOT-standalone.jar -l logfile.log -c git -a summary
