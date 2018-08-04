@@ -502,7 +502,15 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
+    def testStuff(self):
+        """
+        testing method
+        :return:
+        """
+        print self.helper.executeShellRunCodeMaat()
+
+
 if __name__ == '__main__':
-    ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
-    ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    ProcessSonar("CompSci308_2018Spring", "test-xu").gethistory()
+    #ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
+    #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
+    ProcessSonar("CompSci308_2018Spring", "test-xu").testStuff()

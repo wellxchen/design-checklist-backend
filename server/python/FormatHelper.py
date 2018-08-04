@@ -14,7 +14,7 @@ class FormatHelper (object):
     HourDifference = -4  # sonarqube time is * hours faster than actual time
 
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         pass
 
     def adjustSonarTime (self, SonarTime):

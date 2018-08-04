@@ -22,10 +22,14 @@ load_dotenv(dotenv_path)
 
 from FormatHelper import FormatHelper
 
+
+
 class LocalHelper (FormatHelper):
 
     def __init__(self, group, project):
+
         super(LocalHelper, self).__init__()
+
         self.SONAR_GROUP = 'duke-compsci308:'
         if project is None:
             project = ""
@@ -39,7 +43,8 @@ class LocalHelper (FormatHelper):
         self.CACHE_PATH = self.ROOT_PATH + "/cache"
         self.CODES_PATH = self.CACHE_PATH + "/codes"
         self.LOGS_PATH = self.CACHE_PATH + "/logs"
-        self.SHELL_PATH = self.ROOT_PATH + "/server/shell"
+        self.SERVER_PATH = self.ROOT_PATH + "/server"
+        self.SHELL_PATH = self.SERVER_PATH + "/shell"
         self.LOG_QPROFILE_DIR = self.LOGS_PATH + "/qprofile"
         self.LOG_QPROFILE_KEY_DIR = self.LOG_QPROFILE_DIR + "/" + self.QUALITY_PROFILE
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
@@ -47,6 +52,8 @@ class LocalHelper (FormatHelper):
         self.LOG_STATISTICS_DIR = self.LOG_DIR + "/statistics"
         self.LOG_STATISTICS_GENERAL_DIR = self.LOG_STATISTICS_DIR + "/general"
         self.LOG_STATISTICS_AUTHOR_DIR = self.LOG_STATISTICS_DIR + "/author"
+        self.DEPENDENCY_DIR = self.SERVER_PATH + "/dependencies"
+
 
 
     def readProjectDates (self, project):
@@ -79,12 +86,7 @@ class LocalHelper (FormatHelper):
                 res[key][k] = v
                 return
 
-    def getRootPath(self):
-        """
-        get the root
-        :return: root  path
-        """
-        return abspath(dirname(__file__))[:-14]
+
 
 
     def readLogJSON(self, logname, filename, resdict):
@@ -179,55 +181,7 @@ class LocalHelper (FormatHelper):
         res["netid"] = netids
         return res
 
-    def checkAllLogs(self):
-        """
-        check all logs existence
-        :return:
-        """
-        self.executeShellLog()
-        self.executeShellCode()
 
-    def executeShellLog(self):
-        """
-        execute shell script that check log folder existence
-        :return: output from terminal
-        """
-        return subprocess.check_output([self.SHELL_PATH + '/logs.sh',
-                                        self.GITLAB_GROUP,
-                                        self.PLAIN_PROJECT,
-                                        self.ROOT_PATH])
-
-    def executeShellCode(self):
-        """
-        execute shell script that cache gitlab codes
-        :return: output from terminal
-        """
-        return subprocess.check_output([self.SHELL_PATH + '/codes.sh',
-                                        self.TOKEN,
-                                        self.GITLAB_GROUP,
-                                        self.PLAIN_PROJECT,
-                                        self.ROOT_PATH])
-
-    def executeShellStats(self):
-
-        """
-        execute shell scripts that extract stat information
-        :return: stat information
-        """
-        return subprocess.check_output([self.SHELL_PATH + '/stats.sh',
-                                        self.TOKEN,
-                                        self.GITLAB_GROUP,
-                                        self.PLAIN_PROJECT,
-                                        self.ROOT_PATH])
-
-    def executeShellCheckDIR(self, WHICHLOG, ANALYSISID):
-        """
-        execute shell script that check log file existence
-        :return: whether it exists
-        """
-        return subprocess.check_output([self.SHELL_PATH + '/checkdir.sh',
-                                        WHICHLOG,
-                                        ANALYSISID])
 
     def shouldSkipDir(self, dir, returndirs):
         """
@@ -241,6 +195,14 @@ class LocalHelper (FormatHelper):
                 return False
         return True
 
+
+
+    def getRootPath(self):
+        """
+        get the root
+        :return: root  path
+        """
+        return abspath(dirname(__file__))[:-14]
 
     def getSONAR_URL (self):
         """
@@ -265,9 +227,71 @@ class LocalHelper (FormatHelper):
         """
         return self.TEST_PROJECT
 
+    def checkAllLogs(self):
+        """
+        check all logs existence
+        :return:
+        """
+        self.executeShellLog()
+        self.executeShellCode()
+
+    def executeShellLog(self):
+        """
+        execute shell script that check log folder existence
+        :return: output from terminal
+        """
+
+        return subprocess.check_output([self.SHELL_PATH + '/logs.sh',
+                                        self.GITLAB_GROUP,
+                                        self.PLAIN_PROJECT,
+                                        self.ROOT_PATH])
+
+    def executeShellCode(self):
+        """
+        execute shell script that cache gitlab codes
+        :return: output from terminal
+        """
+        return subprocess.check_output([self.SHELL_PATH + '/codes.sh',
+                                        self.TOKEN,
+                                        self.GITLAB_GROUP,
+                                        self.PLAIN_PROJECT,
+                                        self.ROOT_PATH])
+
+    def executeShellStats(self):
+        """
+        execute shell scripts that extract stat information
+        :return: stat information
+        """
+        return subprocess.check_output([self.SHELL_PATH + '/stats.sh',
+                                        self.TOKEN,
+                                        self.GITLAB_GROUP,
+                                        self.PLAIN_PROJECT,
+                                        self.ROOT_PATH])
+
+    def executeShellCheckDIR(self, WHICHLOG, ANALYSISID):
+        """
+        execute shell script that check log file existence
+        :return: whether it exists
+        """
+        return subprocess.check_output([self.SHELL_PATH + '/checkdir.sh',
+                                        WHICHLOG,
+                                        ANALYSISID])
+
+    def executeShellRunCodeMaat(self):
+        """
+        execute shell script to get result from code-maat
+        :return: code-maate related output
+        """
+
+        return subprocess.check_output([self.SHELL_PATH + '/code_maat.sh',
+                                        self.DEPENDENCY_DIR,
+                                        self.ROOT_PATH])
+
+
 
 
 if __name__  == "__main__":
     subprocess.call(['java', '-jar', '/Users/wellxchen/Desktop/xray/org.malnatij.SVPlugin_1.0.4.1.jar'])
 
 #    java -jar code-maat-1.1-SNAPSHOT-standalone.jar -l logfile.log -c git -a summary
+# chmod a+x
