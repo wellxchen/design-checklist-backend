@@ -18,5 +18,5 @@ git log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renam
 
 cd $DEPENDENCY_ROOT
 
-java -jar code-maat-1.1-SNAPSHOT-standalone.jar -l $LOGPATH/logfile.log -c git2 -a summary
+java -jar code-maat-1.1-SNAPSHOT-standalone.jar -l $LOGPATH/code_maat.log -c git2 -a summary
 
