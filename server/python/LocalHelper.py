@@ -285,6 +285,10 @@ class LocalHelper (FormatHelper):
 
         return subprocess.check_output([self.SHELL_PATH + '/code_maat.sh',
                                         self.DEPENDENCY_DIR,
+                                        self.CODES_PATH,
+                                        self.LOGS_PATH,
+                                        self.GITLAB_GROUP,
+                                        self.PLAIN_PROJECT,
                                         self.ROOT_PATH])
 
 

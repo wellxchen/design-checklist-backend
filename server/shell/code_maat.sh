@@ -3,15 +3,20 @@
 
 
 DEPENDENCY_ROOT="$1"
-GIT_ROOT="$2"
+CODE="$2"
+LOGS="$3"
+GROUP="$4"
+PROJECT="$5"
+ROOT="$6"
+CODEPATH=$CODE/$GROUP/$PROJECT
+LOGPATH=$LOGS/$GROUP/$PROJECT
 
-cd $GIT_ROOT
+cd $CODEPATH
 
-git log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames > logfile.log
+git log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames > $LOGPATH/code_maat.log
 
-mv logfile.log $DEPENDENCY_ROOT
 
 cd $DEPENDENCY_ROOT
 
-java -jar code-maat-1.1-SNAPSHOT-standalone.jar -l logfile.log -c git2 -a summary
+java -jar code-maat-1.1-SNAPSHOT-standalone.jar -l $LOGPATH/logfile.log -c git2 -a summary
 
