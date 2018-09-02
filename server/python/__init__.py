@@ -137,6 +137,16 @@ def getbyauthor():
     return ProcessSonar(group, project).process(False,True)
 
 
+@app.route("/api/codemaat")
+def getcodemaat():
+    """
+    return the data gathered from code maat
+    :return: data gathered from code maat
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return ProcessSonar(group, project).getcodemaat()
+
 
 if __name__ == '__main__':
     app.run(threaded=True)

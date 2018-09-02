@@ -244,6 +244,7 @@ class DataHelper (ScoreHelper):
         """
         res = {}
         for key, val in data.iteritems():
+
             res[key] = len(val)
         return res
 

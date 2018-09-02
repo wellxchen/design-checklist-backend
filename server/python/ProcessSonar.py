@@ -116,8 +116,9 @@ class ProcessSonar (object):
         if not onlyDup:
              self.helper.checkAnalysisLog(self.helper.LOG_ISSUES_DIR,
                                           data)
-             self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_AUTHOR_DIR,
-                                          self.helper.getNumIssuesAllAuthor(data))
+             if byAuthor:
+                self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_AUTHOR_DIR,
+                                            self.helper.getNumIssuesAllAuthor(data))
 
 
         res = json.dumps(data, indent=4, separators=(',', ': '))
@@ -502,15 +503,15 @@ class ProcessSonar (object):
         return json.dumps(res)
 
 
-    def testStuff(self):
+    def getcodemaat(self):
         """
         testing method
         :return:
         """
-        print self.helper.executeShellRunCodeMaat()
+        return self.helper.executeShellRunCodeMaat()
 
 
 if __name__ == '__main__':
     #ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    ProcessSonar("CompSci308_2018Spring", "test-xu").testStuff()
+    ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)

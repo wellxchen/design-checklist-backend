@@ -11,14 +11,15 @@ handle categories related functionality
 import json
 from os.path import dirname
 
-ROOT = dirname(__file__)[:-14]
-JSON_DIR = ROOT + "/server/json"
-JSON_TITLE_DIR = JSON_DIR + "/title.json"
-JSON_SEVERITY_DIR = JSON_DIR + "/severity.json"
-JSON_DESCRIPTION_DIR = JSON_DIR + "/description.json"
-JSON_DUPLICATION_DIR = JSON_DIR + "/description_duplication.json"
+
 
 class CategoriesHelper (object):
+    ROOT = dirname(__file__)[:-14]
+    JSON_DIR = ROOT + "/server/json"
+    JSON_SEVERITY_DIR = JSON_DIR + "/severity.json"
+    JSON_TITLE_DIR = JSON_DIR + "/title.json"
+    JSON_DESCRIPTION_DIR = JSON_DIR + "/description.json"
+    JSON_DUPLICATION_DIR = JSON_DIR + "/description_duplication.json"
     # title of main categories and sub categories
 
     with open(JSON_TITLE_DIR) as f:
