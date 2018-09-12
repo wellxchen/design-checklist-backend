@@ -36,6 +36,8 @@ class LocalHelper (FormatHelper):
         self.ROOT_PATH = self.getRootPath()
         self.GITLAB_GROUP = group
         self.PLAIN_PROJECT = project
+        self.YEAR = group.split("_")[1][:4]
+        self.SEMESTER = group.split("_")[1][4:]
         self.TEST_PROJECT = self.SONAR_GROUP + project
         self.QUALITY_PROFILE = 'AV-ylMj9F03llpuaxc9n'
         self.SONAR_URL = 'http://coursework.cs.duke.edu:9000'
@@ -53,7 +55,8 @@ class LocalHelper (FormatHelper):
         self.LOG_STATISTICS_GENERAL_DIR = self.LOG_STATISTICS_DIR + "/general"
         self.LOG_STATISTICS_AUTHOR_DIR = self.LOG_STATISTICS_DIR + "/author"
         self.DEPENDENCY_DIR = self.SERVER_PATH + "/dependencies"
-
+        self.ROSTER_PATH = dirname(__file__)[:-14] + '/server/documents/local/rosters/cs308/308_student_data_'
+        self.ROSTER_PATH += (self.YEAR + self.SEMESTER + ".csv")
 
 
     def readProjectDates (self, project):
@@ -168,9 +171,8 @@ class LocalHelper (FormatHelper):
         emailindex = 3
         gitlabidindex = 4
 
-        csvpath = dirname(__file__)[:-14] + '/server/documents/local/308students.csv'
         import csv
-        with open(csvpath, 'rb') as csvfile:
+        with open(self.ROSTER_PATH, 'rb') as csvfile:
             spamreader = csv.reader(csvfile)
 
             for row in spamreader:
