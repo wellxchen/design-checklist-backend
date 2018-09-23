@@ -26,12 +26,11 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         :param categoryname: category name
         :return: total scores of the category
         """
-        rules = self.getRulesByCategoryName(categoryname)
+        rules = self.ruleswithdetailbycate[categoryname]
+
         score = 0.00
         for rule in rules:
-            r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
-            ruleInfo = r.json()['rules'][0]
-            ruleseverity = ruleInfo["severity"]
+            ruleseverity = rule["severity"]
             score += self.getScoreForSeverity(ruleseverity)
         return score
 

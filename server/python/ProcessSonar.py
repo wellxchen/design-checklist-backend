@@ -64,7 +64,7 @@ class ProcessSonar (object):
         for issue in issues:
 
             ruleID = issue['rule']
-            print ruleID
+
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)
 
             if len(ruleResult) > 0:
@@ -80,8 +80,6 @@ class ProcessSonar (object):
         # cal percentage
 
         percentage = self.helper.calPercentByScore(scores, scores_rem)
-        print percentage
-
 
         res = json.dumps(percentage, indent=4, separators=(',', ': '))
 
@@ -566,6 +564,6 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-   print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
+   #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    #print ProcessSonar("CompSci308_2018Spring", "test-xu").testSpeed()
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)

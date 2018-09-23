@@ -13,6 +13,8 @@ class SonarHelper(DataHelper):
     def __init__(self, group, project):
         super(SonarHelper, self).__init__(group,project)
 
+
+
     def activateRuleReq(self,  ruleID):
         """
         activate a single rule in a quality profile on sonarqube
@@ -365,11 +367,37 @@ class SonarHelper(DataHelper):
                               + ".json",
                               res)
 
+    def getRuleDetailByCategory (self, categoryname):
+        """
+        get all detailed rule under certain category
+        :param categoryname:
+        :return:
+        """
+        rules = self.getRulesIDByCategoryName(categoryname)
+        res = []
+        for rule in rules:
+            r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
+            ruleInfo = r.json()['rules'][0]
+            res.append(ruleInfo)
+        return res
 
+    def getAllRulesWithDetail (self):
+        """
+        get all detailed rules under all category
+        :return:
+        """
+        l = {}
+
+        for category in self.title:
+            maincate = category.keys()[0]
+            l[maincate] = self.getRuleDetailByCategory(maincate)
+
+        return l
 
 
 
 
 if __name__ == '__main__':
 
-    SonarHelper("CompSci308_2018Spring", "test-xu").checkQProfileLogReq()
+    o=SonarHelper("CompSci308_2018Spring", "test-xu")
+    o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getAllRulesWithDetail())

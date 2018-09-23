@@ -1,4 +1,3 @@
-/usr/local/bin/python2.7 /Users/wellxchen/Desktop/design-checklist-backend/server/python/ProcessSonar.py
 {   'error': {   u'Code Smells': [   {   'author': u'chengkang.xu@duke.edu',
                                          'code': [   {   'code': [   u'\t\t<span class="sym-21 sym">command</span> = <span class="sym-21 sym">command</span>.trim();'],
                                                          'msg': '',
