@@ -64,6 +64,7 @@ class ProcessSonar (object):
         for issue in issues:
 
             ruleID = issue['rule']
+            print ruleID
             ruleResult = filter(lambda r: r['key'] == ruleID, rules)
 
             if len(ruleResult) > 0:
