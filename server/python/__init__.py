@@ -148,6 +148,62 @@ def getcodemaat():
     return ProcessSonar(group, project).getcodemaat()
 
 
+
+"""
+new api below
+"""
+@app.route("/api/overview/category")
+def getcategoryoverview ():
+    """
+    get overview for categories
+    :return: overview for percentage of issues in sub and main categories
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return ProcessSonar(group, project).getcategoryoverview()
+
+
+
+@app.route("/api/issues/category")
+def getcategoryerrors ():
+    """
+    get overview for categories
+    :return: overview for percentage of issues in sub and main categories
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    main = request.args.get('main')
+    sub = request.args.get('sub')
+    return ProcessSonar(group, project).getcategoryerrors(main, sub)
+
+@app.route("/api/overview/directory")
+def getdirectoryoverview ():
+    """
+
+    :return:
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return
+
+@app.route("/api/issues/file")
+def getfileerros ():
+    project = request.args.get('project')
+    group = request.args.get('group')
+    file = request.args.get('file')
+    return
+
+@app.route("/api/overview/duplications")
+def getduplicationoverview ():
+    return
+
+@app.route("/api/issues/code")
+def getcode ():
+    return
+
+
+
+
 if __name__ == '__main__':
     app.run(threaded=True)
 

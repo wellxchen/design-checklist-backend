@@ -43,6 +43,54 @@ class ProcessSonar (object):
         self.helper.checkQProfileLogReq()
 
 
+    def getcategoryoverview (self):
+        issues = self.helper.getIssuesAll()
+
+        if 'err' in issues:
+            return issues
+
+        # get all rules associate with quanlity profile
+        rules = []
+
+        rules.extend(self.helper.getRulesReq())
+
+
+        # store details
+        dup_errmessages = []
+        scores = self.helper.calTotalScoreAllCategory()
+        scores_rem = copy.deepcopy(scores)
+        scores_checked_Id = set()
+
+        for issue in issues:
+
+            ruleID = issue['rule']
+            ruleResult = filter(lambda r: r['key'] == ruleID, rules)
+
+            if len(ruleResult) > 0:
+
+                # deduct score
+                maincategoryname = self.helper.getMainCateNameById(ruleID)
+                if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
+                    scores[maincategoryname] -= self.helper.getScoreForSeverity(issue['severity'])
+                    scores_checked_Id.add(ruleID)
+
+
+
+        # cal percentage
+
+        percentage = self.helper.calPercentByScore(scores, scores_rem)
+        print percentage
+
+
+        res = json.dumps(percentage, indent=4, separators=(',', ': '))
+
+        return res
+
+
+    def getcategoryissues (self, main, sub):
+        return
+
+
 
     def process(self, onlyDup, byAuthor):
 
@@ -511,7 +559,12 @@ class ProcessSonar (object):
         return self.helper.executeShellRunCodeMaat()
 
 
+    def testSpeed (self):
+        print "test speed"
+        return self.helper.getIssuesAll()
+
+
 if __name__ == '__main__':
-    #ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
+   print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)
+    #print ProcessSonar("CompSci308_2018Spring", "test-xu").testSpeed()

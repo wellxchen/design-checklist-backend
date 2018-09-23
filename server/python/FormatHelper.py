@@ -1,9 +1,9 @@
-'''
+"""
 Helper class that handle format related functionalities
 
 :Authors:
     - Chengkang Xu <cx33@duke.edu>
-'''
+"""
 
 import re
 import datetime
@@ -170,4 +170,4 @@ class FormatHelper (object):
 
 
 if __name__ == '__main__':
-    print FormatHelper().adjustSonarTime('2018-06-19T18:39:32+0000')
+    print (FormatHelper().adjustSonarTime('2018-06-19T18:39:32+0000'))
