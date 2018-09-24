@@ -397,7 +397,9 @@ class SonarHelper(DataHelper):
 
 
 
+
 if __name__ == '__main__':
 
     o=SonarHelper("CompSci308_2018Spring", "test-xu")
-    o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getAllRulesWithDetail())
+    #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getAllRulesWithDetail())
+    print o.getMostRecentAnalysisDateReq()

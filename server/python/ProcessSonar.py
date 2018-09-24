@@ -101,6 +101,16 @@ class ProcessSonar (object):
         :return: issues in the selected project
         """
 
+        cachedissues = {}
+        mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
+        mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
+        self.helper.readLogJSON(self.helper.LOG_ISSUES_DIR, mostrecenttime + ".json", cachedissues)
+
+
+        if len(cachedissues) > 0:
+            self.helper.displayData(cachedissues)
+            return cachedissues
+
         # get all issues that are open
         issues = self.helper.getIssuesAll()
 
