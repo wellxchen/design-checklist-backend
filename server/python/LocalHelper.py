@@ -11,7 +11,7 @@ import json
 import os
 from os.path import dirname, abspath
 from dotenv import load_dotenv
-
+import os.path
 
 import configparser
 import subprocess
@@ -100,7 +100,10 @@ class LocalHelper (FormatHelper):
         :param resdict: buffer to store the data
         :return: void
         """
-        with open(logname + "/" + filename, 'r') as f:
+        path = logname + "/" + filename
+        if not os.path.exists(path) :
+            return
+        with open(path, 'r') as f:
             data = json.load(f)
             resdict[filename[:-5]] = data
 

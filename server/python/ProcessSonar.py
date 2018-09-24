@@ -108,7 +108,7 @@ class ProcessSonar (object):
 
 
         if len(cachedissues) > 0:
-            self.helper.displayData(cachedissues)
+
             return cachedissues
 
         # get all issues that are open
