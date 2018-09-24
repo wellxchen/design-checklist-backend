@@ -107,7 +107,7 @@ class ProcessSonar (object):
         self.helper.readLogJSON(self.helper.LOG_ISSUES_DIR, mostrecenttime + ".json", cachedissues)
 
 
-        if len(cachedissues) > 0:
+        if len(cachedissues) > 0 and not onlyDup:
 
             return cachedissues
 

@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1b269488-a549-42fa-bb49-183ec50c2609" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/server/python/LocalHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/LocalHelper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/python/ProcessSonar.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/ProcessSonar.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -44,8 +43,8 @@
       <file leaf-file-name="ProcessSonar.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/python/ProcessSonar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="106" column="84" selection-start-line="106" selection-start-column="84" selection-end-line="106" selection-end-column="84" />
+            <state relative-caret-position="248">
+              <caret line="109" column="48" selection-start-line="109" selection-start-column="48" selection-end-line="109" selection-end-column="48" />
             </state>
           </provider>
         </entry>
@@ -391,8 +390,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/python/ProcessSonar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="106" column="84" selection-start-line="106" selection-start-column="84" selection-end-line="106" selection-end-column="84" />
+        <state relative-caret-position="248">
+          <caret line="109" column="48" selection-start-line="109" selection-start-column="48" selection-end-line="109" selection-end-column="48" />
         </state>
       </provider>
     </entry>
