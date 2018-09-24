@@ -51,6 +51,9 @@ class LocalHelper (FormatHelper):
         self.LOG_QPROFILE_KEY_DIR = self.LOG_QPROFILE_DIR + "/" + self.QUALITY_PROFILE
         self.LOG_DIR = self.LOGS_PATH + "/" + self.GITLAB_GROUP + "/" + self.PLAIN_PROJECT
         self.LOG_ISSUES_DIR = self.LOG_DIR + "/issues"
+        self.LOG_ISSUES_GENERAL_DIR = self.LOG_ISSUES_DIR + "/general"
+        self.LOG_ISSUES_AUTHOR_DIR = self.LOG_ISSUES_DIR + "/author"
+        self.LOG_ISSUES_DUPLICATIONS_DIR = self.LOG_ISSUES_DIR + "/duplications"
         self.LOG_STATISTICS_DIR = self.LOG_DIR + "/statistics"
         self.LOG_STATISTICS_GENERAL_DIR = self.LOG_STATISTICS_DIR + "/general"
         self.LOG_STATISTICS_AUTHOR_DIR = self.LOG_STATISTICS_DIR + "/author"

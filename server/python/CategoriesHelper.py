@@ -22,6 +22,7 @@ class CategoriesHelper (object):
     JSON_DUPLICATION_DIR = JSON_DIR + "/description_duplication.json"
     JSON_RULE_DIR = JSON_DIR + "/rules.json"
     JSON_RULE_WITH_DETAIL_DIR = JSON_DIR + "/rules_detail.json"
+    JSON_RULE_WITH_DETAIL_BY_CATE_DIR = JSON_DIR + "/rules_detail_cate.json"
     # title of main categories and sub categories
 
     with open(JSON_TITLE_DIR) as f:
@@ -47,17 +48,25 @@ class CategoriesHelper (object):
         data = json.load(f)
     duplications = data['description']
 
+    # rules with detail by category
+    with open(JSON_RULE_WITH_DETAIL_BY_CATE_DIR) as f:
+        data = json.load(f)
+    ruleswithdetailbycate = data
+
     # rules with detail
     with open(JSON_RULE_WITH_DETAIL_DIR) as f:
         data = json.load(f)
-    ruleswithdetailbycate = data
+    ruleswithdetail = data
+
+    # rule mapping
+    with open(JSON_RULE_DIR) as f:
+        data = json.load(f)
+    rules = data['rule']
 
     # id : [main, sub]
     # main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
 
-    with open(JSON_RULE_DIR) as f:
-        data = json.load(f)
-    rules = data['rule']
+
 
     def __init__(self):
         pass

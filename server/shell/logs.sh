@@ -14,6 +14,7 @@ QPROFILEKEY="AV-ylMj9F03llpuaxc9n"
 LOGROOT="$ROOT/$CACHE/$LOG"
 GENERAL="general"
 BYAUTHOER="author"
+DUPLICATIONS="duplications"
 
 
 
@@ -56,6 +57,24 @@ if [ ! -d $ISSUES ]
 then 
 	mkdir $ISSUES
 fi
+
+cd $LOGROOT/$GROUP/$PROJECT/$ISSUES
+
+if [ ! -d $BYAUTHOER ]
+then 
+	mkdir $BYAUTHOER
+fi
+
+if [ ! -d $GENERAL ]
+then 
+	mkdir $GENERAL
+fi
+
+if [ ! -d $DUPLICATIONS ]
+then 
+	mkdir $DUPLICATIONS
+fi
+
 
 cd $LOGROOT/$GROUP/$PROJECT/$STATISTICS
 

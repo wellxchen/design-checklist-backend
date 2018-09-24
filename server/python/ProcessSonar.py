@@ -104,12 +104,16 @@ class ProcessSonar (object):
         cachedissues = {}
         mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
         mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
-        self.helper.readLogJSON(self.helper.LOG_ISSUES_DIR, mostrecenttime + ".json", cachedissues)
-
+        whichCache = self.helper.LOG_ISSUES_GENERAL_DIR
+        if byAuthor:
+            whichCache = self.helper.LOG_ISSUES_AUTHOR_DIR
+        if onlyDup:
+            whichCache = self.helper.LOG_ISSUES_DUPLICATIONS_DIR
+        self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
 
         if len(cachedissues) > 0 and not onlyDup:
 
-            return cachedissues
+            return cachedissues.values()[0]
 
         # get all issues that are open
         issues = self.helper.getIssuesAll()
@@ -120,7 +124,7 @@ class ProcessSonar (object):
         # get all rules associate with quanlity profile
         rules = []
         if not onlyDup:
-            rules.extend(self.helper.getRulesReq())
+            rules.extend(self.helper.ruleswithdetail)
         else:
             rules.extend(self.helper.getDuplicationsLocal())
 
@@ -137,7 +141,7 @@ class ProcessSonar (object):
 
             if len(ruleResult) > 0:
                 errmessage = self.helper.makeErrMessage(issue,ruleResult)
-                
+
                 # deduct score
                 maincategoryname = self.helper.getMainCateNameById(ruleID)
                 if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
@@ -170,11 +174,10 @@ class ProcessSonar (object):
         data['severitylist'] = self.helper.getSeverityList()
 
         # if not only duplication, store the log   
-        if not onlyDup:
-             self.helper.checkAnalysisLog(self.helper.LOG_ISSUES_DIR,
-                                          data)
-             if byAuthor:
-                self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_AUTHOR_DIR,
+
+        self.helper.checkAnalysisLog(whichCache,data)
+        if byAuthor:
+            self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_AUTHOR_DIR,
                                             self.helper.getNumIssuesAllAuthor(data))
 
 
@@ -576,4 +579,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
    #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(True, False)

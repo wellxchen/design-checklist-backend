@@ -367,7 +367,7 @@ class SonarHelper(DataHelper):
                               + ".json",
                               res)
 
-    def getRuleDetailByCategory (self, categoryname):
+    def getRuleDetailByCategoryReq (self, categoryname):
         """
         get all detailed rule under certain category
         :param categoryname:
@@ -381,7 +381,7 @@ class SonarHelper(DataHelper):
             res.append(ruleInfo)
         return res
 
-    def getAllRulesWithDetail (self):
+    def getAllRulesWithDetailByCateReq (self):
         """
         get all detailed rules under all category
         :return:
@@ -390,9 +390,10 @@ class SonarHelper(DataHelper):
 
         for category in self.title:
             maincate = category.keys()[0]
-            l[maincate] = self.getRuleDetailByCategory(maincate)
+            l[maincate] = self.getRuleDetailByCategoryReq(maincate)
 
         return l
+
 
 
 
@@ -401,5 +402,5 @@ class SonarHelper(DataHelper):
 if __name__ == '__main__':
 
     o=SonarHelper("CompSci308_2018Spring", "test-xu")
-    #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getAllRulesWithDetail())
-    print o.getMostRecentAnalysisDateReq()
+    #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getRulesReq())
+    #print o.getMostRecentAnalysisDateReq()
