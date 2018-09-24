@@ -219,7 +219,7 @@ class CategoriesHelper (object):
 
     def getRulesIDByCategoryName(self, name):
         """
-        get rules by main category name
+        get rules ID by main category name
         :param name: main category name
         :return: rules under that category
         """
@@ -229,6 +229,7 @@ class CategoriesHelper (object):
             if cates[0] == categorynumber:
                 res.append(ruleid)
         return res
+
 
 
 if __name__ == '__main__':

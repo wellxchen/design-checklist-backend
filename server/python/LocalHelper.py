@@ -235,6 +235,7 @@ class LocalHelper (FormatHelper):
         """
         return self.TEST_PROJECT
 
+
     def checkAllLogs(self):
         """
         check all logs existence

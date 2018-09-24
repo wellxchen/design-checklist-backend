@@ -367,13 +367,15 @@ class SonarHelper(DataHelper):
                               + ".json",
                               res)
 
-    def getRuleDetailByCategoryReq (self, categoryname):
+    def getRuleDetailByCategoryReq (self, mainname, subid):
         """
         get all detailed rule under certain category
         :param categoryname:
         :return:
         """
-        rules = self.getRulesIDByCategoryName(categoryname)
+
+        #TODO 
+        rules = self.getRulesIDByCategoryName(mainname)
         res = []
         for rule in rules:
             r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
@@ -389,8 +391,18 @@ class SonarHelper(DataHelper):
         l = {}
 
         for category in self.title:
-            maincate = category.keys()[0]
-            l[maincate] = self.getRuleDetailByCategoryReq(maincate)
+            curmaincate = category.keys()
+
+            maincate = curmaincate[0]
+            subcateid = -1
+            if len(category.values()) > 0:
+                for i in range(0, len(category.values())):
+                    subcate = self.title[maincate][i]
+                    if i == 0:
+                        l[maincate] = []
+                    l[maincate].append({subcate, self.getRuleDetailByCategoryReq(maincate, subcateid)})
+            else:
+                l[maincate] = self.getRuleDetailByCategoryReq(maincate, subcateid)
 
         return l
 
@@ -402,5 +414,6 @@ class SonarHelper(DataHelper):
 if __name__ == '__main__':
 
     o=SonarHelper("CompSci308_2018Spring", "test-xu")
+    o.displayData(o.getAllRulesWithDetailByCateReq())
     #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getRulesReq())
     #print o.getMostRecentAnalysisDateReq()

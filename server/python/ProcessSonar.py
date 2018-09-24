@@ -52,11 +52,11 @@ class ProcessSonar (object):
         # get all rules associate with quanlity profile
         rules = []
 
-        rules.extend(self.helper.getRulesReq())
+        rules.extend(self.helper.ruleswithdetail)
 
 
         # store details
-        dup_errmessages = []
+
         scores = self.helper.calTotalScoreAllCategory()
         scores_rem = copy.deepcopy(scores)
         scores_checked_Id = set()
@@ -80,8 +80,10 @@ class ProcessSonar (object):
         # cal percentage
 
         percentage = self.helper.calPercentByScore(scores, scores_rem)
-
-        res = json.dumps(percentage, indent=4, separators=(',', ': '))
+        ress = {}
+        for i in range(0, self.helper.getNumMainTitle()):
+            ress[self.helper.getMainTitle(i)] = percentage[i]
+        res = json.dumps(ress, indent=4, separators=(',', ': '))
 
         return res
 
@@ -101,19 +103,18 @@ class ProcessSonar (object):
         :return: issues in the selected project
         """
 
-        cachedissues = {}
-        mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
-        mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
+
         whichCache = self.helper.LOG_ISSUES_GENERAL_DIR
         if byAuthor:
             whichCache = self.helper.LOG_ISSUES_AUTHOR_DIR
         if onlyDup:
             whichCache = self.helper.LOG_ISSUES_DUPLICATIONS_DIR
-        self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
 
-        if len(cachedissues) > 0 and not onlyDup:
+        cachedissues = self.checkCached(whichCache)
 
-            return cachedissues.values()[0]
+        if not cachedissues == "NO CACHE":
+
+            return cachedissues
 
         # get all issues that are open
         issues = self.helper.getIssuesAll()
@@ -571,12 +572,16 @@ class ProcessSonar (object):
         return self.helper.executeShellRunCodeMaat()
 
 
-    def testSpeed (self):
-        print "test speed"
-        return self.helper.getIssuesAll()
-
+    def checkCached (self, whichCache):
+        cachedissues = {}
+        mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
+        mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
+        self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
+        if len(cachedissues) > 0 :
+            return cachedissues.values()[0]
+        return "NO CACHE"
 
 if __name__ == '__main__':
-   #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(True, False)
+    #print ProcessSonar("CompSci308_2018Spring", "test-xu").process(True, False)

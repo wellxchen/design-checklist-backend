@@ -19,14 +19,18 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
 
 
     # calcualte total score for rules under one category
-    def calTotalScorePerCategory(self, categoryname):
+    def calTotalScorePerCategory(self, mainname, subid):
 
         """
         calculate the total score for the main category
         :param categoryname: category name
         :return: total scores of the category
         """
-        rules = self.ruleswithdetailbycate[categoryname]
+        rules = []
+        if (subid == -1) :
+            rules.extend(self.ruleswithdetailbycate[mainname])
+        else :
+            rules.extend(self.ruleswithdetailbycate[mainname][subid])
 
         score = 0.00
         for rule in rules:
@@ -43,9 +47,20 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         l = {}
 
         for category in self.title:
-            maincate = category.keys()[0]
-            l[maincate] = self.calTotalScorePerCategory(maincate)
+            curmaincate = category.keys()
+            maincate = curmaincate[0]
+            subcateid = -1
+            if len(category.values()) > 0:
+                for i in range(0, len(category.values())):
+                    subcate = self.title[maincate][i]
+                    if i == 0:
+                        l[maincate] = []
+                    l[maincate].append({subcate, self.calTotalScorePerCategory(maincate, subcateid)})
+            else:
+                l[maincate] = self.calTotalScorePerCategory(maincate, subcateid)
         return l
+
+
 
     def getScoreForSeverity(self, ruleseverity):
 
