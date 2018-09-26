@@ -8,7 +8,7 @@ Helper class that handle data structure related functionalities
 
 import re
 from ScoreHelper import ScoreHelper
-
+import json
 
 
 class DataHelper (ScoreHelper):
@@ -258,3 +258,12 @@ class DataHelper (ScoreHelper):
         :return: message contains errors and percentages
         """
         return self.message
+
+    def jsonify (self, data):
+        """
+        jsonify data
+        :param data: input data
+        :return: data in json
+        """
+
+        return json.dumps(data, indent=4, separators=(',', ': '))

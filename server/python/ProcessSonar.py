@@ -109,7 +109,7 @@ class ProcessSonar (object):
 
         if not cachedissues == "NO CACHE":
 
-            return cachedissues
+            return self.helper.jsonify(cachedissues)
 
         # get all issues that are open
         issues = self.helper.getIssuesAll()
@@ -174,7 +174,7 @@ class ProcessSonar (object):
                                             self.helper.getNumIssuesAllAuthor(data))
 
 
-        res = json.dumps(data, indent=4, separators=(',', ': '))
+        res = self.helper.jsonify(data)
 
         return res
 

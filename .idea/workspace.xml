@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1b269488-a549-42fa-bb49-183ec50c2609" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/json/rules_detail_cate.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/json/rules_detail_cate.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/python/CategoriesHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/CategoriesHelper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/python/DataHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/DataHelper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/python/ProcessSonar.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/ProcessSonar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/python/ScoreHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/ScoreHelper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/python/SonarHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/python/SonarHelper.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -38,8 +33,11 @@
       <file leaf-file-name="DataHelper.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/python/DataHelper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1380">
-              <caret line="105" selection-start-line="105" selection-end-line="105" />
+            <state relative-caret-position="275">
+              <caret line="265" column="29" selection-start-line="265" selection-start-column="29" selection-end-line="265" selection-end-column="29" />
+              <folding>
+                <element signature="e#120#129#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -80,8 +78,8 @@
       <file leaf-file-name="ProcessSonar.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/python/ProcessSonar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="141" column="81" selection-start-line="141" selection-start-column="81" selection-end-line="141" selection-end-column="81" />
+            <state relative-caret-position="134">
+              <caret line="176" column="38" selection-start-line="176" selection-start-column="38" selection-end-line="176" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -128,6 +126,7 @@
       <find>displa</find>
       <find>getMainCat</find>
       <find>pass</find>
+      <find>percen</find>
       <find>print</find>
     </findStrings>
   </component>
@@ -141,9 +140,9 @@
         <option value="$PROJECT_DIR$/server/python/FormatHelper.py" />
         <option value="$PROJECT_DIR$/server/python/LocalHelper.py" />
         <option value="$PROJECT_DIR$/server/python/CategoriesHelper.py" />
-        <option value="$PROJECT_DIR$/server/python/DataHelper.py" />
         <option value="$PROJECT_DIR$/server/python/SonarHelper.py" />
         <option value="$PROJECT_DIR$/server/python/ScoreHelper.py" />
+        <option value="$PROJECT_DIR$/server/python/DataHelper.py" />
         <option value="$PROJECT_DIR$/server/python/ProcessSonar.py" />
       </list>
     </option>
@@ -335,9 +334,9 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3314993" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.43053645" />
       <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26543704" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26543704" />
       <window_info anchor="right" id="R Packages" order="3" />
       <window_info anchor="right" id="R Graphics" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -367,6 +366,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="525">
           <caret line="36" selection-start-line="36" selection-end-line="36" />
+          <folding>
+            <element signature="e#120#129#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -532,10 +534,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/python/DataHelper.py">
+    <entry file="file://$PROJECT_DIR$/server/python/ScoreHelper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1380">
-          <caret line="105" selection-start-line="105" selection-end-line="105" />
+        <state relative-caret-position="369">
+          <caret line="153" lean-forward="true" selection-start-line="153" selection-end-line="153" />
         </state>
       </provider>
     </entry>
@@ -554,17 +556,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/python/ScoreHelper.py">
+    <entry file="file://$PROJECT_DIR$/server/python/DataHelper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="153" lean-forward="true" selection-start-line="153" selection-end-line="153" />
+        <state relative-caret-position="275">
+          <caret line="265" column="29" selection-start-line="265" selection-start-column="29" selection-end-line="265" selection-end-column="29" />
+          <folding>
+            <element signature="e#120#129#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server/python/ProcessSonar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="141" column="81" selection-start-line="141" selection-start-column="81" selection-end-line="141" selection-end-column="81" />
+        <state relative-caret-position="134">
+          <caret line="176" column="38" selection-start-line="176" selection-start-column="38" selection-end-line="176" selection-end-column="38" />
         </state>
       </provider>
     </entry>
