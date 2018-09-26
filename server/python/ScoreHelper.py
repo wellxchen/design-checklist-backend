@@ -27,13 +27,17 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         :return: total scores of the category
         """
         rules = []
+
+
         if (subid == -1) :
             rules.extend(self.ruleswithdetailbycate[mainname])
         else :
-            rules.extend(self.ruleswithdetailbycate[mainname][subid])
+            rules.extend(self.ruleswithdetailbycate[mainname][subid].values()[0])
 
         score = 0.00
+
         for rule in rules:
+
             ruleseverity = rule["severity"]
             score += self.getScoreForSeverity(ruleseverity)
         return score
@@ -49,15 +53,16 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         for category in self.title:
             curmaincate = category.keys()
             maincate = curmaincate[0]
-            subcateid = -1
-            if len(category.values()) > 0:
-                for i in range(0, len(category.values())):
-                    subcate = self.title[maincate][i]
+            nosub = -1
+            subcategories = category.values()[0]
+            if len(subcategories) > 0:
+                for i in range(0, len(subcategories)):
+                    subcate = subcategories[i]
                     if i == 0:
                         l[maincate] = []
-                    l[maincate].append({subcate, self.calTotalScorePerCategory(maincate, subcateid)})
+                    l[maincate].append({subcate: self.calTotalScorePerCategory(maincate, i)})
             else:
-                l[maincate] = self.calTotalScorePerCategory(maincate, subcateid)
+                l[maincate] = self.calTotalScorePerCategory(maincate, nosub)
         return l
 
 
@@ -107,11 +112,42 @@ class ScoreHelper( LocalHelper, CategoriesHelper):
         :param scores_rem: total score under that main category
         :return: buffer that contains scores
         """
-        l = []
-        for i in range(0, self.getNumMainTitle()):
-            l.append(0)
+        l = {}
+
 
         for catename, score in scores.iteritems():
-            index = self.getCategoryNumberByName(catename)
-            l[index] = (score / scores_rem[catename]) * 100.00
+            total_score = 0.0
+            rem_score = 0.0
+            l[catename] = {}
+            l[catename]['percentage'] = 1
+            if type(score) == list:
+
+                l[catename]['subcategory'] = []
+                index = 0
+                for subentry in score:
+                    subcatename = subentry.keys()[0]
+                    subcatescore = subentry.values()[0]
+                    subcatescore_rem = scores_rem[catename][index].values()[0]
+                    total_score += subcatescore
+                    rem_score += subcatescore_rem
+                    l[catename]['subcategory'].append({subcatename : (subcatescore / subcatescore_rem) * 100.00})
+                    index += 1
+            else:
+                total_score = score
+                rem_score = scores_rem[catename]
+            l[catename]['percentage'] = (total_score / rem_score) * 100.00
         return l
+
+
+    def deductscore (self, ruleID, scores_checked_Id, issue, scores):
+        maincategoryname = self.getMainCateNameByRuleId(ruleID)
+        subcategoryid = self.getSubCatedIdByRuleId(ruleID)
+        if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
+            deductscore = self.getScoreForSeverity(issue['severity'])
+            if subcategoryid == -1:
+                scores[maincategoryname] -= deductscore
+            else:
+                newscore = scores[maincategoryname][subcategoryid].values()[0] - deductscore
+                subcatename = self.getSubCateShortDesc(maincategoryname, subcategoryid)
+                scores[maincategoryname][subcategoryid][subcatename] = newscore
+            scores_checked_Id.add(ruleID)

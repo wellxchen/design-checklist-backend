@@ -7,6 +7,7 @@ Helper class that handle sonarqube related functionalities
 
 from DataHelper import DataHelper
 import requests
+import json
 
 class SonarHelper(DataHelper):
 
@@ -127,7 +128,7 @@ class SonarHelper(DataHelper):
         return issues
 
 
-    def getRulesReq (self):
+    def getAllRulesWithDetailReq (self):
         """
         get rules associate with a specific quality profile
         :return: rules asscoiate with the q profile
@@ -352,7 +353,7 @@ class SonarHelper(DataHelper):
                                             mostrecentupdatetime +  ".json")
 
         if "no" in existed:
-            data = self.getRulesReq()
+            data = self.getAllRulesWithDetailReq()
             res = []
             map(lambda e : res.append({"key" : e['key'],
                                        "name": e['name']}),
@@ -374,8 +375,11 @@ class SonarHelper(DataHelper):
         :return:
         """
 
-        #TODO 
-        rules = self.getRulesIDByCategoryName(mainname)
+        rules = []
+        if not subid == -1:
+            rules.extend(self.getRulesIDByCatgeoryNameSubID(mainname, subid))
+        else :
+            rules.extend(self.getRulesIDByCategoryName(mainname))
         res = []
         for rule in rules:
             r = requests.get(self.SONAR_URL + '/api/rules/search?rule_key=' + rule)
@@ -392,15 +396,19 @@ class SonarHelper(DataHelper):
 
         for category in self.title:
             curmaincate = category.keys()
-
             maincate = curmaincate[0]
+
             subcateid = -1
-            if len(category.values()) > 0:
-                for i in range(0, len(category.values())):
-                    subcate = self.title[maincate][i]
+            subcategories = category.values()[0]
+            if len(subcategories) > 0:
+                for i in range(0, len(subcategories)):
+                    subcate = subcategories[i]
+
                     if i == 0:
                         l[maincate] = []
-                    l[maincate].append({subcate, self.getRuleDetailByCategoryReq(maincate, subcateid)})
+
+                    entry = {subcate : self.getRuleDetailByCategoryReq(maincate, subcateid)}
+                    l[maincate].append(entry)
             else:
                 l[maincate] = self.getRuleDetailByCategoryReq(maincate, subcateid)
 
@@ -408,12 +416,19 @@ class SonarHelper(DataHelper):
 
 
 
-
+    def test (self):
+        with open(self.JSON_RULE_WITH_DETAIL_BY_CATE_DIR) as f:
+            data = json.load(f)
+        self.displayData(data)
 
 
 if __name__ == '__main__':
 
     o=SonarHelper("CompSci308_2018Spring", "test-xu")
-    o.displayData(o.getAllRulesWithDetailByCateReq())
-    #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getRulesReq())
+
+    #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_BY_CATE_DIR, o.getAllRulesWithDetailByCateReq())
     #print o.getMostRecentAnalysisDateReq()
+
+
+
+    o.test()

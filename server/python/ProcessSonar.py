@@ -70,20 +70,15 @@ class ProcessSonar (object):
             if len(ruleResult) > 0:
 
                 # deduct score
-                maincategoryname = self.helper.getMainCateNameById(ruleID)
-                if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
-                    scores[maincategoryname] -= self.helper.getScoreForSeverity(issue['severity'])
-                    scores_checked_Id.add(ruleID)
+               self.helper.deductscore(ruleID, scores_checked_Id, issue, scores)
 
 
 
         # cal percentage
 
         percentage = self.helper.calPercentByScore(scores, scores_rem)
-        ress = {}
-        for i in range(0, self.helper.getNumMainTitle()):
-            ress[self.helper.getMainTitle(i)] = percentage[i]
-        res = json.dumps(ress, indent=4, separators=(',', ': '))
+
+        res = json.dumps(percentage, indent=4, separators=(',', ': '))
 
         return res
 
@@ -144,10 +139,7 @@ class ProcessSonar (object):
                 errmessage = self.helper.makeErrMessage(issue,ruleResult)
 
                 # deduct score
-                maincategoryname = self.helper.getMainCateNameById(ruleID)
-                if len(maincategoryname) > 0 and ruleID not in scores_checked_Id:
-                    scores[maincategoryname] -= self.helper.getScoreForSeverity(issue['severity'])
-                    scores_checked_Id.add(ruleID)
+                self.helper.deductscore(ruleID, scores_checked_Id, issue, scores)
 
                 # add code
                 if ruleID == "common-java:DuplicatedBlocks":
@@ -582,6 +574,6 @@ class ProcessSonar (object):
         return "NO CACHE"
 
 if __name__ == '__main__':
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
+   # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    #print ProcessSonar("CompSci308_2018Spring", "test-xu").process(True, False)
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)

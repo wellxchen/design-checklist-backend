@@ -165,9 +165,9 @@ class CategoriesHelper (object):
             return self.rules[ruleID]
         return []
 
-    def getMainCateNameById(self, ruleID):
+    def getMainCateNameByRuleId(self, ruleID):
         """
-        get main category name by id
+        get main category name by rule id
         :param ruleID: rule id
         :return: main category name
         """
@@ -175,6 +175,18 @@ class CategoriesHelper (object):
             cates = self.rules[ruleID]
             return self.getAllMainTitle()[cates[0]]
         return ""
+
+    def getSubCatedIdByRuleId (self, ruleId):
+        """
+        get sub category id by rule id
+        :param ruleId:
+        :return: sub category id
+        """
+        if ruleId in self.rules:
+            cates = self.rules[ruleId]
+            if len(cates) == 2:
+                return cates[1]
+        return -1
 
     def getCategoryNumberByName(self, name):
         """
@@ -217,20 +229,57 @@ class CategoriesHelper (object):
         """
         return self.duplications
 
-    def getRulesIDByCategoryName(self, name):
+    def getRulesIDByCategoryName(self, mainname):
         """
         get rules ID by main category name
         :param name: main category name
         :return: rules under that category
         """
-        categorynumber = self.getCategoryNumberByName(name)
+        mainid = self.getCategoryNumberByName(mainname)
         res = []
         for ruleid, cates in self.rules.iteritems():
-            if cates[0] == categorynumber:
+            if cates[0] == mainid:
                 res.append(ruleid)
         return res
 
 
+    def getRulesIDByCatgeoryNameSubID (self, mainname, subid):
+        """
+        get rule id by main category name and subid
+        :param mainname:
+        :param subid:
+        :return:
+        """
+        mainid= self.getCategoryNumberByName(mainname)
+        res = []
+        for ruleid, cates in self.rules.iteritems():
+            if cates[0] == mainid and cates[1] == subid:
+                res.append(ruleid)
+        return res
+
+    def displayData(self, data):
+        """
+        display any json like data in an easy to read format
+        :param data: any json like data
+        :return: void
+        """
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(data)
+
+
+    def getSubCateShortDesc(self, mainname, subid):
+        """
+        get short description by main name and subid
+        :param mainname:
+        :param subid:
+        :return: short description of sub category
+        """
+
+        mainid = self.getCategoryNumberByName(mainname)
+        if len(self.title[mainid][mainname]) == 0:
+            return ""
+        return self.title[mainid][mainname][subid]
 
 if __name__ == '__main__':
     print CategoriesHelper().getAllMainTitle()

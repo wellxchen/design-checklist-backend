@@ -34,15 +34,6 @@ class DataHelper (ScoreHelper):
                 self.message[i].append([])
 
 
-    def displayData(self, data):
-        """
-        display any json like data in an easy to read format
-        :param data: any json like data
-        :return: void
-        """
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(data)
 
 
     def storeIssue(self, ruleID, errmessage):
@@ -111,9 +102,7 @@ class DataHelper (ScoreHelper):
                     data['error'][maintitle][subtitle]['category description'] = \
                         self.getDescriptionByIndex(mindex, sindex)
 
-            data['percentage'] = {}
-            for i in range(0, self.getNumMainTitle()):
-                data['percentage'][self.getMainTitle(i)] = percentage[i]
+            data['percentage'] = percentage
 
             return data
 
