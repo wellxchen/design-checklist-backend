@@ -565,6 +565,11 @@ class ProcessSonar (object):
 
 
     def checkCached (self, whichCache):
+        """
+        check whether the cache exists
+        :param whichCache:  which cache to check
+        :return: cache or no cache
+        """
         cachedissues = {}
         mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
         mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
@@ -576,4 +581,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)
+    print ProcessSonar("CompSci308_2018Spring", "slogo_team12").process(False, False)
