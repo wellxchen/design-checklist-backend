@@ -1,4 +1,5 @@
 *.pyc
 cache
+.idea
 server/documents/local/*
 !server/documents/local/.gitkeep
