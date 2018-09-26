@@ -242,6 +242,7 @@ class ProcessSonar (object):
         # start to iterating issues and store relevant fields
 
         for issue in issues:
+
             entries.append({})
             entries[count]['methodlen'] = int(issue['message'].split()[3])
             entries[count]['startline'] = issue['line']
@@ -269,7 +270,12 @@ class ProcessSonar (object):
 
          # sort the result by method length
         entries.sort(key=lambda x: x['methodlen'], reverse=False)
-        return entries[:10]
+
+        #make res
+        res = {}
+        res['method'] = []
+        res['method'].extend(entries[:10])
+        return self.helper.jsonify(res)
 
 
     def getcommit (self, onlyStat):
@@ -583,4 +589,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    print ProcessSonar("CompSci308_2018Spring", "slogo_team12").process(False, False)
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").longestmethods()

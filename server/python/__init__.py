@@ -76,10 +76,8 @@ def lmethod():
     '''
     project = request.args.get('project')
     group = request.args.get('group')
-    res = {}
-    res['method'] = []
-    res['method'].extend(ProcessSonar(group, project).longestmethods())
-    return json.dumps(res)
+    return ProcessSonar(group, project).longestmethods()
+
 
 @app.route("/api/commit")
 def getcommit ():
@@ -210,9 +208,9 @@ def test():
 
 def testConnectivity ():
     """
-           test connection
-           :return: void
-           """
+    test connection
+    :return: void
+    """
     res = {}
     res["connection"] = "success"
     return json.dumps(res)
