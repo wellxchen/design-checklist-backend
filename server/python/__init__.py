@@ -202,7 +202,20 @@ def getcode ():
     return
 
 
+#test endpoint
+@app.route("/api/system/test")
+def test():
+    return testConnectivity()
 
+
+def testConnectivity ():
+    """
+           test connection
+           :return: void
+           """
+    res = {}
+    res["connection"] = "success"
+    return json.dumps(res)
 
 if __name__ == '__main__':
     app.run(threaded=True)

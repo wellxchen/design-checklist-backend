@@ -578,6 +578,8 @@ class ProcessSonar (object):
             return cachedissues.values()[0]
         return "NO CACHE"
 
+
+
 if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
