@@ -218,7 +218,8 @@ class SonarHelper(DataHelper):
         r = requests.get(self.SONAR_URL
                          + '/api/project_analyses/search?project='
                          + self.TEST_PROJECT)
-
+        if "errors" in r.json():
+            return r.json()
         return r.json()['analyses'][0]['date']
 
 

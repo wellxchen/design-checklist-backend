@@ -30,7 +30,7 @@ class LocalHelper (FormatHelper):
 
         super(LocalHelper, self).__init__()
 
-        self.SONAR_GROUP = group
+        self.SONAR_GROUP = group + ":"
         if project is None:
             project = ""
         self.ROOT_PATH = self.getRootPath()

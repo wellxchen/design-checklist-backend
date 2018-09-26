@@ -107,6 +107,9 @@ class ProcessSonar (object):
 
         cachedissues = self.checkCached(whichCache)
 
+        if "NOT EXIST" in cachedissues:
+            return self.helper.jsonify({"err" : cachedissues})
+
         if not cachedissues == "NO CACHE":
 
             return self.helper.jsonify(cachedissues)
@@ -578,6 +581,8 @@ class ProcessSonar (object):
         """
         cachedissues = {}
         mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
+        if "errors" in mostrecenttime:
+            return "NOT EXIST"
         mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
         self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
         if len(cachedissues) > 0 :
@@ -589,4 +594,4 @@ class ProcessSonar (object):
 if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").longestmethods()
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)
