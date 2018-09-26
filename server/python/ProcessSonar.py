@@ -78,7 +78,7 @@ class ProcessSonar (object):
 
         percentage = self.helper.calPercentByScore(scores, scores_rem)
 
-        res = json.dumps(percentage, indent=4, separators=(',', ': '))
+        res = self.helper.jsonify(percentage)
 
         return res
 
@@ -196,7 +196,7 @@ class ProcessSonar (object):
                 for subcategory, issues in possibleissues.iteritems():
                    
                     self.helper.handleAuthorStore(issues['detail'], maincategory, subcategory, res)
-        return res
+        return self.helper.jsonify(res)
 
     def statistics(self):
 
@@ -219,7 +219,7 @@ class ProcessSonar (object):
         self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_GENERAL_DIR,
                                      res)
 
-        return json.dumps(res)
+        return self.helper.jsonify(res)
 
     def longestmethods (self):
 
@@ -367,7 +367,7 @@ class ProcessSonar (object):
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
 
-        return json.dumps(res)
+        return self.helper.jsonify(res)
 
 
     def getcommitstatfast(self, studentidmaps):
@@ -459,7 +459,7 @@ class ProcessSonar (object):
         }
 
 
-        return json.dumps(res)
+        return self.helper.jsonify(res)
 
     def getproject(self):
 
@@ -487,7 +487,7 @@ class ProcessSonar (object):
             res['gitlab'] = "not found"
         else:
             res['gitlab'] = "found"
-        return json.dumps(res)
+        return self.helper.jsonify(res)
 
     def getbydirectory(self):
 
@@ -539,7 +539,7 @@ class ProcessSonar (object):
                self.helper.makeIssueEntryForDIR(mainissuelist, res)
 
 
-        return json.dumps(res)
+        return self.helper.jsonify(res)
 
 
     def gethistory (self):
@@ -553,7 +553,7 @@ class ProcessSonar (object):
         res['general'] =self.helper.readLogJSONAll(self.helper.LOG_STATISTICS_GENERAL_DIR)
         res['author'] = self.helper.readLogJSONAll(self.helper.LOG_STATISTICS_AUTHOR_DIR)
 
-        return json.dumps(res)
+        return self.helper.jsonify(res)
 
 
     def getcodemaat(self):
