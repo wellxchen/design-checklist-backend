@@ -219,7 +219,7 @@ class SonarHelper(DataHelper):
                          + '/api/project_analyses/search?project='
                          + self.TEST_PROJECT)
         if "errors" in r.json():
-            return r.json()
+            return "NOT EXIST"
         return r.json()['analyses'][0]['date']
 
 
