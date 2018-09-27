@@ -151,6 +151,7 @@ class ProcessSonar (object):
                 else:
                     errmessage['code'] = []
                     self.helper.storeCodes(issue, errmessage)
+                    #self.helper.storeCodesBasic(issue, errmessage)
                     self.helper.storeIssue (ruleID, errmessage)
 
         # if there is duplication issues, store the issues in separate buffer
@@ -200,7 +201,8 @@ class ProcessSonar (object):
                 for subcategory, issues in possibleissues.iteritems():
                    
                     self.helper.handleAuthorStore(issues['detail'], maincategory, subcategory, res)
-        return self.helper.jsonify(res)
+        return res
+
 
     def statistics(self):
 
@@ -573,6 +575,23 @@ class ProcessSonar (object):
         """
         return self.helper.executeShellRunCodeMaat()
 
+    def getcode(self, start, end, path):
+        """
+        get code for given path
+        :param start:
+        :param end:
+        :param path:
+        :return: code for the given path
+        """
+        codes = self.helper.storeSingleCodeReq(start, end ,path)
+        res = {}
+        res['codes'] = codes
+        res['range'] = {}
+        res['range']['start'] = start
+        res['range']['end'] = end
+        res['path'] = path
+        return self.helper.jsonify(res)
+
 
     def checkCached (self, whichCache):
         """
@@ -585,7 +604,7 @@ class ProcessSonar (object):
 
         if "errors" in mostrecenttime:
             return mostrecenttime["errors"]
-        
+
         mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
         self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
         if len(cachedissues) > 0 :
@@ -597,4 +616,5 @@ class ProcessSonar (object):
 if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, False)
+    #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
+    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)

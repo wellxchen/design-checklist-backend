@@ -230,7 +230,7 @@ class SonarHelper(DataHelper):
         get source code from start to end
         :param startLine: start line of the code
         :param endLine:  end line of the code
-        :param issue: the specific issue
+        :param issue: the specific issue or path
         :return: the source code
         """
 
@@ -330,12 +330,26 @@ class SonarHelper(DataHelper):
                 startLine = entry['textRange']['startLine']
                 endLine = entry['textRange']['endLine']
 
-                items = self.getSourceReq(startLine, endLine, issue)
-
                 entry['code'] = []
-                for item in items:
-                    entry['code'].append(item[1])
+                entry['code'].extend(self.storeSingleCodeReq(startLine, endLine, issue))
                 errmessage['code'].append(entry)
+
+    def storeSingleCodeReq (self, startLine, endLine, path):
+        """
+        store codes for a textRange
+        :param startLine: start line of code
+        :param endLine: end line of code
+        :param path: path to the file
+        :return: codes
+        """
+        items = self.getSourceReq(startLine, endLine, path)
+        entry = []
+        for item in items:
+            entry.append(item[1])
+
+        return entry
+
+
 
 
     def checkQProfileLogReq(self):

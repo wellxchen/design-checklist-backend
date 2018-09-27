@@ -34,6 +34,18 @@ class DataHelper (ScoreHelper):
                 self.message[i].append([])
 
 
+    def storeCodesBasic(self, issue, errmessage):
+        """
+        store only the text range of code to errmessage
+        :param issue:
+        :param errmessage:
+        :return: void
+        """
+        if 'textRange' in issue:
+            textRange = self.makeTextRange(issue)
+            for entry in textRange:
+                errmessage['code'].append(entry)
+
 
 
     def storeIssue(self, ruleID, errmessage):

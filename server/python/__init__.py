@@ -186,7 +186,11 @@ def getdirectoryoverview ():
     return
 
 @app.route("/api/issues/file")
-def getfileerros ():
+def getfileissues ():
+    """
+    get all issues for a specific file
+    :return:
+    """
     project = request.args.get('project')
     group = request.args.get('group')
     file = request.args.get('file')
@@ -198,7 +202,16 @@ def getduplicationoverview ():
 
 @app.route("/api/issues/code")
 def getcode ():
-    return
+    """
+    get codes by start line, end line and file path
+    :return: codes
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    file = request.args.get('file')
+    startLine = request.args.get('start')
+    endLine = request.args.get('end')
+    return ProcessSonar(group, project).getcode(startLine, endLine, file)
 
 
 #test endpoint
