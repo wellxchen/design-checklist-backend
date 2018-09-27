@@ -272,7 +272,7 @@ class ProcessSonar (object):
             count += 1
 
          # sort the result by method length
-        entries.sort(key=lambda x: x['methodlen'], reverse=False)
+        entries.sort(key=lambda x: x['methodlen'], reverse=True)
 
         #make res
         res = {}
