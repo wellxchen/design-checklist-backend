@@ -29,7 +29,8 @@ def process():
     '''
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project).process(False, False)
+
+    return json.dumps({"err" : "here"})#ProcessSonar(group, project).process(False, False)
 
 @app.route("/api/statistics")
 def statistics():
