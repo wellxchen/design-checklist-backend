@@ -581,7 +581,7 @@ class ProcessSonar (object):
         :return: cache or no cache
         """
         cachedissues = {}
-        mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
+        #mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
         return "NOT EXIST"
 
         #if "NOT EXIST" ==  mostrecenttime:
