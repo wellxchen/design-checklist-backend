@@ -220,7 +220,7 @@ class SonarHelper(DataHelper):
                          #+ self.TEST_PROJECT)
         r = {"errors" : "e"}
         if "errors" in r: #r.json():
-            return {"errors" : "NOT EXIST"}
+            return {"errors" : self.TEST_PROJECT}
         return ""#r.json()['analyses'][0]['date']
 
 

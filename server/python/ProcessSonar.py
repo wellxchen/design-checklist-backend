@@ -584,7 +584,7 @@ class ProcessSonar (object):
         mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
 
         if "errors" in mostrecenttime:
-            return "NOT EXIST"
+            return mostrecenttime["errors"]
         mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
         self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
         if len(cachedissues) > 0 :
