@@ -585,6 +585,7 @@ class ProcessSonar (object):
 
         if "errors" in mostrecenttime:
             return mostrecenttime["errors"]
+        
         mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
         self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
         if len(cachedissues) > 0 :
