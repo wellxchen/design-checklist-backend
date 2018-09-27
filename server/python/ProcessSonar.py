@@ -217,9 +217,6 @@ class ProcessSonar (object):
         for measure in measures:
             res['measures'][measure['metric']] = measure['value']
 
-        #store longest methods
-        res['measures']['lmethods'] = []
-        res['measures']['lmethods'].extend(self.longestmethods())
 
         #write logs to local
         self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_GENERAL_DIR,
@@ -617,4 +614,4 @@ if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
     #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
-    print ProcessSonar("CompSci308_2018Spring", "test-xu").process(False, True)
+    print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").longestmethods()
