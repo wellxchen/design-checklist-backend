@@ -215,12 +215,13 @@ class SonarHelper(DataHelper):
         :return: most recent analysis date
         """
 
-        r = requests.get(self.SONAR_URL
-                         + '/api/project_analyses/search?project='
-                         + self.TEST_PROJECT)
-        if "errors" in r.json():
-            return "NOT EXIST"
-        return r.json()['analyses'][0]['date']
+        #r = requests.get(self.SONAR_URL
+                         #+ '/api/project_analyses/search?project='
+                         #+ self.TEST_PROJECT)
+        r = {"errors" : "e"}
+        if "errors" in r: #r.json():
+            return {"errors" : "NOT EXIST"}
+        return ""#r.json()['analyses'][0]['date']
 
 
     def getSourceReq (self, startLine, endLine, issue):

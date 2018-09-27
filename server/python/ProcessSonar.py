@@ -108,7 +108,7 @@ class ProcessSonar (object):
         cachedissues = self.checkCached(whichCache)
 
 
-        if "NOT EXIST" == cachedissues:
+        if "NOT EXIST" in cachedissues:
             return self.helper.jsonify({"err" : cachedissues})
 
         if not cachedissues == "NO CACHE":
@@ -581,16 +581,15 @@ class ProcessSonar (object):
         :return: cache or no cache
         """
         cachedissues = {}
-        #mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
-        return "NOT EXIST"
+        mostrecenttime = self.helper.getMostRecentAnalysisDateReq()
 
-        #if "NOT EXIST" ==  mostrecenttime:
-         #   return "NOT EXIST"
-        #mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
-        #self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
-        #if len(cachedissues) > 0 :
-         #   return cachedissues.values()[0]
-        #return "NO CACHE"
+        if "errors" in mostrecenttime:
+            return "NOT EXIST"
+        mostrecenttime = self.helper.adjustSonarTime(mostrecenttime)
+        self.helper.readLogJSON(whichCache, mostrecenttime + ".json", cachedissues)
+        if len(cachedissues) > 0 :
+            return cachedissues.values()[0]
+        return "NO CACHE"
 
 
 
