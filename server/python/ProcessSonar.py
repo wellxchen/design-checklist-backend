@@ -107,6 +107,7 @@ class ProcessSonar (object):
 
         cachedissues = self.checkCached(whichCache)
 
+        return self.helper.jsonify({"err": "here"})
         if "NOT EXIST" in cachedissues:
             return self.helper.jsonify({"err" : cachedissues})
 
