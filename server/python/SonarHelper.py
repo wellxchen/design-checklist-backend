@@ -137,7 +137,14 @@ class SonarHelper(DataHelper):
         r = requests.get(self.SONAR_URL
                          + '/api/rules/search?ps=500&activation=true&qprofile='
                          + self.QUALITY_PROFILE)
-        return r.json()['rules']
+
+        rules_res = r.json()['rules']
+        for i in range(0,len(rules_res) - 1):
+            if rules_res[i]['key'] == "squid:S138":
+                del rules_res[i]
+                break
+
+        return rules_res
 
 
     def getFilesReq(self, total_pages):
@@ -440,11 +447,11 @@ class SonarHelper(DataHelper):
 
 if __name__ == '__main__':
 
-    o=SonarHelper("CompSci308_2018Spring", "test-xu")
+    o=SonarHelper("CompSci308_2018Fall", "test_xu_fall")
 
-    #o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_BY_CATE_DIR, o.getAllRulesWithDetailByCateReq())
+    o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_BY_CATE_DIR, o.getAllRulesWithDetailByCateReq())
+    o.writeLogJSON(o.JSON_RULE_WITH_DETAIL_DIR, o.getAllRulesWithDetailReq())
     #print o.getMostRecentAnalysisDateReq()
 
 
 
-    o.test()

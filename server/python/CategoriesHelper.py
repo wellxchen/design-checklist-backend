@@ -65,7 +65,7 @@ class CategoriesHelper (object):
 
     # id : [main, sub]
     # main : 0 communication, 1 modularity, 2 flexibility, 3 javanote, 4 codesmell, 5 duplications
-
+    # NOTE: rule S138 belongs to 2, 1
 
 
     def __init__(self):

@@ -172,8 +172,8 @@ def getcategoryerrors ():
     project = request.args.get('project')
     group = request.args.get('group')
     main = request.args.get('main')
-    sub = request.args.get('sub')
-    return ProcessSonar(group, project).getcategoryerrors(main, sub)
+    sub = request.args.get('sub') #NOTE: short name of sub category not full description
+    return ProcessSonar(group, project).getcategoryissues(main, sub)
 
 @app.route("/api/overview/directory")
 def getdirectoryoverview ():
@@ -217,6 +217,10 @@ def getcode ():
 #test endpoint
 @app.route("/api/system/test")
 def test():
+    """
+    simply test if site is up an run
+    :return:
+    """
     return testConnectivity()
 
 

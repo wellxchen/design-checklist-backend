@@ -84,7 +84,19 @@ class ProcessSonar (object):
 
 
     def getcategoryissues (self, main, sub):
-        return
+        """
+        get issues for a specific category
+        :param main: main category
+        :param sub: subcategory
+        :return: issues in that category
+        """
+
+        allissues = self.process(False, False)
+
+        if sub == "":
+            return allissues[main]
+
+        return allissues[main][sub]
 
 
 
@@ -614,4 +626,4 @@ if __name__ == '__main__':
    # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
     #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
-    print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").longestmethods()
+    print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcategoryissues("Communication", "")
