@@ -44,7 +44,8 @@ class DataHelper (ScoreHelper):
         if 'textRange' in issue:
             textRange = self.makeTextRange(issue)
             for entry in textRange:
-                errmessage['code'].append(entry)
+                errmessage['code'].append(entry['textRange'])
+
 
 
 

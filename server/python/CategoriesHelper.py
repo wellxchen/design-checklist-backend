@@ -222,9 +222,16 @@ class CategoriesHelper (object):
         """
         return self.rules.keys()
 
-    def getDuplicationsLocal(self):
+    def getRulesWithDetail (self):
         """
-        get all rules under duplications
+        get rules with details
+        :return: rules with detail
+        """
+        return self.ruleswithdetail
+
+    def getDuplicationRulesShort(self):
+        """
+        get all rules under duplications (short version)
         :return: all rules under duplications
         """
         return self.duplications

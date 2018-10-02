@@ -199,11 +199,12 @@ class SonarHelper(DataHelper):
                     if entry['loc'] in self.fileChecked:
                         discard = True
                         break
-
+                    '''
                     items = self.getSourceReq(entry['startLine'], entry['endLine'], entry['loc'])
                     entry['code'] = []
                     for item in items:
                         entry['code'].append(item[1])
+                    '''
                     single_dup.append(entry)
 
                 if not discard:
