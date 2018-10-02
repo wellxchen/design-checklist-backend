@@ -183,6 +183,11 @@ class ProcessSonar (object):
 
         data['severitylist'] = self.helper.getSeverityList()
 
+        #store list of rules in DRY if duplications
+
+        if onlyDup:
+            data["rules"] = self.helper.getDuplicationRulesShort()
+
         # if not only duplication, store the log   
 
         self.helper.checkAnalysisLog(whichCache,data)

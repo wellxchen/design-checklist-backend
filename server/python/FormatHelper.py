@@ -169,5 +169,6 @@ class FormatHelper (object):
 
 
 
+
 if __name__ == '__main__':
     print (FormatHelper().adjustSonarTime('2018-06-19T19:08:52+0000'))
