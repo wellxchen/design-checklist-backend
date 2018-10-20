@@ -175,30 +175,16 @@ def getcategoryerrors ():
     sub = request.args.get('sub') #NOTE: short name of sub category not full description
     return ProcessSonar(group, project).getcategoryissues(main, sub)
 
-@app.route("/api/overview/directory")
-def getdirectoryoverview ():
-    """
 
-    :return:
+@app.route("/api/commit/state")
+def getStateIssue():
+    """
+    get open or closed issue, closed for closed, opened for opened
+    :return: open or closed issue by author
     """
     project = request.args.get('project')
     group = request.args.get('group')
-    return
-
-@app.route("/api/issues/file")
-def getfileissues ():
-    """
-    get all issues for a specific file
-    :return:
-    """
-    project = request.args.get('project')
-    group = request.args.get('group')
-    file = request.args.get('file')
-    return
-
-@app.route("/api/overview/duplications")
-def getduplicationoverview ():
-    return
+    return ProcessSonar(group, project)
 
 @app.route("/api/issues/code")
 def getcode ():
@@ -212,6 +198,7 @@ def getcode ():
     startLine = request.args.get('start')
     endLine = request.args.get('end')
     return ProcessSonar(group, project).getcode(startLine, endLine, file)
+
 
 
 #test endpoint

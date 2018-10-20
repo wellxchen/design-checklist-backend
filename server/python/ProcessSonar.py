@@ -43,6 +43,10 @@ class ProcessSonar (object):
         self.helper.checkQProfileLogReq()
 
 
+    def getGitIssues (self, state):
+        return self.helper.getGitlabIssues()
+
+
     def getcategoryoverview (self):
         issues = self.helper.getIssuesAll()
 
@@ -306,30 +310,15 @@ class ProcessSonar (object):
         :return: information about commits or statistics about commits
         """
 
-        # request gitlab for projects information based on group
-
-        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL \
-              +"/groups/" \
-              + self.helper.GITLAB_GROUP \
-              + "/projects?search="\
-              + self.helper.PLAIN_PROJECT
-
-        r  = requests.get(URL, headers={'PRIVATE-TOKEN': self.helper.TOKEN})
-        projects = r.json()
-
-        # get project id from response
-        projectid = -1
-        for p in projects:
-            if p['path'] ==self.helper.PLAIN_PROJECT \
-                    or p['name'] == self.helper.PLAIN_PROJECT:
-                projectid = p['id']
-                break
+        projectid = self.helper.getGitlabProjectIDByName(self.helper.GITLAB_GROUP,
+                                                         self.helper.PLAIN_PROJECT,
+                                                         self.helper.TOKEN)
 
         if projectid == -1:
             return []
 
         # using project id to get commits
+        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
 
         res = {}
         res['authors'] = {}
@@ -632,4 +621,4 @@ if __name__ == '__main__':
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
     #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
     #print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcategoryissues("Communication", "")
-   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team01").process(True, False)
+   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team01").getcommit(True)
