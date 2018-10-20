@@ -176,15 +176,16 @@ def getcategoryerrors ():
     return ProcessSonar(group, project).getcategoryissues(main, sub)
 
 
-@app.route("/api/commit/state")
-def getStateIssue():
+@app.route("/api/commit/issues/state")
+def getStateIssueByState():
     """
     get open or closed issue, closed for closed, opened for opened
     :return: open or closed issue by author
     """
     project = request.args.get('project')
     group = request.args.get('group')
-    return ProcessSonar(group, project)
+    state = request.args.get('state')
+    return ProcessSonar(group, project).getGitIssuesByState(state)
 
 @app.route("/api/issues/code")
 def getcode ():

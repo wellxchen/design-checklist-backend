@@ -21,6 +21,8 @@ load_dotenv(dotenv_path)
 
 class GitlabHelper (object):
 
+    GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
+
     def __init__(self):
         pass
 
@@ -35,35 +37,36 @@ class GitlabHelper (object):
         counter = 1
         r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
 
-        while len(r.json()) > 0:
+
+        while len(r.json()) > 0 and 'error' not in r.json():
             result.extend(r.json())
             counter += 1
             r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
         return result
 
 
-    def getcommits(self, GITLAB_URL, projectid, TOKEN):
+    def getcommits(self, projectid, TOKEN):
         """
         get all commits for a specific project
-        :param GITLAB_URL: gitlab url
-        :param projectid:
+        :param projectid: projectid
         :param TOKEN: token to login to gitlab
         :return: return commits for a specfic project
         """
 
-        URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits?ref_name=master&per_page=100&page="
+        URL = self.GITLAB_URL + "/projects/" + str(projectid) + "/repository/commits?ref_name=master&per_page=100&page="
 
         return self.getGitlabInfoAllPages(URL, TOKEN)
 
-    def getGitlabIssuesByState (self, GITLAB_URL, projectid, TOKEN, state):
+    def getGitlabIssuesByState (self, projectid, TOKEN, state):
         """
         get issues in gitlab
         :param GITLAB_URL: gitlab url
+        :param projectid: projectid
         :param state: open or close
         :return: return issues in gitlab by state
         """
 
-        URL = GITLAB_URL + "/projects/" + str(projectid) + "/repository/issues?state=" + state
+        URL = self.GITLAB_URL + "/projects/" + str(projectid) + "/issues?state=" + state + "&per_page=100&page="
 
         return self.getGitlabInfoAllPages(URL, TOKEN)
 
@@ -77,8 +80,7 @@ class GitlabHelper (object):
         :return: project id
         """
 
-        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
-        URL = GITLAB_URL \
+        URL = self.GITLAB_URL \
               +"/groups/" \
               + GITLAB_GROUP \
               + "/projects?search="\

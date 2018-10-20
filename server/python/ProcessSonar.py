@@ -43,11 +43,25 @@ class ProcessSonar (object):
         self.helper.checkQProfileLogReq()
 
 
-    def getGitIssues (self, state):
-        return self.helper.getGitlabIssues()
+    def getGitIssuesByState (self, state):
 
+        projectid = self.helper.getGitlabProjectIDByName(self.helper.GITLAB_GROUP,
+                                                         self.helper.PLAIN_PROJECT,
+                                                         self.helper.TOKEN)
+
+        if projectid == -1:
+            return []
+
+        issues = self.helper.getGitlabIssuesByState(projectid,
+                                                    self.helper.TOKEN,
+                                                    state)
+        return issues
 
     def getcategoryoverview (self):
+        """
+        get an overview of all categories
+        :return:
+        """
         issues = self.helper.getIssuesAll()
 
         if 'err' in issues:
@@ -318,12 +332,12 @@ class ProcessSonar (object):
             return []
 
         # using project id to get commits
-        GITLAB_URL = "https://coursework.cs.duke.edu/api/v4"
+
 
         res = {}
         res['authors'] = {}
         dates = {}
-        commits = self.helper.getcommits(GITLAB_URL, projectid, self.helper.TOKEN)
+        commits = self.helper.getcommits(projectid, self.helper.TOKEN)
 
         # read in student ids and names from csv
 
@@ -621,4 +635,4 @@ if __name__ == '__main__':
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
     #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
     #print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcategoryissues("Communication", "")
-   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team01").getcommit(True)
+   print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getGitIssuesByState("closed")#("closed")
