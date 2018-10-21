@@ -600,13 +600,16 @@ class ProcessSonar (object):
         :param path:
         :return: code for the given path
         """
-        codes = self.helper.storeSingleCodeReq(start, end ,path)
+        ultimatePath = self.helper.SONAR_GROUP + self.helper.PLAIN_PROJECT + ":" + path
+
+        codes = self.helper.storeSingleCodeReq(start, end ,ultimatePath)
         res = {}
         res['codes'] = codes
         res['range'] = {}
         res['range']['start'] = start
         res['range']['end'] = end
         res['path'] = path
+
         return self.helper.jsonify(res)
 
 
@@ -635,4 +638,4 @@ if __name__ == '__main__':
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
     #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
     #print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcategoryissues("Communication", "")
-   print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcode(5, 20, "CompSci308_2018Fall:cellsociety_team05:src/Simulator/Cell.java")
+   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").getcode(5, 20, "src/Simulator/Cell.java")
