@@ -251,6 +251,8 @@ class SonarHelper(DataHelper):
                          + str(endLine)
                          + "&key="
                          + issue)
+        if "sources" not in r.json():
+            return []
         return r.json()["sources"]
 
 

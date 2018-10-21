@@ -180,8 +180,8 @@ class ProcessSonar (object):
                     dup_errmessages.append(errmessage)
                 else:
                     errmessage['code'] = []
-                    #self.helper.storeCodes(issue, errmessage)
-                    self.helper.storeCodesBasic(issue, errmessage)
+                    self.helper.storeCodes(issue, errmessage)
+                    #self.helper.storeCodesBasic(issue, errmessage)
                     self.helper.storeIssue (ruleID, errmessage)
 
         # if there is duplication issues, store the issues in separate buffer
@@ -635,4 +635,4 @@ if __name__ == '__main__':
     #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
     #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
     #print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcategoryissues("Communication", "")
-   print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getGitIssuesByState("closed")#("closed")
+   print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcode(5, 20, "CompSci308_2018Fall:cellsociety_team05:src/Simulator/Cell.java")
