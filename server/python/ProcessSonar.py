@@ -180,8 +180,8 @@ class ProcessSonar (object):
                     dup_errmessages.append(errmessage)
                 else:
                     errmessage['code'] = []
-                    self.helper.storeCodes(issue, errmessage)
-                    #self.helper.storeCodesBasic(issue, errmessage)
+                    #self.helper.storeCodes(issue, errmessage)
+                    self.helper.storeCodesBasic(issue, errmessage)
                     self.helper.storeIssue (ruleID, errmessage)
 
         # if there is duplication issues, store the issues in separate buffer
