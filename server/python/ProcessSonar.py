@@ -252,6 +252,21 @@ class ProcessSonar (object):
         for measure in measures:
             res['measures'][measure['metric']] = measure['value']
 
+        additionalStats = self.helper.executeShellStatsAdditional().split("\n")
+        begin = False
+        startLine = "meaningless catch:"
+        for line in additionalStats:
+            if line[:len(startLine)] ==  startLine:
+                begin = True
+            if begin:
+                extracts =  line.split(":")
+                statname = extracts[0]
+                if len(extracts) > 1:
+                    extracts_detail = extracts[1].split()
+                    if not statname == startLine[:-1]:
+                        res["measures"][statname] = extracts_detail[0]
+                    else :
+                        res["measures"][statname] = extracts_detail
 
         #write logs to local
         self.helper.checkAnalysisLog(self.helper.LOG_STATISTICS_GENERAL_DIR,
@@ -600,6 +615,9 @@ class ProcessSonar (object):
         :param path:
         :return: code for the given path
         """
+
+        # TODO add cache
+
         ultimatePath = self.helper.SONAR_GROUP + self.helper.PLAIN_PROJECT + ":" + path
 
         codes = self.helper.storeSingleCodeReq(start, end ,ultimatePath)
@@ -609,6 +627,7 @@ class ProcessSonar (object):
         res['range']['start'] = start
         res['range']['end'] = end
         res['path'] = path
+
 
         return self.helper.jsonify(res)
 
@@ -634,8 +653,5 @@ class ProcessSonar (object):
 
 
 if __name__ == '__main__':
-   # print ProcessSonar("CompSci308_2018Spring", "test-xu").getcategoryoverview()
-    #ProcessSonar("CompSci308_2018Spring", "test-xu").statistics()
-    #print ProcessSonar("CompSci308_2018Spring", "test-xu").getcode(125,125, "CompSci308_2018Spring:test-xu:src/frontend/SLOGOScreen.java")#
-    #print ProcessSonar("CompSci308_2018Fall", "test_xu_fall").getcategoryissues("Communication", "")
-   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").getcode(5, 20, "src/Simulator/Cell.java")
+
+   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").statistics()#helper.executeShellStatsAdditional()

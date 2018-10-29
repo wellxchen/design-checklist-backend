@@ -54,12 +54,15 @@ class LocalHelper (FormatHelper):
         self.LOG_ISSUES_GENERAL_DIR = self.LOG_ISSUES_DIR + "/general"
         self.LOG_ISSUES_AUTHOR_DIR = self.LOG_ISSUES_DIR + "/author"
         self.LOG_ISSUES_DUPLICATIONS_DIR = self.LOG_ISSUES_DIR + "/duplications"
+        self.LOG_ISSUES_CODE_DIR = self.LOG_ISSUES_DIR + "/code"
         self.LOG_STATISTICS_DIR = self.LOG_DIR + "/statistics"
         self.LOG_STATISTICS_GENERAL_DIR = self.LOG_STATISTICS_DIR + "/general"
         self.LOG_STATISTICS_AUTHOR_DIR = self.LOG_STATISTICS_DIR + "/author"
         self.DEPENDENCY_DIR = self.SERVER_PATH + "/dependencies"
         self.ROSTER_PATH = dirname(__file__)[:-14] + '/server/documents/local/rosters/cs308/308_student_data_'
         self.ROSTER_PATH += (self.YEAR + self.SEMESTER + ".csv")
+
+
 
 
     def readProjectDates (self, project):
@@ -266,6 +269,7 @@ class LocalHelper (FormatHelper):
                                         self.PLAIN_PROJECT,
                                         self.ROOT_PATH])
 
+
     def executeShellStats(self):
         """
         execute shell scripts that extract stat information
@@ -300,6 +304,16 @@ class LocalHelper (FormatHelper):
                                         self.PLAIN_PROJECT,
                                         self.ROOT_PATH])
 
+    def executeShellStatsAdditional(self):
+        """
+        additional stat in project
+        :return: additional stats
+        """
+        return subprocess.check_output([self.SHELL_PATH + '/stats_additional.sh',
+                                        self.TOKEN,
+                                        self.GITLAB_GROUP,
+                                        self.PLAIN_PROJECT,
+                                        self.ROOT_PATH])
 
 
 

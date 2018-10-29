@@ -15,6 +15,7 @@ LOGROOT="$ROOT/$CACHE/$LOG"
 GENERAL="general"
 BYAUTHOER="author"
 DUPLICATIONS="duplications"
+CODE="code"
 
 
 
@@ -73,6 +74,11 @@ fi
 if [ ! -d $DUPLICATIONS ]
 then 
 	mkdir $DUPLICATIONS
+fi
+
+if [ ! -d $CODE ]
+then 
+	mkdir $CODE
 fi
 
 

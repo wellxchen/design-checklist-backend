@@ -16,6 +16,5 @@ cd $ROOT/$CACHE/$CODE/$GROUP/$PROJECT
 
 git log  --shortstat  | grep -E "fil(e|es) changed"  -B 5  
 
-#cd ..
-#rm -r "$3"
+
 
