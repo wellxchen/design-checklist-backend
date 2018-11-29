@@ -316,6 +316,18 @@ class LocalHelper (FormatHelper):
                                         self.ROOT_PATH])
 
 
+    def executeShellClasses(self):
+        """
+        additional stat in project
+        :return: additional stats
+        """
+        return subprocess.check_output([self.SHELL_PATH + '/classes.sh',
+                                        self.TOKEN,
+                                        self.GITLAB_GROUP,
+                                        self.PLAIN_PROJECT,
+                                        self.ROOT_PATH])
+
+
 
 if __name__  == "__main__":
     subprocess.call(['java', '-jar', '/Users/wellxchen/Desktop/xray/org.malnatij.SVPlugin_1.0.4.1.jar'])

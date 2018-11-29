@@ -135,6 +135,16 @@ def getbyauthor():
     group = request.args.get('group')
     return ProcessSonar(group, project).process(False,True)
 
+@app.route("/api/author/contribution")
+def getcontributionbyauthor():
+    """
+    return contribution of classes and methods
+    :return: authors and issues they have
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    return ProcessSonar(group, project).getcontributionsbyauthor()
+
 
 @app.route("/api/codemaat")
 def getcodemaat():

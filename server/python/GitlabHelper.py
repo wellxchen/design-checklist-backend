@@ -26,6 +26,21 @@ class GitlabHelper (object):
     def __init__(self):
         pass
 
+    def getSingleCommitDiff (self, projectid, TOKEN, commitId):
+        """
+        get diff of a commit
+        :return: diff
+        """
+        URL = self.GITLAB_URL \
+              + "/projects/" \
+              + str(projectid) \
+              + "/repository/commits/"\
+              + commitId \
+              + "/diff?ref_name=master&per_page=100&page="
+
+        return self.getGitlabInfoAllPages(URL, TOKEN)
+
+
     def getGitlabInfoAllPages (self, URL, TOKEN):
         """
         get information from gitlab include all pages
@@ -44,8 +59,16 @@ class GitlabHelper (object):
             r = requests.get(URL + str(counter), headers={'PRIVATE-TOKEN': TOKEN})
         return result
 
+    def getCommitsSingleFile (self, projectid, TOKEN, path) :
+        URL = self.GITLAB_URL \
+              + "/projects/" \
+              + str(projectid) \
+              + "/repository/commits?path="+ path \
+              + "&ref_name=master&per_page=100&page="
 
-    def getcommits(self, projectid, TOKEN):
+        return self.getGitlabInfoAllPages(URL, TOKEN)
+
+    def getCommits(self, projectid, TOKEN):
         """
         get all commits for a specific project
         :param projectid: projectid

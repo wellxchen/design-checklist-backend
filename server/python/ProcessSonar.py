@@ -139,6 +139,7 @@ class ProcessSonar (object):
 
 
         if "NOT EXIST" in cachedissues:
+
             return self.helper.jsonify({"err" : cachedissues})
 
         if not cachedissues == "NO CACHE":
@@ -194,7 +195,7 @@ class ProcessSonar (object):
         data = self.helper.dataHandler(percentage, onlyDup)
 
         if byAuthor:
-           data = self.getbyauthor(data)
+           data = self.getissuebyauthor(data)
 
 
         # store severity list
@@ -218,7 +219,7 @@ class ProcessSonar (object):
 
         return res
 
-    def getbyauthor (self, data):
+    def getissuebyauthor (self, data):
         """
         re-arrange result by author
         :return: re-arranged issues by author
@@ -237,6 +238,45 @@ class ProcessSonar (object):
                    
                     self.helper.handleAuthorStore(issues['detail'], maincategory, subcategory, res)
         return res
+
+    def getcontributionsbyauthor(self):
+        """
+        get contributions to classes by author
+        :return: contributions by author
+        """
+
+        projectid = self.helper.getGitlabProjectIDByName(self.helper.GITLAB_GROUP,
+                                                         self.helper.PLAIN_PROJECT,
+                                                         self.helper.TOKEN)
+
+        if projectid == -1:
+            return []
+
+        # using project id to get commits
+
+        commits = self.helper.getCommits(projectid, self.helper.TOKEN)
+        res = {}
+        res["byfile"] = {}
+        res["byauthor"] = {}
+        for commit in commits:
+            author = commit["author_email"]
+            if author not in res["byauthor"]:
+                res["byauthor"][author] = {}
+            diffs = self.helper.getSingleCommitDiff(projectid,self.helper.TOKEN, commit["id"])
+            for diff in diffs:
+                path = diff["new_path"]
+                if path not in res["byfile"]:
+                    res["byfile"][path] = {}
+                if author not in res["byfile"][path]:
+                    res["byfile"][path][author] = 0
+                res["byfile"][path][author] += 1
+                if path not in res["byauthor"][author]:
+                    res["byauthor"][author][path] = 0
+                res["byauthor"][author][path] += 1
+
+        self.helper.displayData(res)
+        return self.helper.jsonify(res)
+
 
 
     def statistics(self):
@@ -348,11 +388,11 @@ class ProcessSonar (object):
 
         # using project id to get commits
 
+        commits = self.helper.getCommits(projectid, self.helper.TOKEN)
 
         res = {}
         res['authors'] = {}
         dates = {}
-        commits = self.helper.getcommits(projectid, self.helper.TOKEN)
 
         # read in student ids and names from csv
 
@@ -410,7 +450,7 @@ class ProcessSonar (object):
             res['authors'][author]['numofcommits'] = numofcommits
             res['authors'][author]['percentageofcommits'] = 100.00 * numofcommits / totalnumofcommits
 
-
+        #self.helper.displayData(res)
         return self.helper.jsonify(res)
 
 
@@ -654,4 +694,4 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-   print ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").statistics()#helper.executeShellStatsAdditional()
+   ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").getcontributionsbyauthor()#helper.executeShellStatsAdditional()
