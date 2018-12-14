@@ -135,7 +135,7 @@ def getbyauthor():
     group = request.args.get('group')
     return ProcessSonar(group, project).process(False,True)
 
-@app.route("/api/author/contribution")
+@app.route("/api/contribution/author")
 def getcontributionbyauthor():
     """
     return contribution of classes and methods
@@ -144,6 +144,19 @@ def getcontributionbyauthor():
     project = request.args.get('project')
     group = request.args.get('group')
     return ProcessSonar(group, project).getcontributionsbyauthor()
+
+@app.route("/api/contribution/file")
+def getcontributionbyauthor():
+    """
+    return contribution of classes and methods
+    :return: authors and issues they have
+    """
+    project = request.args.get('project')
+    group = request.args.get('group')
+    file = request.args.get('file')
+    startLine = request.args.get('start')
+    endLine = request.args.get('end')
+    return ProcessSonar(group, project).getcontributionsbyfile(file, startLine, endLine)
 
 
 @app.route("/api/codemaat")
@@ -158,9 +171,7 @@ def getcodemaat():
 
 
 
-"""
-new api below
-"""
+
 @app.route("/api/overview/category")
 def getcategoryoverview ():
     """

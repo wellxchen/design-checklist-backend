@@ -239,6 +239,38 @@ class ProcessSonar (object):
                     self.helper.handleAuthorStore(issues['detail'], maincategory, subcategory, res)
         return res
 
+    def getcontributionsbyfile(self, file, start, end):
+        """
+        get contribution by file
+        :param file: path to the file
+        :param start: start line
+        :param end: end line
+        :return: contributions
+        """
+        data_list = self.helper.executeShellContributionByFile(file, start, end).split("\n")
+        begin = True
+
+        res = {}
+
+        for data in data_list:
+
+            if begin:
+                begin = False
+                continue
+            nameBeginIndex = data.find(" (") + 2
+            nameEndIndex = data.find(") ")
+            content = data[nameBeginIndex : nameEndIndex].split(" ")
+            content =  filter(None, content)
+            if len(content) == 0:
+                continue
+
+            print(content)
+            fullName = content[0] + " " + content[1]
+            if fullName not in res:
+                res[fullName] = {}
+
+        return
+
     def getcontributionsbyauthor(self):
         """
         get contributions to classes by author
@@ -694,4 +726,4 @@ class ProcessSonar (object):
 
 if __name__ == '__main__':
 
-   ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").getcontributionsbyauthor()#helper.executeShellStatsAdditional()
+   ProcessSonar("CompSci308_2018Fall", "cellsociety_team05").getcontributionsbyfile("./src/Parameters/AntsParameters.java", 5, 30)#helper.executeShellStatsAdditional()

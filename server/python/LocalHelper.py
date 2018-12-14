@@ -316,16 +316,24 @@ class LocalHelper (FormatHelper):
                                         self.ROOT_PATH])
 
 
-    def executeShellClasses(self):
+
+
+    def executeShellContributionByFile (self, file, start, end):
         """
-        additional stat in project
-        :return: additional stats
+        get contribution by file
+        :param file: path
+        :param start:  start line
+        :param end: end line
+        :return: contributions
         """
-        return subprocess.check_output([self.SHELL_PATH + '/classes.sh',
+        return subprocess.check_output([self.SHELL_PATH + '/contribution_file.sh',
                                         self.TOKEN,
                                         self.GITLAB_GROUP,
                                         self.PLAIN_PROJECT,
-                                        self.ROOT_PATH])
+                                        self.ROOT_PATH,
+                                        file,
+                                        str(start),
+                                        str(end)])
 
 
 
