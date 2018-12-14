@@ -251,6 +251,7 @@ class ProcessSonar (object):
         begin = True
 
         res = {}
+        res['all'] = []
 
         for data in data_list:
 
@@ -263,13 +264,18 @@ class ProcessSonar (object):
             content =  filter(None, content)
             if len(content) == 0:
                 continue
+            res['all'].append(content)
 
-            print(content)
             fullName = content[0] + " " + content[1]
             if fullName not in res:
-                res[fullName] = {}
+                res[fullName] = []
+            entry = {}
+            entry['date'] = content[2]
+            entry['time'] = content[3]
+            entry['line number'] = content[5]
+            res[fullName].append(entry)
 
-        return
+        return self.helper.jsonify(res)
 
     def getcontributionsbyauthor(self):
         """
