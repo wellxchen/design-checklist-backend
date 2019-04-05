@@ -16,7 +16,7 @@
 
 This repo is the backend server that retrieves analysis data as json from SonarQube and processes the data using python and shell. The server currently support 11 endpoints, including: 
 
-```python
+```python.
 
 "/api/show" #get all issues 
 
