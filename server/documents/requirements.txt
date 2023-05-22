@@ -1,4 +1,4 @@
 python-dotenv==0.7.1
 Flask>=1.0.0
-requests==2.18.4
+requests==2.31.0
 code-maat==1.1
